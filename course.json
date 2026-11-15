@@ -1,0 +1,466 @@
+{
+  "$schema": "https://sdaiaacademy.github.io/engine/schemas/course.schema.json",
+  "engine": "1",
+  "id": "ae-403",
+  "code": "AE-403",
+  "version": "2027.1.0",
+  "lang": "en",
+  "title": {
+    "en": "Reliability Engineering for AI Services",
+    "ar": "هندسة الاعتمادية لخدمات الذكاء الاصطناعي"
+  },
+  "tagline": "REPLACE: one line under the title: what participants can do after the course",
+  "description": "Participants set and defend reliability standards for AI services that other teams build. For a fictional postal and parcels operator running a bilingual tracking assistant on a self-hosted open-weight model with retrieval, they write service level objectives for availability, latency and answer quality, set admission limits with headroom from measured goodput, design and chaos-test degradation paths, lead incident drills and blameless reviews, release through canaries with automated rollback, and admit models only after verifying signatures and bills of materials.",
+  "track": "ai-engineering",
+  "level": 400,
+  "badge": {
+    "name": "AI Engineering",
+    "level": "Expert"
+  },
+  "audience": "Specialists. Engineers who have completed the level 300 core or can show equivalent work: a production AI system they built, operated and can defend.",
+  "prerequisites": [
+    "AE-305 Operating Machine Learning and Language Model Systems",
+    "AE-307 Container Orchestration and Cloud Infrastructure for AI Workloads",
+    "Has written alerting rules on service metrics",
+    "Runs containers on a single-node cluster",
+    "Has released a service through a canary or blue-green rollout",
+    "Reads a goodput-versus-concurrency curve (the measurement method is taught in AE-401)"
+  ],
+  "site": {
+    "url": "https://sdaiaacademy.github.io/ae-403/",
+    "repo": "SDAIAAcademy/ae-403"
+  },
+  "outcomes": [
+    {
+      "id": "LO1",
+      "text": "Design service level objectives for availability, latency and answer quality, with error budgets and a release policy, given a month of synthetic telemetry and a sampled online quality signal",
+      "level": "Performance",
+      "evidence": "an objectives document defended against a reviewer's challenges"
+    },
+    {
+      "id": "LO2",
+      "text": "Decide an admission limit and shedding priorities that keep headroom for the busiest hour, given the self-hosted model, a recorded traffic trace and the service objectives",
+      "level": "Performance",
+      "evidence": "a justified operating point and margin, and an overload replay in which priority traffic still meets its objective"
+    },
+    {
+      "id": "LO3",
+      "text": "Design degradation for overload and dependency failure using load shedding, a smaller fallback model and a cached-answer mode, given overload, retrieval outage and provider timeout scenarios",
+      "level": "Performance",
+      "evidence": "chaos test results showing each path keeps the minimum service, with quality measured in each mode"
+    },
+    {
+      "id": "LO4",
+      "text": "Lead an incident drill from detection to recovery and write a blameless review, given a silent quality regression after a model update",
+      "level": "Performance",
+      "evidence": "a timeline, a decision log, owned corrective actions and a new regression test"
+    },
+    {
+      "id": "LO5",
+      "text": "Build a release gate that verifies model signatures, a bill of materials and licences before deployment, given signed, tampered and unlicensed model artefacts",
+      "level": "Performance",
+      "evidence": "a pipeline run that admits the valid artefact and rejects the others, with logs"
+    },
+    {
+      "id": "LO6",
+      "text": "Review another team's AI service for production readiness and set launch conditions, given a peer's service, its telemetry and a readiness checklist",
+      "level": "Performance",
+      "evidence": "ranked findings and a launch decision defended before a panel"
+    }
+  ],
+  "case_study": {
+    "name": "REPLACE: the name of the fictional organisation every lab works on",
+    "summary": "REPLACE: two sentences on the case study and its synthetic data"
+  },
+  "format": "intensive",
+  "format_note": "Intensive: 4 teaching days of four sessions and a capstone day, with guided pre-work and a tracked follow-up task",
+  "hours": {
+    "instruction": 6,
+    "lab": 7,
+    "guided_self_study": 6,
+    "assessment": 1,
+    "capstone": 6
+  },
+  "unit": "day",
+  "days": [
+    {
+      "id": "day1",
+      "kind": "day",
+      "title": "Objectives that match what users need",
+      "deck": "slides/day1.html",
+      "sessions": [
+        {
+          "title": "AI services fail differently",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO1"
+          ],
+          "lab": {
+            "id": "1.1",
+            "title": "Read a week of synthetic telemetry and list the incidents an uptime check would miss",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_1_read_week_synthetic.ipynb"
+          }
+        },
+        {
+          "title": "Indicators for latency and quality",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO1"
+          ],
+          "lab": {
+            "id": "1.2",
+            "title": "Define indicators for first-token time, per-token time, availability and a sampled quality grade",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_2_define_indicators_first.ipynb"
+          }
+        },
+        {
+          "title": "Objectives and error budgets",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO1"
+          ],
+          "lab": {
+            "id": "1.3",
+            "title": "Set objectives, compute budget burn from a supplied month and write the release policy",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_3_set_objectives_compute.ipynb"
+          }
+        },
+        {
+          "title": "Objectives for multi-step tasks",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO1"
+          ],
+          "lab": {
+            "id": "1.4",
+            "title": "Define completion, cost and escalation indicators for the redelivery booking flow",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_4_define_completion_cost.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day2",
+      "kind": "day",
+      "title": "Capacity and failure",
+      "deck": "slides/day2.html",
+      "sessions": [
+        {
+          "title": "Capacity with headroom",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO2"
+          ],
+          "lab": {
+            "id": "2.1",
+            "title": "Load-test the model at rising concurrency, find where goodput falls and set the operating point",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_1_load_test_model.ipynb"
+          }
+        },
+        {
+          "title": "Admission control and shedding",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO2"
+          ],
+          "lab": {
+            "id": "2.2",
+            "title": "Add a concurrency cap and priority shedding, then replay the overload trace",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_2_add_concurrency_cap.ipynb"
+          }
+        },
+        {
+          "title": "Degraded modes",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO3"
+          ],
+          "lab": {
+            "id": "2.3",
+            "title": "Configure a smaller fallback model and a cached-answer mode and measure quality in each",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_3_configure_smaller_fallback.ipynb"
+          }
+        },
+        {
+          "title": "Chaos experiments",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO3"
+          ],
+          "lab": {
+            "id": "2.4",
+            "title": "Inject a retrieval outage, a provider timeout and a retry storm and check the minimum service holds",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_4_inject_retrieval_outage.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day3",
+      "kind": "day",
+      "title": "Incidents and safe releases",
+      "deck": "slides/day3.html",
+      "sessions": [
+        {
+          "title": "Finding silent regressions",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO4"
+          ],
+          "lab": {
+            "id": "3.1",
+            "title": "Build a burn-rate alert on the quality indicator and locate the regression in a replayed day",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_1_build_burn_rate.ipynb"
+          }
+        },
+        {
+          "title": "Running an incident",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO4"
+          ],
+          "lab": {
+            "id": "3.2",
+            "title": "Run a game day on a model-update regression as incident lead, operator and scribe",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_2_run_game_day.ipynb"
+          }
+        },
+        {
+          "title": "Canary and rollback",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO1"
+          ],
+          "lab": {
+            "id": "3.3",
+            "title": "Release a new model version as a canary with automated rollback on a latency and quality gate",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_3_release_new_model.ipynb"
+          }
+        },
+        {
+          "title": "Learning from incidents",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO4"
+          ],
+          "lab": {
+            "id": "3.4",
+            "title": "Write a blameless review of a supplied incident and turn its cases into a regression test",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_4_write_blameless_review.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day4",
+      "kind": "day",
+      "title": "Integrity and readiness",
+      "deck": "slides/day4.html",
+      "sessions": [
+        {
+          "title": "The model supply chain",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO5"
+          ],
+          "lab": {
+            "id": "4.1",
+            "title": "Trace the provenance of three model artefacts and find the tampered file by its hash",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_1_trace_provenance_three.ipynb"
+          }
+        },
+        {
+          "title": "Signing and verification",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO5"
+          ],
+          "lab": {
+            "id": "4.2",
+            "title": "Sign a manifest of model files and show that a changed file fails verification",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_2_sign_manifest_model.ipynb"
+          }
+        },
+        {
+          "title": "Bills of materials and admission",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO5"
+          ],
+          "lab": {
+            "id": "4.3",
+            "title": "Write a bill of materials and a policy that rejects unsigned or unlicensed models",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_3_write_bill_materials.ipynb"
+          }
+        },
+        {
+          "title": "Production readiness reviews",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO6"
+          ],
+          "lab": {
+            "id": "4.4",
+            "title": "Apply the readiness checklist to a supplied service and rank the findings by risk",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_4_apply_readiness_checklist.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "capstone",
+      "kind": "capstone",
+      "title": "Capstone project presentations",
+      "deck": "slides/capstone.html",
+      "subtitle": "REPLACE: the catalog gives no length for the presentations; set capstone.talk_minutes and capstone.qa_minutes in course.json, write them on the format slide, add a timer for each to the now-presenting slide, and remove this line"
+    }
+  ],
+  "capstone": {
+    "summary": "A production readiness review of a peer's or a supplied AI service, covering objectives, capacity, degradation, incidents and release integrity with measured evidence in a public repository, defended before a panel of experienced engineers. The follow-up task applies one reliability standard to a service in the participant's own team or an open-source deployment",
+    "submission": "REPLACE: what participants submit and how: a public repository link, or a shared folder for a course without code",
+    "rubric": [
+      {
+        "criterion": "Objectives and alerts",
+        "weight": 20
+      },
+      {
+        "criterion": "Capacity and degradation",
+        "weight": 25
+      },
+      {
+        "criterion": "Incident drill and review",
+        "weight": 20
+      },
+      {
+        "criterion": "Release integrity",
+        "weight": 15
+      },
+      {
+        "criterion": "Readiness decision",
+        "weight": 20
+      }
+    ]
+  },
+  "labs": {
+    "kind": "notebooks",
+    "base": "labs/"
+  },
+  "tools": [
+    {
+      "slot": "Inference engine",
+      "examples": [
+        "vLLM",
+        "SGLang",
+        "llama.cpp server"
+      ]
+    },
+    {
+      "slot": "Load generation",
+      "examples": [
+        "inference-perf",
+        "k6",
+        "Locust"
+      ]
+    },
+    {
+      "slot": "Metrics, traces and alerting",
+      "examples": [
+        "Prometheus with Grafana",
+        "an OpenTelemetry collector"
+      ]
+    },
+    {
+      "slot": "Fault injection",
+      "examples": [
+        "Chaos Mesh",
+        "Toxiproxy"
+      ]
+    },
+    {
+      "slot": "Progressive delivery",
+      "examples": [
+        "Argo Rollouts",
+        "Flagger"
+      ]
+    },
+    {
+      "slot": "Signing, bills of materials and admission",
+      "examples": [
+        "OpenSSF Model Signing",
+        "CycloneDX ML-BOM",
+        "Kyverno"
+      ]
+    },
+    {
+      "slot": "Single-node cluster",
+      "examples": [
+        "kind",
+        "k3s"
+      ]
+    }
+  ]
+}

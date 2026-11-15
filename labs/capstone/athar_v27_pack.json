@@ -10,7 +10,7 @@
   "objectives": "availability, first token and quality per language, unchanged from v2.6",
   "capacity": "goodput curve measured with English prompts only",
   "degradation": "fallback and cache modes as in v2.6; no experiment with the tracking API down",
-  "incidents": "runbook updated after INC-0412; no drill run on the new write tool",
+  "incidents": "runbook updated after INC-0731; no drill run on the new write tool",
   "release": "canary gate of Lab 3.3; the new model is signed with the release key",
   "integrity": "bill of materials lists the model; the licence of the new embedding model is not stated"
  },

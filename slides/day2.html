@@ -258,10 +258,11 @@ review:    monthly, and before any planned sale or campaign</code></pre>
   <h2>Every degraded answer says so, in the user's language</h2>
   <div class="chat">
     <div class="msg user"><span class="who">Customer</span>What is the fee for a registered letter in Abha?</div>
-    <div class="msg ai"><span class="who">Athar, cache mode</span>Athar is answering from saved answers: details may not reflect the latest updates. Saved answer: 25.</div>
-    <div class="msg ai"><span class="who">أثر، الوضع المخفَّض</span>يعمل أثر حاليًا بوضع مخفَّض، وقد تكون هذه الإجابة أقل اكتمالًا من المعتاد.</div>
+    <div class="msg ai"><span class="who">Athar, cache mode</span>Athar is answering from saved answers: details may not reflect the latest updates. <i>Then the saved answer.</i></div>
+    <div class="msg ai"><span class="who">Athar, fallback mode</span>Athar is running in reduced mode: this answer may be less complete than usual. <i>Then the smaller model's answer.</i></div>
+    <div class="msg ai" lang="ar" dir="rtl"><span class="who">أثر، الإجابات المحفوظة</span>يجيب أثر حاليًا من إجابات محفوظة، وقد لا تعكس التفاصيل آخر التحديثات.</div>
   </div>
-  <aside class="notes"><p>The texts are U.DISCLOSURE in the helper module. The lab checks that 100% of degraded answers start with the disclosure. Users decide what to trust when they are told.</p></aside>
+  <aside class="notes"><p>Each mode has its own disclosure, in English and in Arabic; the Arabic line is the cache-mode text an Arabic question receives. The texts are U.DISCLOSURE in the helper module. The lab checks that 100% of degraded answers start with the disclosure. Users decide what to trust when they are told.</p></aside>
 </section>
 
 <section class="slide" id="check-mode" data-lo="LO3">

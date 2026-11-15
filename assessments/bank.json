@@ -356,9 +356,9 @@
     {
       "id": "q-inc-order",
       "type": "order",
-      "prompt": "A quality alert pages at 14:05: Arabic tracking answers are wrong since a model update at 13:30. Put the first actions in order.",
+      "prompt": "A quality alert pages 35 minutes after a model update: Arabic tracking answers have been wrong since the update. Put the first actions in order.",
       "options": [
-        "Declare the incident and name an incident commander",
+        "Declare the incident and name an incident lead",
         "Mitigate: roll back to the previous model",
         "Tell the stakeholders what is known and when the next update is due",
         "Find the root cause from the logs, once users are protected"
@@ -378,7 +378,7 @@
     {
       "id": "q-inc-rollback",
       "type": "single",
-      "prompt": "Twenty minutes into the incident the team suspects the new model mis-reads Arabic-Indic digits in parcel numbers, but is not sure. Users are still getting wrong answers. What does the incident commander decide?",
+      "prompt": "Twenty minutes into the incident the team suspects the new model mis-reads Arabic-Indic digits in parcel numbers, but is not sure. Users are still getting wrong answers. What does the incident lead decide?",
       "options": [
         "Keep the new model until the root cause is proven, to avoid a needless rollback",
         "Roll back now and record the decision and its time in the log; prove the cause afterwards",
@@ -408,7 +408,7 @@
     {
       "id": "q-inc-action",
       "type": "single",
-      "prompt": "The blameless review of INC-0412 lists corrective actions. Which one prevents a repeat?",
+      "prompt": "The blameless review of INC-0731 lists corrective actions. Which one prevents a repeat?",
       "options": [
         "Remind release engineers to test Arabic carefully",
         "Note that the engineer on call missed the regression",

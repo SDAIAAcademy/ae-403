@@ -26,13 +26,13 @@ import pandas as pd
 # %% [markdown]
 # ## 1 · Read the incident record
 #
-# `data/incident/INC-0412.json` is the record of the incident you drilled in Lab 3.2: a timeline
+# `data/incident/INC-0731.json` is the record of the incident you drilled in Lab 3.2: a timeline
 # in minutes from the page, chat extracts and measured facts. `data/incident/cases.jsonl` holds
 # twelve failing cases: Arabic tracking questions with the parcel number in Eastern Arabic
 # digits, and the answers of v2.4 and of the fixed v2.4.1.
 
 # %%
-inc = json.loads((U.DATA / "incident" / "INC-0412.json").read_text(encoding="utf-8"))
+inc = json.loads((U.DATA / "incident" / "INC-0731.json").read_text(encoding="utf-8"))
 cases = [json.loads(l) for l in (U.DATA / "incident" / "cases.jsonl").read_text(encoding="utf-8").splitlines()]
 print(inc["summary"])
 print(pd.DataFrame(inc["timeline"]).to_string(index=False))

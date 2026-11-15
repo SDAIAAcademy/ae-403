@@ -82,7 +82,7 @@ def fires(g: pd.DataFrame, long: int, short: int, rate: float) -> pd.Series:
     # END SOLUTION
 
 # %%
-TIERS = {"page: 1 h and 5 min at 14.4": (12, 1, 14.4), "ticket: 6 h and 30 min at 6": (72, 6, 6.0),
+TIERS = {"fast page: 1 h and 5 min at 14.4": (12, 1, 14.4), "slow page: 6 h and 30 min at 6": (72, 6, 6.0),
          "quality: 1 h and 5 min at 6": (12, 1, 6.0)}
 
 
@@ -106,7 +106,7 @@ for tier in TIERS:
         detect[tier][name] = first_fire(slots[name], tier, name)
 U.keep("lab_3_1_detection", detect)
 print(pd.DataFrame(detect).T)
-U.ok(detect["page: 1 h and 5 min at 14.4"]["all"] is None and detect["ticket: 6 h and 30 min at 6"]["all"] is None,
+U.ok(detect["fast page: 1 h and 5 min at 14.4"]["all"] is None and detect["slow page: 6 h and 30 min at 6"]["all"] is None,
      "on all traffic neither workbook tier ever fires")
 
 # %% [markdown]
@@ -138,11 +138,11 @@ print("regression starts around slot", start)
 print(near.to_string(index=False))
 U.ok(abs(start - 130) <= 3, "the Arabic regression starts with the model update at slot 130")
 q = detect["quality: 1 h and 5 min at 6"]["ar"]
-t = detect["ticket: 6 h and 30 min at 6"]["ar"]
-print(f"detection after the update: quality tier {(q - 130) * 5} min, ticket tier {(t - 130) * 5} min")
+t = detect["slow page: 6 h and 30 min at 6"]["ar"]
+print(f"detection after the update: quality tier {(q - 130) * 5} min, slow-page tier {(t - 130) * 5} min")
 
 # %% [markdown]
-# **Look at** the three answers: the averaged alert never fires, the per-language ticket tier
+# **Look at** the three answers: the averaged alert never fires, the per-language slow-page tier
 # takes hours, and a quality tier with a one-hour window fires within the hour. Quality
 # regressions after a model update are step changes: they need short windows and slices.
 #

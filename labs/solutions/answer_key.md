@@ -26,7 +26,7 @@ Answers written by participants differ in wording; the numbers and decisions sho
 
 | Lab | Expected result |
 |---|---|
-| 3.1 A burn-rate alert on quality | On the replay day the model update at slot 130 breaks Arabic answers. The quality tier (1 h and 5 min windows at burn rate 6) fires first, about 35 minutes after the regression starts; the ticket tier fires hours later; the paging tier and any alert on all traffic combined never fire. |
+| 3.1 A burn-rate alert on quality | On the replay day the model update at slot 130 breaks Arabic answers. The quality tier (1 h and 5 min windows at burn rate 6) fires first, about 35 minutes after the regression starts; the slow-page tier fires hours later; the fast-page tier and any alert on all traffic combined never fire. |
 | 3.2 Game day: a model-update regression | Roles assigned at 2 minutes, incident declared at 1, mitigation (rollback) at 5 minutes. The decision log has 10 entries, each with a reason. Rolling back first exposes 32 answers carrying another customer's data, against 56 when the team diagnoses first (35 minutes); the data protection officer is paged, the breach assessed, and SDAIA notified well inside 72 hours of awareness. |
 | 3.3 Canary with automated rollback | The old gate promotes both v2.6 and the int4 candidate, deciding on 27 Arabic samples. The designed gate (minimum sample per language, comparison with stable) promotes v2.6 and rolls back v2.6-int4 at the 25% step. |
 | 3.4 Blameless review and regression test | The twelve failing cases become a regression test: v2.4 passes 0 of 12, v2.4.1 passes 12 of 12. Corrective actions each have an owner and a date; none names a person as the cause. |

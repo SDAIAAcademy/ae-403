@@ -79,7 +79,7 @@ only; run it again and every file comes out byte for byte the same.
 | `redelivery_sessions.jsonl` | Multi-step redelivery sessions, call by call |
 | `traffic_hourly.csv`, `overload_trace.csv` | A year of hourly traffic and a recorded overload by priority |
 | `replay_day.csv`, `deploy_log.csv` | A day of graded answers per slot and the deployments in it |
-| `incident/` | INC-0412's record and twelve failing cases |
+| `incident/` | INC-0731's record and twelve failing cases |
 | `models/` | Three small model artefacts (random weights), their provenance, signatures and Rasael's release key |
 | `taqdir/` | The readiness checklist and Taqdir's evidence pack |
 | `reference/` | The reference result of every exercise |

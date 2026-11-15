@@ -131,4 +131,4 @@ U.ok(slow["answers_with_other_customers_data"] > report["answers_with_other_cust
 # 3. What does the scribe's log add that the chat history does not?
 #    <details><summary>Answer</summary>Every decision with its time, its owner and its reason, in one place: the material of the blameless review.</details>
 #
-# **Carry forward** · Lab 3.4 reviews the same incident from its record (`data/incident/INC-0412.json`).
+# **Carry forward** · Lab 3.4 reviews the same incident from its record (`data/incident/INC-0731.json`).

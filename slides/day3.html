@@ -65,8 +65,8 @@
   <h2>The averaged alert never fires; the Arabic one fires in 35 minutes</h2>
   <table class="t small">
     <tr><th>Tier</th><th>All traffic</th><th>Arabic slice</th></tr>
-    <tr><td>page: 1 h and 5 min at 14.4×</td><td>never</td><td>never</td></tr>
-    <tr><td>ticket: 6 h and 30 min at 6×</td><td>never</td><td>after 255 min</td></tr>
+    <tr><td>fast page: 1 h and 5 min at 14.4×</td><td>never</td><td>never</td></tr>
+    <tr><td>slow page: 6 h and 30 min at 6×</td><td>never</td><td>after 255 min</td></tr>
     <tr class="hl"><td>quality: 1 h and 5 min at 6×</td><td>never</td><td>after 35 min</td></tr>
   </table>
   <p class="small mt">After the update Arabic burns at about 8×, English at about 0.6×, all traffic at about 5×.</p>
@@ -306,7 +306,7 @@
 </section>
 
 <section class="slide" id="contributing-factors" data-lo="LO4">
-  <div class="kicker">Lab 3.4 · INC-0412</div>
+  <div class="kicker">Lab 3.4 · INC-0731</div>
   <h2>Five conditions made the incident possible</h2>
   <ol class="bullets small">
     <li>The offline evaluation set had no Arabic tracking questions</li>
@@ -364,7 +364,7 @@
   <div class="kicker">Checkpoint</div>
   <h2>Which line belongs in the review?</h2>
   <div class="quiz" data-type="single" data-lo="LO4">
-    <p class="lead">Four draft lines for INC-0412's contributing factors. Which one belongs in a blameless review?</p>
+    <p class="lead">Four draft lines for INC-0731's contributing factors. Which one belongs in a blameless review?</p>
     <div class="opts">
       <div class="opt" data-why="Names a person's behaviour, which invites blame and no fix">The release engineer should have checked Arabic before shipping</div>
       <div class="opt" data-why="Labels the cause instead of finding the condition behind it">Human error during the template change</div>

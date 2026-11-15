@@ -33,7 +33,7 @@
   "minutes_from_release_to_rollback": 49,
   "wrong_arabic_answers": 1900
  },
- "id": "INC-0412",
+ "id": "INC-0731",
  "service": "Athar",
  "severity": "SEV-2",
  "summary": "After the v2.4 model update, Arabic tracking questions with Eastern Arabic digits returned other customers' parcel records.",

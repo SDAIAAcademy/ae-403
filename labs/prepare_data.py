@@ -422,7 +422,7 @@ def incident():
         (180, "decision", "Notification sent to SDAIA through the national platform; customers informed by text message."),
     ]
     rec = {
-        "id": "INC-0412", "service": "Athar", "severity": "SEV-2",
+        "id": "INC-0731", "service": "Athar", "severity": "SEV-2",
         "summary": "After the v2.4 model update, Arabic tracking questions with Eastern Arabic digits returned other customers' parcel records.",
         "timeline": [{"minute": m, "kind": k, "event": e} for m, k, e in timeline],
         "chat": [
@@ -435,7 +435,7 @@ def incident():
         "facts": {"answers_exposing_data": 40, "customers_affected": 37, "wrong_arabic_answers": 1900,
                   "minutes_from_release_to_rollback": 49, "evaluation_set_arabic_share": 0.0},
     }
-    write_json(DATA / "incident" / "INC-0412.json", rec)
+    write_json(DATA / "incident" / "INC-0731.json", rec)
     cases = []
     for k in range(12):
         asked = parcel_id(r)

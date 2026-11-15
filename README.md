@@ -39,7 +39,9 @@ Participants set and defend reliability standards for AI services that other tea
 
 ## Case study
 
-**REPLACE: the name of the fictional organisation every lab works on.** REPLACE: two sentences on the case study and its synthetic data
+**Rasael Post and Parcels** (رسائل للبريد والطرود), a fictional national postal and parcels operator. Its bilingual assistant, Athar, answers parcel tracking, redelivery and help questions in Arabic and English on a self-hosted open-weight model with retrieval over 3,000 help articles; participants set its objectives, size and protect its capacity, chaos-test its degraded modes, run an incident drill on a silent quality regression, release through a canary, admit models only after verifying them, and finally review a second team's assistant, Taqdir, for launch.
+
+All data is synthetic and generated with a fixed seed by `labs/prepare_data.py`: a month of telemetry, recorded traffic, graded answers, incident records and three small model artefacts (random weights) with their provenance and signatures. The model serving and its load behaviour are a calibrated simulator (`labs/relia.py`), so every lab runs on a laptop CPU or in Colab with no model download; recorded answers stand in for live model calls, and a lab can call a free hosted model instead when a key is set.
 
 <!-- academy:labs -->
 ## Labs
@@ -70,7 +72,7 @@ Every lab is a notebook in `labs/`. Open it in Google Colab from the course page
 
 A production readiness review of a peer's or a supplied AI service, covering objectives, capacity, degradation, incidents and release integrity with measured evidence in a public repository, defended before a panel of experienced engineers. The follow-up task applies one reliability standard to a service in the participant's own team or an open-source deployment
 
-**Submission:** REPLACE: what participants submit and how: a public repository link, or a shared folder for a course without code
+**Submission:** a public GitHub repository link: the readiness review (objectives, capacity, degradation, incident drill, release integrity) with its measured evidence, logs and commit history. The brief and a template are in `labs/capstone/`. The defence is a 10-minute talk and 5 minutes of panel questions, during which the assessor injects a fault into a running service for the participant to diagnose live.
 
 ## Prerequisites
 
@@ -98,12 +100,48 @@ Each line is a capability; the examples are interchangeable.
 <!-- academy:sources -->
 ## Sources
 
-- REPLACE: every source the course cites, with its address, in course.json under "sources"; this list is written from there
+### Objectives, alerts and incidents
+
+- [Google SRE Workbook: Implementing SLOs](https://sre.google/workbook/implementing-slos/)
+- [Google SRE Workbook: Example Error Budget Policy](https://sre.google/workbook/error-budget-policy/)
+- [Google SRE Workbook: Alerting on SLOs](https://sre.google/workbook/alerting-on-slos/)
+- [Google SRE Workbook: Incident Response](https://sre.google/workbook/incident-response/)
+- [Google SRE Book: Postmortem Culture: Learning from Failure](https://sre.google/sre-book/postmortem-culture/)
+- [Google SRE Book: The Evolving SRE Engagement Model (production readiness reviews)](https://sre.google/sre-book/evolving-sre-engagement-model/)
+- [OpenTelemetry semantic conventions for generative AI: metrics](https://github.com/open-telemetry/semantic-conventions-genai)
+
+### Capacity, overload and degradation
+
+- [Google SRE Book: Handling Overload](https://sre.google/sre-book/handling-overload/)
+- [Google SRE Book: Addressing Cascading Failures](https://sre.google/sre-book/addressing-cascading-failures/)
+- [vLLM documentation: Metrics](https://docs.vllm.ai/en/latest/design/metrics.html)
+- [inference-perf: a benchmarking tool for generative AI inference (Kubernetes SIGs)](https://github.com/kubernetes-sigs/inference-perf)
+- [Toxiproxy](https://github.com/Shopify/toxiproxy)
+- [Chaos Mesh documentation](https://chaos-mesh.org/docs/)
+
+### Releases and model integrity
+
+- [Google SRE Workbook: Canarying Releases](https://sre.google/workbook/canarying-releases/)
+- [Argo Rollouts: Analysis and Progressive Delivery](https://argo-rollouts.readthedocs.io/en/stable/features/analysis/)
+- [Flagger documentation](https://docs.flagger.app/)
+- [OpenSSF Model Signing (sigstore/model-transparency)](https://github.com/sigstore/model-transparency)
+- [CycloneDX: Machine Learning Bill of Materials (ML-BOM)](https://cyclonedx.org/capabilities/mlbom/)
+- [CycloneDX specification overview](https://cyclonedx.org/specification/overview/)
+- [Kyverno: validate rules](https://kyverno.io/docs/policy-types/cluster-policy/validate/)
+
+### National references
+
+- [Personal Data Protection Law (SDAIA)](https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf)
+- [Personal Data Breach Incidents procedural guide (SDAIA)](https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataBreachIncidents.pdf)
+- [NDMO Data Classification Policy](https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf)
+- [National Cybersecurity Authority: Cloud Cybersecurity Controls (CCC)](https://nca.gov.sa/en/regulatory-documents/controls-list/ccc/)
+- [National AI Risk Management Framework: executive summary (SDAIA)](https://sdaia.gov.sa/en/MediaCenter/KnowledgeCenter/ResearchLibrary/ExecutiveSummaryEn.pdf)
 <!-- /academy:sources -->
 
 ### National references
 
-- Personal Data Protection Law and its implementing regulations, including the personal data breach procedure: REPLACE: the address of the official text
-- NDMO Data Classification Policy: REPLACE: the address of the official text
-- National Cybersecurity Authority (NCA) Cloud Cybersecurity Controls: REPLACE: the address of the official text
-- National AI Risk Management Framework: REPLACE: the address of the official text
+- Personal Data Protection Law: https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf
+- Personal Data Breach Incidents procedural guide (the 72-hour notification used in Lab 3.2): https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataBreachIncidents.pdf
+- NDMO Data Classification Policy: https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf
+- National Cybersecurity Authority (NCA) Cloud Cybersecurity Controls: https://nca.gov.sa/en/regulatory-documents/controls-list/ccc/
+- National AI Risk Management Framework (executive summary): https://sdaia.gov.sa/en/MediaCenter/KnowledgeCenter/ResearchLibrary/ExecutiveSummaryEn.pdf

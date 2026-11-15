@@ -3,166 +3,757 @@
   "version": 1,
   "questions": [
     {
-      "id": "q-example-1",
+      "id": "q-slo-budget-burn",
+      "type": "numeric",
+      "prompt": "Athar's availability objective is 99.5% of valid requests over 30 days. The month will see about 2,000,000 valid requests. After 10 days, 6,000 requests have failed. What percentage of the month's error budget has been spent?",
+      "explanation": "The budget is 0.5% of 2,000,000 = 10,000 failed requests; 6,000 of 10,000 is 60%.",
+      "lo": [
+        "LO1"
+      ],
+      "day": "day1",
+      "session": 3,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 90,
+      "answer": 60,
+      "tolerance": 1,
+      "unit": "%"
+    },
+    {
+      "id": "q-slo-fast-burn",
       "type": "single",
-      "prompt": "REPLACE: a practice question on LO1, as a short scenario",
+      "prompt": "A page fires when the one-hour burn rate of a 30-day objective reaches 14.4. If the burn holds for exactly that hour, how much of the 30-day error budget is gone?",
       "options": [
-        "REPLACE: a wrong option that a common misconception makes tempting",
-        "REPLACE: the right answer",
-        "REPLACE: a wrong option that a common misconception makes tempting",
-        "REPLACE: a wrong option that a common misconception makes tempting"
+        "About 2%: 14.4 hours of budget-rate spending out of 720 hours",
+        "14.4%, the burn rate read as a percentage",
+        "0.1%, the gap between 99.9% and 100%",
+        "Half the budget, since a page means the objective is at risk"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A burn rate of 1 spends the budget evenly over 720 hours; 14.4 for one hour spends 14.4/720, which is 2%.",
+      "misconceptions": [
+        "",
+        "Reads the burn rate as a share of the budget",
+        "Confuses the objective's error rate with the budget spent",
+        "Equates a page with a fixed, large loss"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": "day3",
+      "session": 1,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-slo-per-language",
+      "type": "single",
+      "prompt": "Over a week Athar's graded answers pass 97% overall: 98.4% in English on 1,700 samples and 89% in Arabic on 300 samples. The objective is 95% of graded answers correct. What should the quality objective look like?",
+      "options": [
+        "One overall objective: 97% already meets 95%, so the service is healthy",
+        "No quality objective, since grading is only a sample",
+        "One objective per language, each with its sample size and interval, so Arabic's 89% is visible and spends its own budget",
+        "An Arabic objective of 89%, set to what the service does today"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "An overall rate lets the larger English traffic hide a failing Arabic service; per-language objectives with sample sizes show it.",
+      "misconceptions": [
+        "Trusts an average that the larger group dominates",
+        "Thinks a sampled signal cannot carry an objective",
+        "",
+        "Sets the objective from current performance instead of what users need"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": "day1",
+      "session": 2,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-slo-task",
+      "type": "single",
+      "prompt": "Rebooking a delivery takes Athar five model or tool calls in a row; each succeeds 99% of the time, independently. About how often does the whole rebooking task succeed?",
+      "options": [
+        "About 99%: the weakest call sets the rate",
+        "About 95%: 0.99 to the power of 5",
+        "About 99.9%: retries inside the task raise it",
+        "It cannot be estimated without the calls' latencies"
       ],
       "correct": [
         1
       ],
-      "explanation": "REPLACE: why the right answer is right, in one sentence",
+      "explanation": "Independent steps multiply: 0.99^5 is about 0.951, so an objective per call overstates what users get per task.",
       "misconceptions": [
-        "REPLACE: the misconception behind this option",
+        "Thinks a chain is as good as its weakest link",
         "",
-        "REPLACE: the misconception behind this option",
-        "REPLACE: the misconception behind this option"
+        "Assumes retries that the scenario does not have",
+        "Confuses success with latency"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": "day1",
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-slo-probe",
+      "type": "tf",
+      "prompt": "An uptime probe that receives HTTP 200 from Athar every minute shows that users are getting correct answers.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A probe sees that the endpoint answers, not what it answers: empty or wrong answers also return 200.",
+      "misconceptions": [
+        "Equates a reachable endpoint with a working assistant",
+        ""
       ],
       "lo": [
         "LO1"
       ],
       "day": "day1",
       "session": 1,
-      "level": "apply",
+      "level": "understand",
       "pool": "practice",
-      "weight": 1
+      "weight": 1,
+      "timer": 30
     },
     {
-      "id": "q-example-2",
-      "type": "tf",
-      "prompt": "REPLACE: a statement on LO2 that is true",
+      "id": "q-cap-replicas",
+      "type": "numeric",
+      "prompt": "Each Athar replica serves 2.1 requests per second of goodput at its operating point. The busiest hour of the year averages 7.6 requests per second, and the team keeps 25% headroom above it. How many replicas are needed?",
+      "explanation": "7.6 × 1.25 = 9.5 requests per second; 9.5 / 2.1 = 4.5, so 5 replicas.",
+      "lo": [
+        "LO2"
+      ],
+      "day": "day2",
+      "session": 1,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 90,
+      "answer": 5,
+      "tolerance": 0,
+      "unit": "replicas"
+    },
+    {
+      "id": "q-cap-goodput",
+      "type": "single",
+      "prompt": "A load test shows throughput still rising up to 24 concurrent requests per replica, but beyond 16 the share of requests meeting the time-to-first-token objective falls quickly. Where should the admission limit be?",
       "options": [
-        "True",
-        "False"
+        "At 24, where throughput peaks",
+        "At 16 or just below, where goodput (requests that meet the objective) is highest",
+        "At 1, so that every request gets the fastest answer",
+        "No limit: autoscaling will add replicas"
       ],
       "correct": [
-        0
+        1
       ],
-      "explanation": "REPLACE: why the right answer is right, in one sentence",
+      "explanation": "Requests that miss the objective are not service; the limit sits where goodput peaks, not raw throughput.",
       "misconceptions": [
+        "Counts answered requests whether or not they meet the objective",
         "",
-        "REPLACE: the misconception behind this option"
+        "Ignores cost: the objective, not the fastest answer, is the target",
+        "Assumes scaling is instant and unlimited during a burst"
       ],
       "lo": [
         "LO2"
       ],
-      "day": "day1",
+      "day": "day2",
       "session": 1,
-      "level": "understand",
+      "level": "analyze",
       "pool": "practice",
-      "weight": 1
+      "weight": 1,
+      "timer": 60
     },
     {
-      "id": "q-example-3",
+      "id": "q-cap-shed",
       "type": "single",
-      "prompt": "REPLACE: a practice question on LO3, as a short scenario",
+      "prompt": "Athar is overloaded at 140% of its admission limit. Traffic is P1 parcel tracking for customers, P2 redelivery chat, and P3 bulk summaries of help articles for staff. What does the gateway do?",
       "options": [
-        "REPLACE: a wrong option that a common misconception makes tempting",
-        "REPLACE: the right answer",
-        "REPLACE: a wrong option that a common misconception makes tempting",
-        "REPLACE: a wrong option that a common misconception makes tempting"
+        "Queue everything in arrival order until the burst passes",
+        "Reject a random 30% of all requests",
+        "Shed P3 first, cap and give P2 a short queue deadline, and keep P1 within its objective",
+        "Shed P1 first, since tracking questions can be retried"
       ],
       "correct": [
-        1
+        2
       ],
-      "explanation": "REPLACE: why the right answer is right, in one sentence",
+      "explanation": "Shedding by priority keeps the most important traffic within its objective while the overload lasts.",
       "misconceptions": [
-        "REPLACE: the misconception behind this option",
+        "Thinks queues absorb any overload; they turn it into latency for everyone",
+        "Treats all traffic as equal",
         "",
-        "REPLACE: the misconception behind this option",
-        "REPLACE: the misconception behind this option"
+        "Lets retries justify shedding the most valuable traffic"
+      ],
+      "lo": [
+        "LO2",
+        "LO3"
+      ],
+      "day": "day2",
+      "session": 2,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-cap-order",
+      "type": "order",
+      "prompt": "Put the steps for setting an admission limit in order.",
+      "options": [
+        "Measure goodput against concurrency on the model you will serve",
+        "Choose the operating point where the objective is still met",
+        "Compare capacity at that point with the busiest hour plus headroom",
+        "Replay a recorded overload and check priority traffic still meets its objective"
+      ],
+      "explanation": "The limit comes from measurement, is sized against the busiest hour, and is proven by a replay.",
+      "misconceptions": [],
+      "lo": [
+        "LO2"
+      ],
+      "day": "day2",
+      "session": 1,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-deg-outage",
+      "type": "single",
+      "prompt": "Retrieval over the help articles is down. Which degraded mode should Athar use for help questions?",
+      "options": [
+        "Serve vetted cached answers to known questions, disclose the reduced service, and send the rest to a template that points to the help centre",
+        "Let the model answer from memory without retrieval, so users notice nothing",
+        "Return an error for every question until retrieval is back",
+        "Retry retrieval on every request until it answers"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A degraded mode keeps a minimum, honest service; answering without sources invents policy and retries add load.",
+      "misconceptions": [
+        "",
+        "Thinks fluent answers without sources are a safe fallback",
+        "Gives up a minimum service the case can still provide",
+        "Retries against a dependency that is down, adding load"
       ],
       "lo": [
         "LO3"
       ],
-      "day": "day1",
-      "session": 1,
-      "level": "apply",
+      "day": "day2",
+      "session": 3,
+      "level": "evaluate",
       "pool": "practice",
-      "weight": 1
+      "weight": 1,
+      "timer": 60
     },
     {
-      "id": "q-example-4",
-      "type": "tf",
-      "prompt": "REPLACE: a statement on LO4 that is true",
+      "id": "q-deg-cache-pd",
+      "type": "single",
+      "prompt": "Of 137 cached answers, 9 are tracking answers that contain a customer's name and address, and 7 quote a delivery fee that changed last month. What happens to the cache before it serves as a fallback?",
       "options": [
-        "True",
-        "False"
+        "Keep all 137: they were correct when written",
+        "Remove only the 7 stale answers; personal data is fine in a server-side cache",
+        "Remove only the 9 with personal data; prices change rarely",
+        "Remove both: answers with personal data must not be served to others, and stale answers are wrong"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "REPLACE: why the right answer is right, in one sentence",
+      "explanation": "A cache served to anyone must hold no personal data and no stale facts.",
       "misconceptions": [
-        "",
-        "REPLACE: the misconception behind this option"
+        "Treats a once-correct answer as permanently correct",
+        "Ignores that a cached answer is shown to other users",
+        "Ignores that a stale price is a wrong answer",
+        ""
       ],
       "lo": [
-        "LO4"
+        "LO3"
       ],
-      "day": "day1",
-      "session": 1,
-      "level": "understand",
+      "day": "day2",
+      "session": 3,
+      "level": "analyze",
       "pool": "practice",
-      "weight": 1
+      "weight": 1,
+      "timer": 60
     },
     {
-      "id": "q-example-5",
+      "id": "q-deg-retry",
       "type": "single",
-      "prompt": "REPLACE: a practice question on LO5, as a short scenario",
+      "prompt": "A provider timeout lasts 60 seconds. Clients retry every failure immediately, up to three times. After the provider recovers, the service stays overloaded. What fixes this?",
       "options": [
-        "REPLACE: a wrong option that a common misconception makes tempting",
-        "REPLACE: the right answer",
-        "REPLACE: a wrong option that a common misconception makes tempting",
-        "REPLACE: a wrong option that a common misconception makes tempting"
+        "More retries, so that more requests eventually succeed",
+        "A retry budget (about 10% of requests) with exponential backoff and jitter",
+        "A longer client timeout",
+        "Restarting the service after each fault"
       ],
       "correct": [
         1
       ],
-      "explanation": "REPLACE: why the right answer is right, in one sentence",
+      "explanation": "Immediate retries multiply load past capacity, so goodput collapses; a budget and backoff bound the extra load.",
       "misconceptions": [
-        "REPLACE: the misconception behind this option",
+        "Thinks retries are free",
         "",
-        "REPLACE: the misconception behind this option",
-        "REPLACE: the misconception behind this option"
+        "Delays the failure without reducing load",
+        "Treats a load problem as a process problem"
       ],
       "lo": [
-        "LO5"
+        "LO3"
       ],
-      "day": "day1",
-      "session": 1,
-      "level": "apply",
+      "day": "day2",
+      "session": 4,
+      "level": "analyze",
       "pool": "practice",
-      "weight": 1
+      "weight": 1,
+      "timer": 60
     },
     {
-      "id": "q-example-6",
+      "id": "q-deg-quality",
       "type": "tf",
-      "prompt": "REPLACE: a statement on LO6 that is true",
+      "prompt": "A chaos test of the smaller fallback model passes if Athar keeps returning HTTP 200 throughout the fault.",
       "options": [
         "True",
         "False"
       ],
       "correct": [
+        1
+      ],
+      "explanation": "The fallback in the case kept answering, but its Arabic quality fell to about 73%; each mode needs its quality measured per language.",
+      "misconceptions": [
+        "Equates availability with a minimum service",
+        ""
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": "day2",
+      "session": 4,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-inc-order",
+      "type": "order",
+      "prompt": "A quality alert pages at 14:05: Arabic tracking answers are wrong since a model update at 13:30. Put the first actions in order.",
+      "options": [
+        "Declare the incident and name an incident commander",
+        "Mitigate: roll back to the previous model",
+        "Tell the stakeholders what is known and when the next update is due",
+        "Find the root cause from the logs, once users are protected"
+      ],
+      "explanation": "Roles first, then stop the harm, then communicate; diagnosis comes after users are protected.",
+      "misconceptions": [],
+      "lo": [
+        "LO4"
+      ],
+      "day": "day3",
+      "session": 2,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-inc-rollback",
+      "type": "single",
+      "prompt": "Twenty minutes into the incident the team suspects the new model mis-reads Arabic-Indic digits in parcel numbers, but is not sure. Users are still getting wrong answers. What does the incident commander decide?",
+      "options": [
+        "Keep the new model until the root cause is proven, to avoid a needless rollback",
+        "Roll back now and record the decision and its time in the log; prove the cause afterwards",
+        "Patch the prompt template in production to normalise digits",
+        "Ask each engineer to test Arabic queries by hand"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Mitigation does not wait for certainty: a rollback is cheap and reversible, and the log records why.",
+      "misconceptions": [
+        "Puts the diagnosis before the users' harm",
+        "",
+        "Makes an untested change during the incident",
+        "Relies on people to catch what a gate should"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": "day3",
+      "session": 2,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-inc-action",
+      "type": "single",
+      "prompt": "The blameless review of INC-0412 lists corrective actions. Which one prevents a repeat?",
+      "options": [
+        "Remind release engineers to test Arabic carefully",
+        "Note that the engineer on call missed the regression",
+        "Shorten the alert's long window",
+        "Add the failing Arabic digit cases as a regression test, and route model releases through a canary with a per-language quality gate"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A test and a gate catch the failure every time; reminders and blame do not change the system.",
+      "misconceptions": [
+        "Relies on people remembering",
+        "Turns a review into blame",
+        "Changes detection speed but not prevention",
+        ""
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": "day3",
+      "session": 4,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-inc-breach",
+      "type": "single",
+      "prompt": "During the incident, 40 answers showed parcels' recipient names and addresses to the wrong customers. Under SDAIA's personal data breach guide, what is the notification clock?",
+      "options": [
+        "Notify within 72 hours of becoming aware of the breach, when it may harm the people concerned",
+        "Notify only after the root cause is known",
+        "No notification: the exposure was caused by a model error, not an attack",
+        "Notify within 30 days, in the monthly report"
+      ],
+      "correct": [
         0
       ],
-      "explanation": "REPLACE: why the right answer is right, in one sentence",
+      "explanation": "The clock starts at awareness, not at the root cause, and a model error that exposes personal data is a breach.",
       "misconceptions": [
         "",
-        "REPLACE: the misconception behind this option"
+        "Waits for diagnosis before notifying",
+        "Thinks only attacks are breaches",
+        "Confuses breach notification with routine reporting"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": "day3",
+      "session": 2,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-inc-canary",
+      "type": "single",
+      "prompt": "A canary of a quantised model passed its quality gate on 27 Arabic samples, then failed in production. What should the gate have required?",
+      "options": [
+        "A higher pass threshold on the same 27 samples",
+        "A longer canary at the same traffic share, with no other change",
+        "A minimum sample per language before deciding, and a comparison against the stable version",
+        "No gate: canaries only measure latency"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "27 samples give an interval too wide to decide; a minimum sample per language makes the gate's decision trustworthy.",
+      "misconceptions": [
+        "Tightens a threshold that the sample cannot support",
+        "Waits without checking whether enough samples arrive",
+        "",
+        "Thinks quality cannot be gated"
+      ],
+      "lo": [
+        "LO4",
+        "LO1"
+      ],
+      "day": "day3",
+      "session": 3,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-int-key",
+      "type": "single",
+      "prompt": "A partner's model folder arrives with a signature bundle and the public key to check it, all in the same file share. The signature verifies. What has been shown?",
+      "options": [
+        "That the partner released these exact files",
+        "That the files match whatever key was in the share, which anyone with access to the share could have replaced",
+        "That the model is safe to load",
+        "That Rasael may deploy it"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Verification is only as trusted as the key; a key that travels with the model can be swapped with it.",
+      "misconceptions": [
+        "Trusts a key from the same channel as the files",
+        "",
+        "Confuses integrity with safety",
+        "Confuses integrity with permission"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": "day4",
+      "session": 2,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-int-licence",
+      "type": "single",
+      "prompt": "A small model's signature verifies with Rasael's release key and its bill of materials matches every file. Its licence allows research use only. What does the admission gate decide?",
+      "options": [
+        "Admit: integrity is proven",
+        "Admit with a warning in the log",
+        "Ask the publisher to re-sign it",
+        "Reject: the licence is not on the allow list"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Integrity is not permission: every rule must pass, including the licence.",
+      "misconceptions": [
+        "Treats a valid signature as the only rule",
+        "Turns a failed rule into a warning",
+        "Thinks signing changes the licence",
+        ""
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": "day4",
+      "session": 3,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-int-mirror",
+      "type": "single",
+      "prompt": "One weight shard of a model downloaded from a mirror has a different SHA-256 from the publisher's list. What does that prove?",
+      "options": [
+        "The bytes of that shard are not the ones the publisher released",
+        "Someone tampered with it on purpose",
+        "The mirror is malicious",
+        "The model will behave differently"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A hash difference proves the bytes differ, not who changed them, why, or what the change does.",
+      "misconceptions": [
+        "",
+        "Infers intent from a hash",
+        "Infers the source of the change",
+        "Infers behaviour from bytes"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": "day4",
+      "session": 1,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-int-pickle",
+      "type": "single",
+      "prompt": "Why does the admission gate refuse a model shipped as a pickled .bin file, even with a valid signature?",
+      "options": [
+        "Pickle files are larger than safetensors",
+        "Loading a pickle can run code, so a signed file can still carry code that runs at load",
+        "Signatures cannot cover binary files",
+        "The engine cannot read .bin files"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Signing proves who released the bytes, not that loading them is safe; formats that run code at load are refused.",
+      "misconceptions": [
+        "Thinks the rule is about size",
+        "",
+        "Thinks signatures only cover text",
+        "Thinks the rule is about compatibility"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": "day4",
+      "session": 3,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-int-bom",
+      "type": "multi",
+      "prompt": "Which of these does a CycloneDX machine learning bill of materials record for a model? Choose all that apply.",
+      "options": [
+        "The hash of each file",
+        "The licence",
+        "The publisher and version",
+        "Whether the model's answers are correct"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "A bill of materials records what a release contains and where it came from, not how well it performs.",
+      "misconceptions": [
+        "",
+        "",
+        "",
+        "Confuses an inventory with an evaluation"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": "day4",
+      "session": 3,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-prr-claim",
+      "type": "single",
+      "prompt": "Taqdir's team marks its latency objective as met: 95% of requests under 2 seconds to first token. Rasael's standard is 1.5 seconds. How does the review score it?",
+      "options": [
+        "Met: the team's evidence shows its objective is met",
+        "Missing: there is no 1.5-second measurement",
+        "Partial: an objective exists and is measured, but it is weaker than the standard",
+        "Not scored: the standard is the platform team's concern"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A reviewer checks the claim against the standard; meeting a weaker objective is partial.",
+      "misconceptions": [
+        "Accepts the team's word for the score",
+        "Ignores the measured evidence that exists",
+        "",
+        "Leaves the standard out of the review"
       ],
       "lo": [
         "LO6"
       ],
-      "day": "day1",
-      "session": 1,
+      "day": "day4",
+      "session": 4,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-prr-risk",
+      "type": "numeric",
+      "prompt": "A finding has likelihood 4, impact 4 and is partial (gap 0.5). What is its risk, as likelihood × impact × gap?",
+      "explanation": "4 × 4 × 0.5 = 8, which makes it a dated condition under Rasael's rule.",
+      "lo": [
+        "LO6"
+      ],
+      "day": "day4",
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 45,
+      "answer": 8,
+      "tolerance": 0
+    },
+    {
+      "id": "q-prr-decision",
+      "type": "single",
+      "prompt": "Every checklist item for a service is met except one: its fallback model is unsigned (missing, impact 5). What is the decision under Rasael's rule?",
+      "options": [
+        "Launch: twelve of thirteen items are met",
+        "Launch with a condition to sign the model within 30 days",
+        "Do not launch until the model is signed and admitted; then relaunch review",
+        "Ask the team to rerun its own checklist"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Any missing item with impact 5 blocks the launch until fixed; a count of met items does not outweigh it.",
+      "misconceptions": [
+        "Counts items instead of weighing risk",
+        "Turns a blocking item into a condition",
+        "",
+        "Lets the team grade itself"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": "day4",
+      "session": 4,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 60
+    },
+    {
+      "id": "q-prr-condition",
+      "type": "single",
+      "prompt": "What makes a launch condition usable?",
+      "options": [
+        "It is written in the team's own words",
+        "It names an owner, a date, and the evidence that proves it is met",
+        "It lists every finding, whatever its risk",
+        "It is approved by the panel"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A condition without an owner, a date and a proof cannot be checked or closed.",
+      "misconceptions": [
+        "Thinks ownership of wording is ownership of the work",
+        "",
+        "Confuses a condition list with the findings list",
+        "Thinks approval replaces evidence"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": "day4",
+      "session": 4,
       "level": "understand",
       "pool": "practice",
-      "weight": 1
+      "weight": 1,
+      "timer": 60
     }
   ]
 }

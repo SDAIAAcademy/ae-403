@@ -836,5 +836,127 @@
         "k3s"
       ]
     }
+  ],
+  "sources": [
+    {
+      "group": "Objectives, alerts and incidents",
+      "items": [
+        {
+          "title": "Google SRE Workbook: Implementing SLOs",
+          "url": "https://sre.google/workbook/implementing-slos/"
+        },
+        {
+          "title": "Google SRE Workbook: Example Error Budget Policy",
+          "url": "https://sre.google/workbook/error-budget-policy/"
+        },
+        {
+          "title": "Google SRE Workbook: Alerting on SLOs",
+          "url": "https://sre.google/workbook/alerting-on-slos/"
+        },
+        {
+          "title": "Google SRE Workbook: Incident Response",
+          "url": "https://sre.google/workbook/incident-response/"
+        },
+        {
+          "title": "Google SRE Book: Postmortem Culture: Learning from Failure",
+          "url": "https://sre.google/sre-book/postmortem-culture/"
+        },
+        {
+          "title": "Google SRE Book: The Evolving SRE Engagement Model (production readiness reviews)",
+          "url": "https://sre.google/sre-book/evolving-sre-engagement-model/"
+        },
+        {
+          "title": "OpenTelemetry semantic conventions for generative AI: metrics",
+          "url": "https://github.com/open-telemetry/semantic-conventions-genai"
+        }
+      ]
+    },
+    {
+      "group": "Capacity, overload and degradation",
+      "items": [
+        {
+          "title": "Google SRE Book: Handling Overload",
+          "url": "https://sre.google/sre-book/handling-overload/"
+        },
+        {
+          "title": "Google SRE Book: Addressing Cascading Failures",
+          "url": "https://sre.google/sre-book/addressing-cascading-failures/"
+        },
+        {
+          "title": "vLLM documentation: Metrics",
+          "url": "https://docs.vllm.ai/en/latest/design/metrics.html"
+        },
+        {
+          "title": "inference-perf: a benchmarking tool for generative AI inference (Kubernetes SIGs)",
+          "url": "https://github.com/kubernetes-sigs/inference-perf"
+        },
+        {
+          "title": "Toxiproxy",
+          "url": "https://github.com/Shopify/toxiproxy"
+        },
+        {
+          "title": "Chaos Mesh documentation",
+          "url": "https://chaos-mesh.org/docs/"
+        }
+      ]
+    },
+    {
+      "group": "Releases and model integrity",
+      "items": [
+        {
+          "title": "Google SRE Workbook: Canarying Releases",
+          "url": "https://sre.google/workbook/canarying-releases/"
+        },
+        {
+          "title": "Argo Rollouts: Analysis and Progressive Delivery",
+          "url": "https://argo-rollouts.readthedocs.io/en/stable/features/analysis/"
+        },
+        {
+          "title": "Flagger documentation",
+          "url": "https://docs.flagger.app/"
+        },
+        {
+          "title": "OpenSSF Model Signing (sigstore/model-transparency)",
+          "url": "https://github.com/sigstore/model-transparency"
+        },
+        {
+          "title": "CycloneDX: Machine Learning Bill of Materials (ML-BOM)",
+          "url": "https://cyclonedx.org/capabilities/mlbom/"
+        },
+        {
+          "title": "CycloneDX specification overview",
+          "url": "https://cyclonedx.org/specification/overview/"
+        },
+        {
+          "title": "Kyverno: validate rules",
+          "url": "https://kyverno.io/docs/policy-types/cluster-policy/validate/"
+        }
+      ]
+    },
+    {
+      "group": "National references",
+      "items": [
+        {
+          "title": "Personal Data Protection Law (SDAIA)",
+          "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf"
+        },
+        {
+          "title": "Personal Data Breach Incidents procedural guide (SDAIA)",
+          "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataBreachIncidents.pdf"
+        },
+        {
+          "title": "NDMO Data Classification Policy",
+          "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf"
+        },
+        {
+          "title": "National Cybersecurity Authority: Cloud Cybersecurity Controls (CCC)",
+          "url": "https://nca.gov.sa/en/regulatory-documents/controls-list/ccc/"
+        },
+        {
+          "title": "National AI Risk Management Framework: executive summary (SDAIA)",
+          "url": "https://sdaia.gov.sa/en/MediaCenter/KnowledgeCenter/ResearchLibrary/ExecutiveSummaryEn.pdf"
+        }
+      ]
+    }
   ]
 }

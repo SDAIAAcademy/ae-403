@@ -1,19 +1,35 @@
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">Today is theirs: keep your own talking to the opening and the closing. Confirm the running order and the demo setup (screen sharing, accounts, a recorded backup) first.</aside>
+  <aside class="notes">Today is theirs: keep your own talking to the opening and the closing. Confirm the running order, the panel and the demo setup (screen sharing, the simulator open in a notebook, a recorded backup) first. The supervised exit check runs before the defences, with AI off.</aside>
 </section>
 
 <section class="slide" id="agenda" data-label="Agenda">
   <div class="kicker">Capstone</div>
-  <h2>How the presentations run</h2>
+  <h2>How the day runs</h2>
   <div class="agenda">
-    <div class="item now"><div><b>Expectations and final prep</b><small>the rubric, a last rehearsal, then the first presentations</small></div></div>
-    <div class="item"><div><b>Presentations</b><small>each one timed, with questions after it</small></div></div>
-    <div class="item"><div><b>Review and closing</b><small>peer feedback, the trainer's review, what next</small></div></div>
+    <div class="item now"><div><b>Exit check and final prep</b><small>the supervised check without AI, the rubric, a last rehearsal</small></div></div>
+    <div class="item"><div><b>Defences</b><small>ten minutes of review, five of questions with a live fault</small></div></div>
+    <div class="item"><div><b>Review and closing</b><small>peer feedback, the trainer's review, the follow-up task</small></div></div>
   </div>
+  <aside class="notes"><p>The exit check mirrors the entry check: an error budget burn, an admission limit from a goodput curve, and the first actions of an incident in order. It is 20% of the grade and runs with AI off; collect the papers before the first defence.</p></aside>
+</section>
+
+<section class="slide" id="deliverable" data-label="What you hand in">
+  <div class="kicker">The capstone</div>
+  <h2>A readiness review of a real or supplied service, with measured evidence</h2>
+  <div class="cols cols-2">
+    <ul class="bullets small">
+      <li>A public GitHub repository: the review, the code and notebooks behind every number, the logs</li>
+      <li>Load-test, chaos and pipeline logs, the drill's decision log, and a commit history that shows the work</li>
+      <li>Findings ranked by risk, a launch decision, and dated conditions that each name their proof</li>
+      <li>Synthetic data only: no personal data, no keys, no private model weights</li>
+    </ul>
+    <div class="card c-teal flat"><h4>Brief and template</h4><p class="small mb0"><code>labs/capstone/README.md</code> and <code>TEMPLATE_README.md</code>. The supplied service is Athar v2.7 (<code>athar_v27_pack.json</code>), running on the course's simulator.</p></div>
+  </div>
+  <aside class="notes"><p>AI assistants were allowed while preparing; the defence is live, so every participant must be able to explain every number in their repository. A peer's service is welcome when its owner agreed the scope on Day 4. Check before the first defence that each repository is public and opens.</p></aside>
 </section>
 
 <section class="slide" id="rubric" data-label="The rubric">
-  <div class="kicker">How presentations are scored</div>
+  <div class="kicker">How reviews are scored</div>
   <h2>The rubric</h2>
   <div class="bars">
     <div class="row"><span>Objectives and alerts</span><div class="bar c-teal" style="--w:80%"></div><span class="val">20%</span></div>
@@ -22,59 +38,88 @@
     <div class="row"><span>Release integrity</span><div class="bar c-purple" style="--w:60%"></div><span class="val">15%</span></div>
     <div class="row"><span>Readiness decision</span><div class="bar c-amber" style="--w:80%"></div><span class="val">20%</span></div>
   </div>
-  <div class="callout tip mt"><b>Show results from at least two measured runs.</b> A claim without a number is a plan, not a result.</div>
-  <aside class="notes">Walk through each criterion with one example of what full marks look like.</aside>
+  <div class="callout tip mt"><b>Every claim carries a number and the log it came from.</b> "Met" is the team's word; a review shows the measurement.</div>
+  <aside class="notes"><p>Full marks, one example each. Objectives: per-language quality with its sample size and interval, and a burn-rate alert replayed on data. Capacity: a goodput curve, the busiest hour and the margin. Degradation: chaos results per mode with quality measured in Arabic and English. Drill: a decision log with times. Integrity: a gate that rejects a tampered and an unlicensed artefact, with logs. Decision: ranked findings and dated conditions with proofs.</p><p>The grade: rubric 60%, panel defence 20%, supervised check 20%. Passing needs 70% overall and at least 60% on both the rubric and the supervised check.</p></aside>
 </section>
 
 <section class="slide" id="format" data-label="Format">
   <div class="kicker">Format</div>
-  <h2>REPLACE: how many minutes each presentation and its questions take</h2>
+  <h2>Ten minutes of review, then five of questions with a live fault</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>1 · The problem</h4><p class="small mb0">Who, what, why now. One slide.</p></div>
-    <div class="card c-cyan"><h4>2 · What you built</h4><p class="small mb0">Design, decisions, trade-offs. Then the live demo.</p></div>
-    <div class="card c-coral"><h4>3 · What you measured</h4><p class="small mb0">Baseline, improvement, failures found, what comes next.</p></div>
+    <div class="card c-teal"><h4>1 · The service</h4><p class="small mb0">What it does, for whom, its objectives. Two minutes.</p></div>
+    <div class="card c-cyan"><h4>2 · The evidence</h4><p class="small mb0">Capacity, degradation, the drill, the release gate: measured. Five minutes.</p></div>
+    <div class="card c-coral"><h4>3 · The decision</h4><p class="small mb0">The top three findings, the decision, the conditions. Three minutes.</p></div>
   </div>
-  <div class="callout note mt"><b>Peer feedback.</b> After each talk, everyone writes one strength, one question and one suggestion.</div>
+  <div class="callout note mt"><b>Peer feedback.</b> After each defence, everyone writes one strength, one question and one suggestion.</div>
+  <aside class="notes"><p>Ten and five minutes is the course's choice for an Expert-level defence with a live diagnosis; the catalog entry does not fix it. Keep the timer visible and stop the talk at ten: a review that cannot be told in ten minutes has not been ranked.</p></aside>
+</section>
+
+<section class="slide" id="live-fault" data-label="The live fault">
+  <div class="kicker">In the questions</div>
+  <h2>The panel injects a fault; you diagnose it aloud</h2>
+  <div class="flow">
+    <div class="step c-navy"><b>1 · Inject</b>the assessor starts one fault, unannounced</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>2 · Detect</b>which indicator moved, and which alert fires</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>3 · Mitigate</b>the first action, and why before the root cause</div>
+    <div class="arrow">→</div>
+    <div class="step c-purple"><b>4 · Explain</b>what your review predicted, and what it missed</div>
+  </div>
+  <div class="callout tip small mt"><b>The reasoning is scored, not the speed.</b> Say what you look at first and why; a wrong first guess that you correct from the data is a good answer.</div>
+  <aside class="notes"><p>This is the authenticity check of the catalog entry. On the supplied service, inject one of the simulator's faults in a notebook the participant can see: <code>s = relia.Service(); s.faults.add("retrieval_outage")</code>, or <code>"retrieval_slow"</code>, or <code>"provider_timeout"</code>; or replay overload with retries through <code>relia.retry_storm</code>. On a peer's service, use Toxiproxy for latency or a cut connection, agreed with the owner beforehand. Choose the fault the participant's own review rated lowest: it tests whether the ranking was right.</p></aside>
+</section>
+
+<section class="slide" id="week-recap" data-label="The week">
+  <div class="kicker">What the panel will look for</div>
+  <h2>The week in four questions</h2>
+  <div class="cols cols-4 gap-s">
+    <div class="card c-teal"><h4>What does good mean?</h4><p class="small mb0">Indicators per language, budgets that change releases.</p></div>
+    <div class="card c-cyan"><h4>What survives the busiest hour?</h4><p class="small mb0">An operating point with margin, shedding by priority, honest degraded modes.</p></div>
+    <div class="card c-coral"><h4>Who acts when it breaks?</h4><p class="small mb0">Roles, a decision log, a canary that rolls back, a review without blame.</p></div>
+    <div class="card c-purple"><h4>What are we running?</h4><p class="small mb0">Hashes, signatures, a bill of materials, a ranked launch decision.</p></div>
+  </div>
+  <aside class="notes"><p>One question per day. Each participant should be able to point to where their repository answers each one.</p></aside>
 </section>
 
 <section class="slide order" id="running-order" data-label="Running order">
   <div class="kicker">Running order</div>
-  <h2>Who presents when</h2>
+  <h2>Who defends when</h2>
   <table class="t small">
-    <tr><th>#</th><th>Presenter</th><th>Project</th></tr>
-    <tr><td>1</td><td><input placeholder="name"></td><td><input placeholder="Project"></td></tr>
-    <tr><td>2</td><td><input placeholder="name"></td><td><input placeholder="Project"></td></tr>
-    <tr><td>3</td><td><input placeholder="name"></td><td><input placeholder="Project"></td></tr>
-    <tr><td>4</td><td><input placeholder="name"></td><td><input placeholder="Project"></td></tr>
-    <tr><td>5</td><td><input placeholder="name"></td><td><input placeholder="Project"></td></tr>
-    <tr><td>6</td><td><input placeholder="name"></td><td><input placeholder="Project"></td></tr>
-    <tr><td>7</td><td><input placeholder="name"></td><td><input placeholder="Project"></td></tr>
-    <tr><td>8</td><td><input placeholder="name"></td><td><input placeholder="Project"></td></tr>
+    <tr><th>#</th><th>Presenter</th><th>Service reviewed</th></tr>
+    <tr><td>1</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>2</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>3</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>4</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>5</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>6</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>7</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>8</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
   </table>
-  <aside class="notes">Type the names in at the start; the fields can be edited live and are not saved, so keep the list in your notes too.</aside>
+  <aside class="notes">Type the names in at the start; the fields can be edited live and are not saved, so keep the list in your notes too. Do not schedule two reviews of the same peer service back to back.</aside>
 </section>
 
-<section class="slide dark" id="final-prep" data-label="Before the first presentation">
-  <div class="kicker">Before the first presentation</div>
+<section class="slide dark" id="final-prep" data-label="Before the first defence">
+  <div class="kicker">Before the first defence</div>
   <h1>Final prep · 20 minutes</h1>
   <div class="timer" data-minutes="20"></div>
-  <p class="lead">Rehearse once, record a backup, try the demo on this screen.</p>
+  <p class="lead">Rehearse once, record a backup, open your service or the simulator on this screen.</p>
   <aside class="notes">Press T to start the timer. Breaks are not slides: press B when the room needs one.</aside>
 </section>
 
 <section class="slide dark presenting" id="now-presenting" data-label="Now presenting">
-  <div class="kicker center">Now presenting</div>
-  <div class="center"><input placeholder="Presenter · project"></div>
-  <aside class="notes">Type the presenter's name and press T to start the timer. Reuse this slide for every presenter.</aside>
+  <div class="kicker center">Now defending</div>
+  <div class="center"><input placeholder="Presenter · service"></div>
+  <aside class="notes">Type the presenter's name and press T to start the timer. Reuse this slide for every presenter; the panel agrees the fault before the questions start.</aside>
 </section>
 
 <section class="slide" id="review" data-label="Trainer review">
   <div class="kicker">Trainer review</div>
-  <h2>What the presentations showed</h2>
+  <h2>What the reviews showed</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Strongest patterns</h4><p class="small mb0">What several projects got right.</p></div>
-    <div class="card c-coral"><h4>Common gaps</h4><p class="small mb0">What most projects would fix next.</p></div>
-    <div class="card c-purple"><h4>One surprise</h4><p class="small mb0">Something nobody expected.</p></div>
+    <div class="card c-teal"><h4>Strongest patterns</h4><p class="small mb0">What several reviews got right.</p></div>
+    <div class="card c-coral"><h4>Common gaps</h4><p class="small mb0">What most reviews would fix next.</p></div>
+    <div class="card c-purple"><h4>One surprise</h4><p class="small mb0">Something the live faults showed.</p></div>
   </div>
   <aside class="notes">Fill these in from your scoring notes during the last break. Name projects for strengths; keep gaps anonymous.</aside>
 </section>
@@ -83,13 +128,16 @@
   <div class="kicker">After the course</div>
   <h2>Keep going</h2>
   <ul class="bullets">
-    <li><b>Your project stays yours:</b> keep it reproducible and add the next improvement you named today</li>
-    <li><b>Next Academy course:</b> REPLACE: the course that follows this one</li>
+    <li><b>The follow-up task:</b> within 30 days, apply one standard from the course to a service in your team or an open-source deployment, and send the evidence</li>
+    <li><b>Your review stays yours:</b> keep it reproducible and act on the first condition you named today</li>
+    <li><b>The AE Expert badge:</b> this course is one of the AE-400 courses that help prepare for it</li>
   </ul>
+  <aside class="notes"><p>The follow-up task is tracked: agree the date and where the evidence is sent before people leave. One standard is enough: an objective with its alert, an admission limit, a degraded mode, a release gate or model admission.</p></aside>
 </section>
 
 <section class="slide dark" id="thanks" data-label="Thank you">
   <div class="kicker">SDAIA Academy</div>
   <h1>Thank you</h1>
   <p class="lead">Reliability Engineering for AI Services</p>
+  <aside class="notes">Thank the panel by name. Remind everyone that the repositories must stay public until grading is complete.</aside>
 </section>

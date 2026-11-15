@@ -1,0 +1,50 @@
+{
+ "timeline": [
+  {
+   "minute": -35,
+   "what": "v2.4 released to all traffic; offline evaluation passed on an English-only set"
+  },
+  {
+   "minute": 0,
+   "what": "Arabic quality burn-rate alert pages on-call"
+  },
+  {
+   "minute": 7,
+   "what": "incident declared, roles assigned"
+  },
+  {
+   "minute": 14,
+   "what": "rollback to v2.3; Arabic answers recover"
+  },
+  {
+   "minute": 55,
+   "what": "breach assessed with the data protection officer: harm likely"
+  },
+  {
+   "minute": 180,
+   "what": "SDAIA notified; affected customers told by text message"
+  }
+ ],
+ "contributing_factors": [
+  {
+   "factor": "The offline evaluation set had no Arabic tracking questions and no Eastern Arabic digits",
+   "evidence": "evaluation_set_arabic_share 0.0; release engineer's note at minute 30"
+  },
+  {
+   "factor": "The v2.4 prompt template dropped the digit normalisation step",
+   "evidence": "model platform's note at minute 41; all twelve failing cases use Eastern Arabic digits"
+  },
+  {
+   "factor": "The tracking lookup falls back to the nearest parcel number instead of refusing",
+   "evidence": "finding at minute 32; answers named parcels the customer did not ask about"
+  },
+  {
+   "factor": "The release went to all traffic at once, with no canary and no quality gate",
+   "evidence": "timeline at minute -35"
+  },
+  {
+   "factor": "The on-call engineer had no written authority to roll back without the evaluation team",
+   "evidence": "chat at minute 6"
+  }
+ ]
+}

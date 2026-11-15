@@ -1,0 +1,32 @@
+[
+ {
+  "action": "Add Arabic tracking questions with Eastern Arabic digits to the offline set (at least 20% of it)",
+  "owner": "answer-quality lead",
+  "due_days": 14,
+  "verified_by": "the regression test of step 4 runs in CI on every release"
+ },
+ {
+  "action": "Normalise digits in the gateway, before any prompt template",
+  "owner": "model platform engineer",
+  "due_days": 7,
+  "verified_by": "unit test with Eastern Arabic digits"
+ },
+ {
+  "action": "Make the tracking lookup refuse when no exact parcel number matches",
+  "owner": "tracking API team",
+  "due_days": 7,
+  "verified_by": "test: an unknown parcel number returns 'not found', never another parcel"
+ },
+ {
+  "action": "Route every model release through the canary gate of Lab 3.3",
+  "owner": "release engineer",
+  "due_days": 21,
+  "verified_by": "pipeline refuses a release without a gate verdict"
+ },
+ {
+  "action": "Write rollback authority for on-call into the runbook",
+  "owner": "reliability lead",
+  "due_days": 7,
+  "verified_by": "next game day: rollback decided by on-call within 10 minutes"
+ }
+]

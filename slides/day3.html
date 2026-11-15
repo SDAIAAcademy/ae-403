@@ -1,158 +1,402 @@
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Today follows one incident from its alert to its review: a model update that broke Arabic answers silently. Session 2 is a game day without AI assistance; groups of three. Every lab starts from supplied files.</p></aside>
 </section>
 
 <section class="slide" id="agenda" data-auto="agenda"></section>
 
-<!-- Session 1 -->
-
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea" data-lo="LO4">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="review-day2" data-lo="LO3">
+  <div class="kicker">Review of Day 2</div>
+  <h2>Which degraded mode for Arabic help questions?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">The engine is down. The fallback model passes 87% of English and 73% of Arabic test questions; the cache answers 63% of Arabic help questions, all correctly. The minimum service is 85% per language. What do Arabic help questions get?</p>
+    <div class="opts">
+      <div class="opt" data-why="Applies one route to both languages although their modes perform differently">The fallback model, like English</div>
+      <div class="opt" data-why="Gives up a service that the cache can partly keep">An apology for every Arabic question</div>
+      <div class="opt" data-ok>The cache first, the fallback on a miss, both disclosed</div>
+      <div class="opt" data-why="Serves cached answers without the freshness and personal-data checks">The full cache, including saved tracking answers</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Routed this way, Arabic help passed 91.1% in Lab 2.3, above the minimum; the fallback alone gave 72.6%.</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Answer: C. Option D is the breach trap of Lab 2.3: saved tracking answers carry another customer's name and address.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps" data-lo="LO4">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<!-- ======================= SESSION 1 ======================= -->
+<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
+
+<section class="slide" id="silent-regression" data-lo="LO4">
+  <div class="kicker">Silent regressions</div>
+  <h2>A model update can fail one language without a single error</h2>
+  <div class="cols cols-2">
+    <ul class="bullets small">
+      <li>Every request returns 200, latency is normal, the probe is green</li>
+      <li>Arabic answers fail 38% of the time; English is unchanged</li>
+      <li>Only the sampled quality indicator moves, and only in its Arabic slice</li>
+    </ul>
+    <div class="card c-coral flat"><h4>The replayed day</h4><p class="small mb0"><code>replay_day.csv</code>: 288 five-minute slots. Athar v2.4 goes out at slot 130.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>This is the same kind of failure as Day 1's first incident, now caused by a release. The question of the session: how fast does your alerting find it?</p></aside>
+</section>
+
+<section class="slide" id="burn-rate" data-lo="LO1 LO4">
+  <div class="kicker">Burn rate</div>
+  <h2>Burn rate is how fast the budget is being spent</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="stat center"><div class="big">1×</div><div class="lbl">spends the 30-day budget in 30 days</div></div>
+    <div class="stat center"><div class="big">6×</div><div class="lbl">spends 5% of it in 6 hours</div></div>
+    <div class="stat center"><div class="big">14.4×</div><div class="lbl">spends 2% of it in one hour</div></div>
+  </div>
+  <p class="small mt">Burn rate = error rate in the window ÷ (1 − objective). With a 95% quality objective, 14.4× means 72% of answers failing.</p>
+  <aside class="notes"><p>The SRE workbook's recommended starting points: page at 14.4× over one hour and five minutes, and at 6× over six hours and thirty minutes; ticket at 1× over three days. They were designed for availability budgets of 0.1%, where 14.4× is an error rate of 1.4%.</p><p>Sources: Google SRE workbook, Alerting on SLOs.</p></aside>
+</section>
+
+<section class="slide" id="two-windows" data-lo="LO4">
+  <div class="kicker">Multi-window alerts</div>
+  <h2>Two windows: one proves it matters, one proves it is still happening</h2>
+  <pre class="code s" data-file="Lab 3.1"><code>def fires(g, long, short, rate):
+    lw = U.burn_rate(g.bad, g.graded, 0.95, long)
+    sw = U.burn_rate(g.bad, g.graded, 0.95, short)
+    return (lw &gt; rate) &amp; (sw &gt; rate)</code></pre>
+  <p class="small mt">Without the short window, the alert keeps firing for hours after the fix; without the long one, a single bad five minutes pages someone.</p>
+  <aside class="notes"><p>Windows are counted in five-minute slots: one hour is 12 slots. Ask: what happens to a regression that affects ten minutes in every hour? The workbook discusses this weakness of short windows.</p></aside>
+</section>
+
+<section class="slide" id="when-it-fires" data-lo="LO1 LO4">
+  <div class="kicker">Lab 3.1 · the replay</div>
+  <h2>The averaged alert never fires; the Arabic one fires in 35 minutes</h2>
+  <table class="t small">
+    <tr><th>Tier</th><th>All traffic</th><th>Arabic slice</th></tr>
+    <tr><td>page: 1 h and 5 min at 14.4×</td><td>never</td><td>never</td></tr>
+    <tr><td>ticket: 6 h and 30 min at 6×</td><td>never</td><td>after 255 min</td></tr>
+    <tr class="hl"><td>quality: 1 h and 5 min at 6×</td><td>never</td><td>after 35 min</td></tr>
+  </table>
+  <p class="small mt">After the update Arabic burns at about 8×, English at about 0.6×, all traffic at about 5×.</p>
+  <aside class="notes"><p>The third tier is the course's proposal for quality objectives: step changes after releases need a short long-window. It costs more pages on noisy days; the stretch counts them over the month.</p></aside>
+</section>
+
+<section class="slide" id="locate-regression" data-lo="LO4">
+  <div class="kicker">Locating it</div>
+  <h2>Put the change log next to the slice: slot 131 against a deploy at 130</h2>
+  <div class="cols cols-2">
+    <div class="trace s">
+      <div class="ev result dim"><b>slot 40</b>help index refresh (English)</div>
+      <div class="ev error"><b>slot 130</b>model update: athar-v2.4</div>
+      <div class="ev result dim"><b>slot 210</b>gateway configuration</div>
+    </div>
+    <ul class="bullets small">
+      <li>Arabic 30-minute error rate above 10% from slot 131, for the rest of the day</li>
+      <li>The English slice did not move: the change is language-specific</li>
+      <li>A step change right after a release points at the release</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>Correlation is enough to decide a rollback, not to explain it. The explanation comes in Lab 3.4: Eastern Arabic digits and a dropped normalisation step.</p></aside>
+</section>
+
+<section class="slide" id="alert-as-code" data-lo="LO4">
+  <div class="kicker">The rule</div>
+  <h2>The alert is code in the repository, reviewed like code</h2>
+  <pre class="code s" data-file="Prometheus rule (Lab 3.1)"><code>- alert: AtharArabicQualityBurn
+  expr: (athar:quality_bad:ratio_rate1h{lang="ar"} &gt; (6 * 0.05))
+    and (athar:quality_bad:ratio_rate5m{lang="ar"} &gt; (6 * 0.05))
+  labels:
+    severity: page</code></pre>
+  <aside class="notes"><p>The recording rules athar:quality_bad:* are assumed to exist; Prometheus with Grafana is one example of the metrics slot. One rule per language, generated from the objectives file so they never drift apart.</p></aside>
+</section>
+
+<section class="slide" id="check-averaged" data-lo="LO4">
+  <div class="kicker">Checkpoint</div>
+  <h2>Why did the alert stay silent?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4">
+    <p class="lead">After v2.4, 38% of Arabic answers fail and English is unchanged. Arabic is 60% of traffic. The 6× quality alert on all traffic never fires. Why?</p>
+    <div class="opts">
+      <div class="opt" data-why="Blames sampling, but the Arabic slice alone has enough samples to fire">Too few answers are graded to see it</div>
+      <div class="opt" data-ok>The English slice keeps the combined burn rate near 5×, below the threshold</div>
+      <div class="opt" data-why="Confuses the two windows: the short window is above the threshold too">The five-minute window is too short</div>
+      <div class="opt" data-why="Treats the objective as the cause; any objective averaged over both languages hides the slice">The 95% objective is too strict</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Averaging dilutes a one-language failure. The objective and its alert must be per language.</div>
+  </div>
+  <aside class="notes"><p>Answer: B.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-1" data-auto="lab" data-lab="3.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: windows given in minutes instead of slots; a burn rate computed on requests instead of graded answers. The stretch writes the rule and counts how often it would have paged in the month.</p></aside>
 </section>
 
-<!-- Session 2 -->
-
+<!-- ======================= SESSION 2 ======================= -->
 <section class="slide section" id="s2" data-auto="section" data-session="2"></section>
 
-<section class="slide" id="s2-idea" data-lo="LO4">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="three-roles" data-lo="LO4">
+  <div class="kicker">Incident roles</div>
+  <h2>Three roles keep deciding, doing and recording apart</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-navy"><h4>Incident lead</h4><p class="small mb0">Decides and sets priorities. Talks to the service owner. Does not type commands.</p></div>
+    <div class="card c-teal"><h4>Operator</h4><p class="small mb0">Runs the mitigation and reports what the system shows.</p></div>
+    <div class="card c-purple"><h4>Scribe</h4><p class="small mb0">Keeps the decision log: minute, role, decision, reason.</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>The SRE workbook's incident response chapter separates command, operations and communications roles. Three is enough for a team of Athar's size; the separation matters more than the titles.</p><p>Sources: Google SRE workbook, Incident Response.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps" data-lo="LO4">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="mitigate-first" data-lo="LO4">
+  <div class="kicker">The first rule</div>
+  <h2>Mitigate first; diagnose on a copy</h2>
+  <div class="cols cols-2">
+    <div class="stat center"><div class="big">5 min</div><div class="lbl">to mitigate when the lead rolls back first: 32 exposed answers</div></div>
+    <div class="stat center"><div class="big">35 min</div><div class="lbl">when the team diagnoses first: 56 exposed answers</div></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <p class="small mt">Lab 3.2's simulator. A rollback is reversible; the minutes customers spend receiving wrong answers are not.</p>
+  <aside class="notes"><p>The exposed answers are answers carrying another customer's parcel record. The 35 minutes before the page count in both plans: alerting speed is part of the incident.</p></aside>
+</section>
+
+<section class="slide" id="decision-log" data-lo="LO4">
+  <div class="kicker">The decision log</div>
+  <h2>Every decision gets a minute, an owner and a reason</h2>
+  <table class="t small">
+    <tr><th class="num">T+</th><th>Role</th><th>Decision</th><th>Reason</th></tr>
+    <tr><td class="num">1</td><td>lead</td><td>declare</td><td>quality alert; release 35 minutes earlier</td></tr>
+    <tr><td class="num">5</td><td>lead</td><td>roll back v2.4</td><td>complaints confirm impact; only recent change; reversible</td></tr>
+    <tr><td class="num">10</td><td>lead</td><td>page the DPO</td><td>a customer saw another customer's address</td></tr>
+    <tr><td class="num">40</td><td>lead</td><td>notify SDAIA</td><td>names and addresses exposed: harm likely</td></tr>
+  </table>
+  <aside class="notes"><p>From the lab's reference plan. The log is the material of Lab 3.4's review; a log without reasons cannot be reviewed fairly, because nobody can see what was known at the time.</p></aside>
+</section>
+
+<section class="slide" id="breach-procedure" data-lo="LO4">
+  <div class="kicker">Responsible use</div>
+  <h2>Personal data in answers is a breach: follow the procedure</h2>
+  <div class="flow">
+    <div class="step c-coral"><b>Contain</b>stop the exposure: the rollback</div>
+    <div class="arrow">→</div>
+    <div class="step c-purple"><b>Assess</b>data, people, likely harm, with the DPO</div>
+    <div class="arrow">→</div>
+    <div class="step c-navy"><b>Notify</b>SDAIA within 72 hours of awareness, if harm is expected</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>Document</b>the notice, the actions, the lessons</div>
+  </div>
+  <aside class="notes"><p>SDAIA's procedural guide for handling personal data breach incidents: notify SDAIA within 72 hours of becoming aware when the incident is expected to harm the data or the data subjects, through the national platform; contain; notify data subjects without undue delay when it harms them; keep the documents. National Cybersecurity Authority reporting rules may apply as well. Ithar Al-Hammadi decides with the lead, not after the incident.</p><p>Sources: SDAIA, Procedural Guide for Handling Personal Data Breach Incidents; Personal Data Protection Law.</p></aside>
+</section>
+
+<section class="slide" id="awareness-clock" data-lo="LO4">
+  <div class="kicker">What goes wrong</div>
+  <h2>The 72 hours start at awareness, not at the root cause</h2>
+  <ul class="bullets">
+    <li>Awareness came at T+9, when a customer reported another person's address</li>
+    <li>Waiting for the root cause before assessing spends the clock on the wrong question</li>
+    <li>Preserve the evidence before the rollback overwrites the logs you will need</li>
+  </ul>
+  <aside class="notes"><p>The breach guide lists what the notice contains: a description, the categories and numbers of people, the risks and remedies, whether data subjects are told, and contacts. The assessment at T+20 gathers exactly these.</p></aside>
+</section>
+
+<section class="slide" id="check-first-action" data-lo="LO4">
+  <div class="kicker">Checkpoint</div>
+  <h2>Order the first actions</h2>
+  <div class="quiz" data-type="order" data-lo="LO4">
+    <p class="lead">The Arabic quality alert pages you; v2.4 went out 35 minutes ago. Put the first four actions in order.</p>
+    <div class="opts">
+      <div class="opt">Declare the incident and assign the roles</div>
+      <div class="opt">Roll back to v2.3</div>
+      <div class="opt">Page the data protection officer once personal data is reported</div>
+      <div class="opt">Start root-cause analysis</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Roles first so decisions have an owner, then the reversible mitigation, then the breach procedure, and only then the diagnosis.</div>
+  </div>
+  <aside class="notes"><p>This is the supervised check's third item type: order first actions in an incident, AI-off. Discuss any group that put root cause second: what did each minute cost?</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-2" data-auto="lab" data-lab="3.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off: no assistant in the room. Groups of three; rotate roles in the stretch. Watch for: a plan with no reason column; notifying SDAIA without an assessment; customers told before the DPO is involved. Debrief with two groups' logs side by side.</p></aside>
 </section>
 
-<!-- Session 3 -->
-
+<!-- ======================= SESSION 3 ======================= -->
 <section class="slide section" id="s3" data-auto="section" data-session="3"></section>
 
-<section class="slide" id="s3-idea" data-lo="LO1">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="canary-recap" data-lo="LO1 LO4">
+  <div class="kicker">Recap from AE-305</div>
+  <h2>A canary is a release that can stop itself</h2>
+  <div class="flow">
+    <div class="step c-teal"><b>5%</b>10 min</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>25%</b>20 min</div>
+    <div class="arrow">→</div>
+    <div class="step c-purple"><b>50%</b>20 min</div>
+    <div class="arrow">→</div>
+    <div class="step c-navy"><b>100%</b>promote</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <p class="small mt">Analysis at every step; a failed step rolls back without a human. Progressive delivery tools such as Argo Rollouts or Flagger run the steps; your gate decides them.</p>
+  <aside class="notes"><p>AE-305 Day 2 built a canary on replayed traffic. Here the question is the standard: what must a gate check, on how many samples, before a model reaches everyone? The supplied labs/release/analysis-template.yaml shows the same gate in Argo Rollouts form.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps" data-lo="LO1">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="old-gate" data-lo="LO1 LO4">
+  <div class="kicker">Lab 3.3 · the old pipeline</div>
+  <h2>Ten minutes at 5% promoted the int4 model on 27 Arabic answers</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>Latency</h4><p class="small mb0">Canary p95 1,174 ms against stable 1,455 ms: the 4-bit model is faster.</p></div>
+    <div class="card c-coral"><h4>Quality</h4><p class="small mb0">26 of 27 graded Arabic answers passed. Its true Arabic rate is 90.5%, against 97% for stable.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>The true rates are the simulator's settings; the participants see only the samples. With 27 samples a 90% model passes the gate by luck about a quarter of the time; on this run it did.</p></aside>
+</section>
+
+<section class="slide" id="minimum-sample" data-lo="LO4">
+  <div class="kicker">The minimum sample</div>
+  <h2>No quality verdict below 200 graded answers per language</h2>
+  <ul class="bullets">
+    <li>Latency is judged at every step: it has thousands of samples</li>
+    <li>Quality is judged on the cumulative canary samples, once each language has 200</li>
+    <li>Before that the step continues, and the release cannot reach 100%</li>
+    <li>Canary answers are graded at 30%, stable ones at 5%, to reach 200 in minutes</li>
+  </ul>
+  <aside class="notes"><p>200 is a course choice: it detects a drop of a few points from 97% with reasonable confidence. Participants must justify their own number in the capstone. The SRE workbook's canarying chapter discusses population size and the reduced overall error rate a canary sees.</p><p>Sources: Google SRE workbook, Canarying Releases.</p></aside>
+</section>
+
+<section class="slide" id="canary-decisions" data-lo="LO1 LO4">
+  <div class="kicker">Lab 3.3 · the designed gate</div>
+  <h2>v2.6 is promoted; the int4 model rolls back at 25%</h2>
+  <table class="t small">
+    <tr><th>Candidate</th><th>5%</th><th>25%</th><th>50%</th><th>Decision</th></tr>
+    <tr><td>v2.6</td><td>continue (35 ar)</td><td>pass (305 ar)</td><td>pass</td><td>promoted</td></tr>
+    <tr class="hl"><td>v2.6-int4</td><td>continue (27 ar)</td><td>fail: ar 91.2% against 96.6%</td><td></td><td>rolled back</td></tr>
+  </table>
+  <aside class="notes"><p>At 25% the English sample also dipped below stable (96.0% against 99.1%, a lucky stable sample). Ask: would you investigate English too? Yes, but the Arabic gap alone is decisive.</p></aside>
+</section>
+
+<section class="slide" id="gate-as-policy" data-lo="LO1 LO4">
+  <div class="kicker">The standard you set</div>
+  <h2>The release gate is the error budget policy, automated</h2>
+  <table class="t small">
+    <tr><th>Rule</th><th>Value</th></tr>
+    <tr><td>first-token p95</td><td>at most 1.2 × stable, every step</td></tr>
+    <tr><td>quality per language</td><td>at least stable minus 3 points</td></tr>
+    <tr><td>minimum sample</td><td>200 graded answers per language, cumulative</td></tr>
+    <tr><td>on failure</td><td>automatic rollback, alert to the release engineer</td></tr>
+  </table>
+  <aside class="notes"><p>Link back to Day 1: RR-1, the frozen model update, can go through this gate as a fix only because the gate measures Arabic quality. That is the escape the release policy needed.</p></aside>
+</section>
+
+<section class="slide" id="check-canary" data-lo="LO4">
+  <div class="kicker">Checkpoint</div>
+  <h2>The canary passed; should it have?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4">
+    <p class="lead">A canary ran 10 minutes at 5% and passed with 25 of 26 Arabic answers correct, against 97% for stable. What do you do before promoting?</p>
+    <div class="opts">
+      <div class="opt" data-why="Treats a pass on a tiny sample as evidence of quality">Promote: 96% is within the 3-point margin</div>
+      <div class="opt" data-why="Discards a candidate on no evidence of a problem">Roll back: the sample is too small to trust</div>
+      <div class="opt" data-ok>Continue at a larger share until each language has the minimum sample</div>
+      <div class="opt" data-why="Moves the decision to people without new evidence">Ask the evaluation team to approve by hand</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> 26 answers cannot tell 97% from 90%. The gate holds the decision until the sample can.</div>
+  </div>
+  <aside class="notes"><p>Answer: C.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-3" data-auto="lab" data-lab="3.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: judging quality per step instead of cumulatively; letting "continue" reach 100%. The stretch maps the Python gate onto the Argo Rollouts template: the minimum-sample rule needs a metric the template does not have yet.</p></aside>
 </section>
 
-<!-- Session 4 -->
-
+<!-- ======================= SESSION 4 ======================= -->
 <section class="slide section" id="s4" data-auto="section" data-session="4"></section>
 
-<section class="slide" id="s4-idea" data-lo="LO4">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
+<section class="slide" id="blameless" data-lo="LO4">
+  <div class="kicker">Blameless reviews</div>
+  <h2>A blameless review asks what made the error easy, not who made it</h2>
   <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+    <div class="card c-coral flat"><h4>Not a factor</h4><p class="small mb0">"The engineer did not test Arabic."</p></div>
+    <div class="card c-teal flat"><h4>A factor</h4><p class="small mb0">"The evaluation set had no Arabic tracking questions and no Eastern Arabic digits."</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <p class="small mt">The SRE book: a blameless postmortem focuses on the contributing causes without indicting any individual or team.</p>
+  <aside class="notes"><p>The second sentence leads to a fix any engineer benefits from; the first leads to a more careful engineer and the same gap. Lab 3.4's check flags names and phrases such as "human error" and "should have".</p><p>Sources: Google SRE book, Postmortem Culture.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps" data-lo="LO4">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="contributing-factors" data-lo="LO4">
+  <div class="kicker">Lab 3.4 · INC-0412</div>
+  <h2>Five conditions made the incident possible</h2>
+  <ol class="bullets small">
+    <li>The offline evaluation set had no Arabic tracking questions</li>
+    <li>The v2.4 prompt template dropped digit normalisation</li>
+    <li>The tracking lookup fell back to the nearest parcel instead of refusing</li>
+    <li>The release went to everyone at once, with no quality gate</li>
+    <li>On-call had no written authority to roll back</li>
+  </ol>
+  <aside class="notes"><p>Each factor in the lab carries its evidence from the record (a chat line, a fact, a timeline entry). Factor 3 is why a quality bug became a personal data breach: an unsafe default in a dependency.</p></aside>
+</section>
+
+<section class="slide" id="owned-actions" data-lo="LO4">
+  <div class="kicker">Corrective actions</div>
+  <h2>An action has an owning role, a date and a check</h2>
+  <table class="t small">
+    <tr><th>Action</th><th>Owner</th><th class="num">Days</th><th>Done when</th></tr>
+    <tr><td>Normalise digits in the gateway</td><td>model platform</td><td class="num">7</td><td>unit test with Eastern Arabic digits passes</td></tr>
+    <tr><td>Lookup refuses inexact matches</td><td>tracking API team</td><td class="num">7</td><td>unknown number returns "not found"</td></tr>
+    <tr><td>Every model release through the canary gate</td><td>release engineer</td><td class="num">21</td><td>pipeline refuses a release without a verdict</td></tr>
+  </table>
+  <aside class="notes"><p>Three of the five actions from the lab. "Be more careful" has no check, so it is not an action. Owners are roles: people change jobs, roles stay.</p></aside>
+</section>
+
+<section class="slide" id="case-to-test" data-lo="LO4">
+  <div class="kicker">From case to test</div>
+  <h2>The incident's cases become a test that failed before the fix</h2>
+  <pre class="code s" data-file="Lab 3.4"><code>def check_case(answer, case):
+    a = U.normalise_digits(answer)
+    problems = []
+    if case["asked_parcel"] not in a:
+        problems.append("does not name the parcel asked about")
+    if [p for p in U.PARCEL_RE.findall(a) if p != case["asked_parcel"]]:
+        problems.append("names another customer's parcel")
+    return problems</code></pre>
+  <p class="small mt">v2.4 passes 0 of 12 cases; v2.4.1 passes 12 of 12.</p>
+  <aside class="notes"><p>Replaying recorded failures as regression cases was AE-305's Day 4 technique; here the source is the review. A test that passes on the broken version proves nothing: make it fail first.</p></aside>
+</section>
+
+<section class="slide" id="review-template" data-lo="LO4">
+  <div class="kicker">The standard you set</div>
+  <h2>Every review has the same five parts</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-navy"><h4>Timeline</h4><p class="small mb0">from the decision log, in minutes from the page</p></div>
+    <div class="card c-teal"><h4>Impact</h4><p class="small mb0">users, answers, data, budget spent</p></div>
+    <div class="card c-coral"><h4>Factors</h4><p class="small mb0">conditions, each with evidence</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="cols cols-2 gap-s mt-s">
+    <div class="card c-purple"><h4>Actions</h4><p class="small mb0">owned, dated, checked</p></div>
+    <div class="card c-cyan"><h4>Tests</h4><p class="small mb0">the cases, in the release gate</p></div>
+  </div>
+  <aside class="notes"><p>The capstone's incident evidence is exactly this: a timeline, a decision log, owned corrective actions and a new regression test (LO4's evidence line in the catalog).</p></aside>
+</section>
+
+<section class="slide" id="check-factor" data-lo="LO4">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which line belongs in the review?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4">
+    <p class="lead">Four draft lines for INC-0412's contributing factors. Which one belongs in a blameless review?</p>
+    <div class="opts">
+      <div class="opt" data-why="Names a person's behaviour, which invites blame and no fix">The release engineer should have checked Arabic before shipping</div>
+      <div class="opt" data-why="Labels the cause instead of finding the condition behind it">Human error during the template change</div>
+      <div class="opt" data-why="States an outcome, not a condition anyone can change">Arabic customers received wrong answers</div>
+      <div class="opt" data-ok>The release pipeline had no gate on Arabic answer quality</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> It names a condition of the system, with an obvious owner and an action that removes it.</div>
+  </div>
+  <aside class="notes"><p>Answer: D.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-4" data-auto="lab" data-lab="3.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: factors without evidence; actions owned by names; a regression test that only checks for the asked parcel and misses the leaked one. Ask two participants to read a factor aloud and let the room test it for blame.</p></aside>
 </section>
 
-<section class="slide" id="wrap-up">
+<section class="slide" id="wrap-up" data-lo="LO4">
   <div class="kicker">Day 3 · wrap-up</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Alert per slice</h4><p class="small mb0">Quality alerts per language, with windows short enough for step changes.</p></div>
+    <div class="card c-cyan"><h4>Mitigate, then diagnose</h4><p class="small mb0">Roles, a decision log, and the breach procedure from awareness.</p></div>
+    <div class="card c-coral"><h4>Gates and tests</h4><p class="small mb0">A canary with a minimum sample; every incident leaves a test behind.</p></div>
   </div>
+  <aside class="notes"><p>Ask: which of today's artefacts would you demand first from another team?</p></aside>
 </section>
 
-<section class="slide dark" id="next" data-label="Next">
+<section class="slide dark" id="next">
   <div class="kicker">Next</div>
-  <h2>Day 4: Integrity and readiness</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+  <h2>Day 4: integrity and readiness</h2>
+  <ul class="bullets">
+    <li>Where model files come from, how to prove they were not changed, and how to admit only verified models</li>
+    <li>The last session starts the capstone: a readiness review of another team's service</li>
+  </ul>
+  <aside class="notes"><p>Ask participants to think about which service they will review: a peer's from the cohort, or the supplied Athar release pack.</p></aside>
 </section>

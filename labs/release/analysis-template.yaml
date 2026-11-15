@@ -1,0 +1,36 @@
+# Athar's canary gate written for Argo Rollouts (read-only reference for Lab 3.3).
+# The labs run the same rules in Python; this is the form they take in a cluster.
+# The recording rules athar:* are assumed to exist in Prometheus.
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: athar-canary-gate
+spec:
+  metrics:
+    - name: first-token-p95-ratio
+      interval: 5m
+      failureLimit: 1
+      successCondition: result[0] <= 1.2
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring.svc:9090
+          query: |
+            athar:ttft_seconds:p95{track="canary"} / athar:ttft_seconds:p95{track="stable"}
+    - name: arabic-quality-delta
+      interval: 10m
+      failureLimit: 1
+      successCondition: result[0] >= -0.03
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring.svc:9090
+          query: |
+            athar:quality_pass:ratio{lang="ar",track="canary"} - athar:quality_pass:ratio{lang="ar",track="stable"}
+    - name: english-quality-delta
+      interval: 10m
+      failureLimit: 1
+      successCondition: result[0] >= -0.03
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring.svc:9090
+          query: |
+            athar:quality_pass:ratio{lang="en",track="canary"} - athar:quality_pass:ratio{lang="en",track="stable"}

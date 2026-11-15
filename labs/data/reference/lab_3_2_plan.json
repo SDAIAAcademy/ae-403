@@ -1,0 +1,62 @@
+[
+ {
+  "minute": 1,
+  "role": "lead",
+  "action": "declare",
+  "reason": "Arabic quality alert on a paging tier; release 35 minutes earlier"
+ },
+ {
+  "minute": 2,
+  "role": "lead",
+  "action": "assign_roles",
+  "reason": "one decider, one operator, one scribe before anyone touches production"
+ },
+ {
+  "minute": 5,
+  "role": "lead",
+  "action": "rollback_model",
+  "reason": "complaints confirm user impact; v2.4 is the only recent change and a rollback is reversible"
+ },
+ {
+  "minute": 6,
+  "role": "operator",
+  "action": "status_update",
+  "reason": "customer services need words for callers while we recover"
+ },
+ {
+  "minute": 10,
+  "role": "lead",
+  "action": "page_dpo",
+  "reason": "a customer saw another customer's address: possible personal data breach"
+ },
+ {
+  "minute": 11,
+  "role": "operator",
+  "action": "preserve_evidence",
+  "reason": "the affected answers and logs are needed for the assessment and the notice"
+ },
+ {
+  "minute": 20,
+  "role": "lead",
+  "action": "assess_breach",
+  "reason": "count the answers and customers affected and judge the harm with the DPO"
+ },
+ {
+  "minute": 40,
+  "role": "lead",
+  "action": "notify_sdaia",
+  "reason": "names and addresses exposed to other customers: harm is likely, so SDAIA is notified within 72 hours of awareness"
+ },
+ {
+  "minute": 45,
+  "role": "lead",
+  "action": "notify_customers",
+  "reason": "affected customers are told plainly, with what we did and who to contact"
+ },
+ {
+  "minute": 50,
+  "role": "operator",
+  "action": "root_cause",
+  "reason": "service recovered and the breach is handled; now find why v2.4 broke Arabic"
+ }
+]

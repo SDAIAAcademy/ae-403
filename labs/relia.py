@@ -610,7 +610,7 @@ class GameDay:
     into the answer. Minutes are counted from the page (T+0)."""
 
     PAGE = ("T+0 page: the Arabic quality burn-rate alert fired on Athar. English is normal. "
-            "Model v2.4 was released 40 minutes before the page.")
+            "Model v2.4 was released 35 minutes before the page.")
     EVENTS = {
         4: "Customer services: three Arabic customers say Athar gives the wrong parcel status.",
         9: "Customer services: a customer received another person's delivery address in Athar's answer.",
@@ -652,9 +652,9 @@ class GameDay:
                 wrong += self.wrong_per_min
             if state["leak_stopped"] is None:
                 leaks += self.leak_per_min
-        # the release ran 40 minutes before the page
-        wrong += 40 * self.wrong_per_min
-        leaks += 40 * self.leak_per_min
+        # the release ran 35 minutes before the page
+        wrong += 35 * self.wrong_per_min
+        leaks += 35 * self.leak_per_min
         report = {"time_to_declare": state["declared"], "time_to_mitigate": state["mitigated"],
                   "wrong_arabic_answers": int(wrong), "answers_with_other_customers_data": int(leaks),
                   "dpo_paged_at": state["dpo"], "breach_assessed_at": state["assessed"],
@@ -674,26 +674,29 @@ CANDIDATES = {
 }
 
 CANARY_STEPS = [(5, 10), (25, 20), (50, 20), (100, 0)]  # (traffic percent, minutes of analysis)
+FAST_STEPS = [(5, 10), (100, 0)]  # the old pipeline: ten minutes at 5%, then everyone
+CANARY_SEED = 0
 
 
-def canary_window(candidate: str, percent: int, minutes: int, step: int, seed=SEED,
-                  rps: float = 3.0, graded_share: float = 0.05):
-    """Simulated observations of one canary step: graded samples and first-token times for the
-    canary and the stable version over the same minutes."""
-    rng = np.random.default_rng(seed * 10 + step * 3 + len(candidate))
+def canary_window(candidate: str, percent: int, minutes: int, step: int, seed: int = CANARY_SEED,
+                  rps: float = 5.0, canary_graded: float = 0.30, stable_graded: float = 0.05):
+    """Simulated observations of one canary step over the same minutes: graded samples per
+    language and first-token p95, for the canary arm and the stable arm. Canary answers are
+    graded more often (30%) than stable ones (5%), as a release gate does."""
+    rng = np.random.default_rng(seed * 100 + step * 7 + sum(map(ord, candidate)))
     out = {}
-    for who, share in (("canary", percent / 100), ("stable", 1 - percent / 100 if percent < 100 else 0.0)):
+    for who, share in (("canary", percent / 100), ("stable", 1 - percent / 100)):
         name = candidate if who == "canary" else "stable"
         q = CANDIDATES[name]
         n_req = int(rps * 60 * minutes * share)
-        res = {}
+        g = canary_graded if who == "canary" else stable_graded
+        res = {"requests": n_req}
         for lang, mix in (("ar", 0.6), ("en", 0.4)):
-            n = int(rng.binomial(max(int(n_req * mix), 0), graded_share)) if n_req else 0
+            n = int(rng.binomial(int(n_req * mix), g)) if n_req else 0
             res[f"graded_{lang}"] = n
             res[f"passed_{lang}"] = int(rng.binomial(n, q[lang])) if n else 0
         lat = rng.lognormal(mean=math.log(700 * q["ttft_factor"]), sigma=0.45, size=max(n_req, 1))
         res["ttft_p95_ms"] = round(float(np.quantile(lat, 0.95)), 1) if n_req else float("nan")
-        res["requests"] = n_req
         out[who] = res
     return out
 

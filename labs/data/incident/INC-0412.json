@@ -2,7 +2,7 @@
  "chat": [
   {
    "minute": 2,
-   "text": "English quality fine, Arabic burning. v2.4 went out 40 min before the page.",
+   "text": "English quality fine, Arabic burning. v2.4 went out 35 min before the page.",
    "who": "on-call"
   },
   {
@@ -27,11 +27,11 @@
   }
  ],
  "facts": {
-  "answers_exposing_data": 51,
-  "customers_affected": 47,
+  "answers_exposing_data": 40,
+  "customers_affected": 37,
   "evaluation_set_arabic_share": 0.0,
-  "minutes_from_release_to_rollback": 54,
-  "wrong_arabic_answers": 2050
+  "minutes_from_release_to_rollback": 49,
+  "wrong_arabic_answers": 1900
  },
  "id": "INC-0412",
  "service": "Athar",
@@ -41,7 +41,7 @@
   {
    "event": "Model v2.4 released to all traffic after the offline evaluation passed (English set only).",
    "kind": "release",
-   "minute": -40
+   "minute": -35
   },
   {
    "event": "Arabic quality burn-rate alert pages the on-call engineer.",
@@ -84,7 +84,7 @@
    "minute": 32
   },
   {
-   "event": "Breach assessed: 51 answers exposed another customer's name and address; harm is likely; SDAIA to be notified and the customers told.",
+   "event": "Breach assessed: 40 answers exposed another customer's name and address; harm is likely; SDAIA to be notified and the customers told.",
    "kind": "decision",
    "minute": 55
   },

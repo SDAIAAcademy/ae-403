@@ -409,7 +409,7 @@ def replay_day():
 def incident():
     r = rng("incident")
     timeline = [
-        (-40, "release", "Model v2.4 released to all traffic after the offline evaluation passed (English set only)."),
+        (-35, "release", "Model v2.4 released to all traffic after the offline evaluation passed (English set only)."),
         (0, "alert", "Arabic quality burn-rate alert pages the on-call engineer."),
         (4, "report", "Customer services report wrong parcel statuses from Arabic customers."),
         (7, "decision", "Incident declared; Thabit Al-Junaibi takes the incident lead role."),
@@ -418,7 +418,7 @@ def incident():
         (14, "mitigation", "Model rolled back to v2.3; Arabic answers recover within five minutes."),
         (15, "finding", "2.1% of Arabic answers since the release named a parcel the customer did not ask about."),
         (32, "finding", "Parcel numbers written in Eastern Arabic digits were not normalised by the v2.4 prompt template; the tracking lookup fell back to the nearest match."),
-        (55, "decision", "Breach assessed: 51 answers exposed another customer's name and address; harm is likely; SDAIA to be notified and the customers told."),
+        (55, "decision", "Breach assessed: 40 answers exposed another customer's name and address; harm is likely; SDAIA to be notified and the customers told."),
         (180, "decision", "Notification sent to SDAIA through the national platform; customers informed by text message."),
     ]
     rec = {
@@ -426,14 +426,14 @@ def incident():
         "summary": "After the v2.4 model update, Arabic tracking questions with Eastern Arabic digits returned other customers' parcel records.",
         "timeline": [{"minute": m, "kind": k, "event": e} for m, k, e in timeline],
         "chat": [
-            {"minute": 2, "who": "on-call", "text": "English quality fine, Arabic burning. v2.4 went out 40 min before the page."},
+            {"minute": 2, "who": "on-call", "text": "English quality fine, Arabic burning. v2.4 went out 35 min before the page."},
             {"minute": 6, "who": "on-call", "text": "Should I roll back or wait for the evaluation team?"},
             {"minute": 13, "who": "incident lead", "text": "Roll back now, diagnose after."},
             {"minute": 30, "who": "release engineer", "text": "Our offline set has no Eastern Arabic digits at all."},
             {"minute": 41, "who": "model platform", "text": "The template change in v2.4 dropped the digit normalisation step."},
         ],
-        "facts": {"answers_exposing_data": 51, "customers_affected": 47, "wrong_arabic_answers": 2050,
-                  "minutes_from_release_to_rollback": 54, "evaluation_set_arabic_share": 0.0},
+        "facts": {"answers_exposing_data": 40, "customers_affected": 37, "wrong_arabic_answers": 1900,
+                  "minutes_from_release_to_rollback": 49, "evaluation_set_arabic_share": 0.0},
     }
     write_json(DATA / "incident" / "INC-0412.json", rec)
     cases = []

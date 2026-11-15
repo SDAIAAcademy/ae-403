@@ -1,0 +1,6 @@
+{
+ "sar_per_completed": 0.01323,
+ "sessions_looping": 64,
+ "loop_share_of_cost": 0.098,
+ "loop_completion": 0.297
+}

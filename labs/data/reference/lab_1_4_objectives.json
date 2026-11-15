@@ -1,0 +1,17 @@
+[
+ {
+  "indicator": "completion",
+  "target": ">= 85% of sessions over 30 days, per language",
+  "reason": "today 79%; loops and abandoned confirmations are fixable, ineligible parcels are not"
+ },
+ {
+  "indicator": "cost per completed booking",
+  "target": "<= SAR 0.012",
+  "reason": "today about SAR 0.0133; ending the slot loop removes most of the excess"
+ },
+ {
+  "indicator": "escalation",
+  "target": "<= 9%, and every escalation reaches a person",
+  "reason": "escalation is the right answer for ineligible parcels; a lost hand-over is the failure"
+ }
+]

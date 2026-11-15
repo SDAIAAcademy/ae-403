@@ -1,0 +1,30 @@
+[
+ {
+  "name": "availability",
+  "target": 0.995,
+  "good": "ok",
+  "valid": "valid",
+  "lang": null
+ },
+ {
+  "name": "ttft",
+  "target": 0.95,
+  "good": "ttft_good",
+  "valid": "ok",
+  "lang": null
+ },
+ {
+  "name": "quality_ar",
+  "target": 0.95,
+  "good": "passed",
+  "valid": "graded",
+  "lang": "ar"
+ },
+ {
+  "name": "quality_en",
+  "target": 0.95,
+  "good": "passed",
+  "valid": "graded",
+  "lang": "en"
+ }
+]

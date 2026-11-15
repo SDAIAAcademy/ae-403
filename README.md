@@ -5,7 +5,7 @@
 
 AI Engineering Track · SDAIA Academy · AE-403 · Level 400
 
-REPLACE: one line under the title: what participants can do after the course
+Set, measure and defend the reliability standards of an AI service: objectives, capacity, degraded modes, incidents, safe releases and verified models
 
 Participants set and defend reliability standards for AI services that other teams build. For a fictional postal and parcels operator running a bilingual tracking assistant on a self-hosted open-weight model with retrieval, they write service level objectives for availability, latency and answer quality, set admission limits with headroom from measured goodput, design and chaos-test degradation paths, lead incident drills and blameless reviews, release through canaries with automated rollback, and admit models only after verifying signatures and bills of materials.
 
@@ -48,22 +48,22 @@ Every lab is a notebook in `labs/`. Open it in Google Colab from the course page
 
 | | Session | Lab | File |
 |---|---|---|---|
-| 1.1 | Day 1 · Session 1 | Read a week of synthetic telemetry and list the incidents an uptime check would miss | [`D1_1_read_week_synthetic.ipynb`](labs/D1_1_read_week_synthetic.ipynb) |
-| 1.2 | Day 1 · Session 2 | Define indicators for first-token time, per-token time, availability and a sampled quality grade | [`D1_2_define_indicators_first.ipynb`](labs/D1_2_define_indicators_first.ipynb) |
-| 1.3 | Day 1 · Session 3 | Set objectives, compute budget burn from a supplied month and write the release policy | [`D1_3_set_objectives_compute.ipynb`](labs/D1_3_set_objectives_compute.ipynb) |
-| 1.4 | Day 1 · Session 4 | Define completion, cost and escalation indicators for the redelivery booking flow | [`D1_4_define_completion_cost.ipynb`](labs/D1_4_define_completion_cost.ipynb) |
-| 2.1 | Day 2 · Session 1 | Load-test the model at rising concurrency, find where goodput falls and set the operating point | [`D2_1_load_test_model.ipynb`](labs/D2_1_load_test_model.ipynb) |
-| 2.2 | Day 2 · Session 2 | Add a concurrency cap and priority shedding, then replay the overload trace | [`D2_2_add_concurrency_cap.ipynb`](labs/D2_2_add_concurrency_cap.ipynb) |
-| 2.3 | Day 2 · Session 3 | Configure a smaller fallback model and a cached-answer mode and measure quality in each | [`D2_3_configure_smaller_fallback.ipynb`](labs/D2_3_configure_smaller_fallback.ipynb) |
-| 2.4 | Day 2 · Session 4 | Inject a retrieval outage, a provider timeout and a retry storm and check the minimum service holds | [`D2_4_inject_retrieval_outage.ipynb`](labs/D2_4_inject_retrieval_outage.ipynb) |
-| 3.1 | Day 3 · Session 1 | Build a burn-rate alert on the quality indicator and locate the regression in a replayed day | [`D3_1_build_burn_rate.ipynb`](labs/D3_1_build_burn_rate.ipynb) |
-| 3.2 | Day 3 · Session 2 | Run a game day on a model-update regression as incident lead, operator and scribe | [`D3_2_run_game_day.ipynb`](labs/D3_2_run_game_day.ipynb) |
-| 3.3 | Day 3 · Session 3 | Release a new model version as a canary with automated rollback on a latency and quality gate | [`D3_3_release_new_model.ipynb`](labs/D3_3_release_new_model.ipynb) |
-| 3.4 | Day 3 · Session 4 | Write a blameless review of a supplied incident and turn its cases into a regression test | [`D3_4_write_blameless_review.ipynb`](labs/D3_4_write_blameless_review.ipynb) |
-| 4.1 | Day 4 · Session 1 | Trace the provenance of three model artefacts and find the tampered file by its hash | [`D4_1_trace_provenance_three.ipynb`](labs/D4_1_trace_provenance_three.ipynb) |
-| 4.2 | Day 4 · Session 2 | Sign a manifest of model files and show that a changed file fails verification | [`D4_2_sign_manifest_model.ipynb`](labs/D4_2_sign_manifest_model.ipynb) |
-| 4.3 | Day 4 · Session 3 | Write a bill of materials and a policy that rejects unsigned or unlicensed models | [`D4_3_write_bill_materials.ipynb`](labs/D4_3_write_bill_materials.ipynb) |
-| 4.4 | Day 4 · Session 4 | Apply the readiness checklist to a supplied service and rank the findings by risk | [`D4_4_apply_readiness_checklist.ipynb`](labs/D4_4_apply_readiness_checklist.ipynb) |
+| 1.1 | Day 1 · Session 1 | What the uptime check missed | [`D1_1_uptime_blind_spots.ipynb`](labs/D1_1_uptime_blind_spots.ipynb) |
+| 1.2 | Day 1 · Session 2 | Four indicators from one day | [`D1_2_indicators.ipynb`](labs/D1_2_indicators.ipynb) |
+| 1.3 | Day 1 · Session 3 | Objectives, budget and release policy | [`D1_3_error_budgets.ipynb`](labs/D1_3_error_budgets.ipynb) |
+| 1.4 | Day 1 · Session 4 | Indicators for the redelivery flow | [`D1_4_task_objectives.ipynb`](labs/D1_4_task_objectives.ipynb) |
+| 2.1 | Day 2 · Session 1 | Goodput curve and operating point | [`D2_1_goodput_operating_point.ipynb`](labs/D2_1_goodput_operating_point.ipynb) |
+| 2.2 | Day 2 · Session 2 | A cap and priority shedding | [`D2_2_admission_shedding.ipynb`](labs/D2_2_admission_shedding.ipynb) |
+| 2.3 | Day 2 · Session 3 | Fallback model and cached answers | [`D2_3_degraded_modes.ipynb`](labs/D2_3_degraded_modes.ipynb) |
+| 2.4 | Day 2 · Session 4 | Outage, timeout and retry storm | [`D2_4_chaos.ipynb`](labs/D2_4_chaos.ipynb) |
+| 3.1 | Day 3 · Session 1 | A burn-rate alert on quality | [`D3_1_quality_burn_rate.ipynb`](labs/D3_1_quality_burn_rate.ipynb) |
+| 3.2 | Day 3 · Session 2 | Game day: a model-update regression | [`D3_2_game_day.ipynb`](labs/D3_2_game_day.ipynb) |
+| 3.3 | Day 3 · Session 3 | Canary with automated rollback | [`D3_3_canary_rollback.ipynb`](labs/D3_3_canary_rollback.ipynb) |
+| 3.4 | Day 3 · Session 4 | Blameless review and regression test | [`D3_4_blameless_review.ipynb`](labs/D3_4_blameless_review.ipynb) |
+| 4.1 | Day 4 · Session 1 | Provenance and the tampered file | [`D4_1_provenance.ipynb`](labs/D4_1_provenance.ipynb) |
+| 4.2 | Day 4 · Session 2 | Sign and verify a model folder | [`D4_2_signing.ipynb`](labs/D4_2_signing.ipynb) |
+| 4.3 | Day 4 · Session 3 | Bill of materials and admission gate | [`D4_3_bom_admission.ipynb`](labs/D4_3_bom_admission.ipynb) |
+| 4.4 | Day 4 · Session 4 | Readiness review of Taqdir | [`D4_4_readiness_review.ipynb`](labs/D4_4_readiness_review.ipynb) |
 <!-- /academy:labs -->
 
 ## Capstone

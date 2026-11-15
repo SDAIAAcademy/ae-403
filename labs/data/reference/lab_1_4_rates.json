@@ -1,0 +1,23 @@
+{
+ "__frame__": true,
+ "columns": [
+  "lang",
+  "abandoned",
+  "completed",
+  "escalated"
+ ],
+ "rows": [
+  [
+   "ar",
+   0.137,
+   0.782,
+   0.081
+  ],
+  [
+   "en",
+   0.115,
+   0.813,
+   0.072
+  ]
+ ]
+}

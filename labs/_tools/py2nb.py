@@ -11,6 +11,9 @@ Exercise regions (code cells only):
     # BEGIN SOLUTION
     ...reference code...
     # END SOLUTION
+A line "# @header" in a markdown cell becomes the lab's title, session, summary, tasks with
+minutes and stretch item, read from course.json, so the notebook always matches the manifest.
+
 Student notebooks (labs/*.ipynb) get a placeholder that raises NotImplementedError;
 solution notebooks (labs/solutions/*.ipynb) keep the code, minus the markers.
 """
@@ -23,6 +26,22 @@ from pathlib import Path
 
 LABS = Path(__file__).resolve().parents[1]
 SRC = LABS / "_src"
+COURSE = LABS.parent / "course.json"
+
+
+def header(stem: str) -> list[str]:
+    course = json.loads(COURSE.read_text(encoding="utf-8"))
+    for d_i, day in enumerate([d for d in course["days"] if d.get("kind") == "day"], start=1):
+        for s_i, sess in enumerate(day["sessions"], start=1):
+            lab = sess.get("lab") or {}
+            if Path(lab.get("href", "")).stem == stem:
+                lines = [f"# Lab {lab['id']} · {lab['title']}", "",
+                         f"Day {d_i} · Session {s_i} ({sess['title']}) · {lab['minutes']} min.", "",
+                         lab["summary"], "", "**Tasks**"]
+                lines += [f"- [ ] {st['text']} · {st['minutes']} min" for st in lab["steps"]]
+                lines.append(f"- [ ] ✱ Stretch · {lab['stretch']}")
+                return ["# " + l if l else "#" for l in lines]
+    raise SystemExit(f"no lab in course.json has the href {stem}.ipynb")
 
 
 def strip_solutions(lines: list[str], student: bool) -> list[str]:
@@ -68,7 +87,11 @@ def convert(src: Path, student: bool) -> Path:
             cell.update(execution_count=None, outputs=[])
         cells.append(cell)
 
-    for line in src.read_text(encoding="utf-8").splitlines():
+    text = src.read_text(encoding="utf-8").splitlines()
+    expanded = []
+    for line in text:
+        expanded.extend(header(src.stem) if line.strip() == "# @header" else [line])
+    for line in expanded:
         if line.startswith("# %%"):
             flush()
             kind, buf = ("markdown" if "[markdown]" in line else "code"), []

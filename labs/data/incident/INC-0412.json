@@ -1,0 +1,97 @@
+{
+ "chat": [
+  {
+   "minute": 2,
+   "text": "English quality fine, Arabic burning. v2.4 went out 40 min before the page.",
+   "who": "on-call"
+  },
+  {
+   "minute": 6,
+   "text": "Should I roll back or wait for the evaluation team?",
+   "who": "on-call"
+  },
+  {
+   "minute": 13,
+   "text": "Roll back now, diagnose after.",
+   "who": "incident lead"
+  },
+  {
+   "minute": 30,
+   "text": "Our offline set has no Eastern Arabic digits at all.",
+   "who": "release engineer"
+  },
+  {
+   "minute": 41,
+   "text": "The template change in v2.4 dropped the digit normalisation step.",
+   "who": "model platform"
+  }
+ ],
+ "facts": {
+  "answers_exposing_data": 51,
+  "customers_affected": 47,
+  "evaluation_set_arabic_share": 0.0,
+  "minutes_from_release_to_rollback": 54,
+  "wrong_arabic_answers": 2050
+ },
+ "id": "INC-0412",
+ "service": "Athar",
+ "severity": "SEV-2",
+ "summary": "After the v2.4 model update, Arabic tracking questions with Eastern Arabic digits returned other customers' parcel records.",
+ "timeline": [
+  {
+   "event": "Model v2.4 released to all traffic after the offline evaluation passed (English set only).",
+   "kind": "release",
+   "minute": -40
+  },
+  {
+   "event": "Arabic quality burn-rate alert pages the on-call engineer.",
+   "kind": "alert",
+   "minute": 0
+  },
+  {
+   "event": "Customer services report wrong parcel statuses from Arabic customers.",
+   "kind": "report",
+   "minute": 4
+  },
+  {
+   "event": "Incident declared; Thabit Al-Junaibi takes the incident lead role.",
+   "kind": "decision",
+   "minute": 7
+  },
+  {
+   "event": "A customer reports another person's delivery address in an answer.",
+   "kind": "report",
+   "minute": 9
+  },
+  {
+   "event": "Data protection officer paged.",
+   "kind": "decision",
+   "minute": 11
+  },
+  {
+   "event": "Model rolled back to v2.3; Arabic answers recover within five minutes.",
+   "kind": "mitigation",
+   "minute": 14
+  },
+  {
+   "event": "2.1% of Arabic answers since the release named a parcel the customer did not ask about.",
+   "kind": "finding",
+   "minute": 15
+  },
+  {
+   "event": "Parcel numbers written in Eastern Arabic digits were not normalised by the v2.4 prompt template; the tracking lookup fell back to the nearest match.",
+   "kind": "finding",
+   "minute": 32
+  },
+  {
+   "event": "Breach assessed: 51 answers exposed another customer's name and address; harm is likely; SDAIA to be notified and the customers told.",
+   "kind": "decision",
+   "minute": 55
+  },
+  {
+   "event": "Notification sent to SDAIA through the national platform; customers informed by text message.",
+   "kind": "decision",
+   "minute": 180
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "__frame__": true,
+ "columns": [
+  "objective",
+  "indicator",
+  "budget_events",
+  "bad_events",
+  "burned",
+  "remaining"
+ ],
+ "rows": [
+  [
+   "availability",
+   0.99821,
+   17211,
+   6163,
+   0.358,
+   0.642
+  ],
+  [
+   "ttft",
+   0.97709,
+   171806,
+   78712,
+   0.458,
+   0.542
+  ],
+  [
+   "quality_ar",
+   0.95932,
+   5171,
+   4207,
+   0.814,
+   0.186
+  ],
+  [
+   "quality_en",
+   0.97837,
+   3435,
+   1486,
+   0.433,
+   0.567
+  ]
+ ]
+}

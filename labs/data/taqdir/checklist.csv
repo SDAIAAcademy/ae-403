@@ -1,0 +1,14 @@
+id,area,item,evidence,likelihood,impact
+O1,objectives,Objectives for availability and first-token time,objectives.latency,3,4
+O2,objectives,An answer-quality objective sliced by language,objectives.quality_by_language,4,5
+O3,objectives,Burn-rate alerts on each objective,alerts.burn_rate,4,4
+C1,capacity,Load test up to the busiest hour with headroom,capacity.busiest_hour,4,4
+C2,capacity,Admission limit and shedding priorities,capacity.admission,3,4
+D1,degradation,Fallback mode tested under a provider failure,degradation.fallback_tested,3,4
+D2,degradation,Degraded answers disclosed to users,degradation.disclosure,3,3
+I1,incidents,Runbook with incident roles and a decision log,incidents.runbook,3,3
+I2,incidents,"Breach procedure linked, data protection officer named",incidents.breach_procedure,2,5
+R1,release,Canary with an automated quality and latency gate,release.canary_gate,3,4
+R2,release,Rollback tested in the last 30 days,release.rollback_tested,2,4
+S1,integrity,Model signature verified at admission,integrity.signature,3,5
+S2,integrity,Bill of materials with licences,integrity.bom,2,3

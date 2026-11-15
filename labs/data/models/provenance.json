@@ -1,0 +1,53 @@
+[
+ {
+  "artefact": "athar-small-v1",
+  "licence": "Apache-2.0",
+  "obtained_from": "the publisher",
+  "publisher": "Rasael ML platform team",
+  "publisher_sha256": {
+   "LICENSE": "9d1c3518a4921b1651e175d8506a1fd40a67b6e33faaa1913022742c6ad5920d",
+   "README.md": "e25269c41c459871f6ac41c5cbdca9def369318b322839e5c7618c9b093ddb33",
+   "config.json": "ce076e84eedb45b30c01c8d05b6f58400b01f8d9570fcc8a219eddf6fbc7d8b1",
+   "generation_config.json": "4dabeac2362842473432525620d5a02a0aa8152d7b377ca4dd4a33acad123189",
+   "model-00001-of-00002.safetensors": "750bb039f97609a44bd68f9fd9f829ee62f2e3f058828d92d52a0038bfe89adc",
+   "model-00002-of-00002.safetensors": "be1f25b1cc7b4c314f2acab36b7a9d7f411c16f245b23d6dd6900a89cc203f43",
+   "tokenizer.json": "3b68e40b337d61d12ca034bc1446cfe0fc9a761a0459805f19a756c7b12be08e"
+  },
+  "revision": "ac942ec9cc875767810968c28ad413a466c11528",
+  "source": "models.rasael.example/athar-small"
+ },
+ {
+  "artefact": "athar-small-v1-mirror",
+  "licence": "Apache-2.0",
+  "obtained_from": "a third-party mirror",
+  "publisher": "Rasael ML platform team",
+  "publisher_sha256": {
+   "LICENSE": "9d1c3518a4921b1651e175d8506a1fd40a67b6e33faaa1913022742c6ad5920d",
+   "README.md": "e25269c41c459871f6ac41c5cbdca9def369318b322839e5c7618c9b093ddb33",
+   "config.json": "ce076e84eedb45b30c01c8d05b6f58400b01f8d9570fcc8a219eddf6fbc7d8b1",
+   "generation_config.json": "4dabeac2362842473432525620d5a02a0aa8152d7b377ca4dd4a33acad123189",
+   "model-00001-of-00002.safetensors": "750bb039f97609a44bd68f9fd9f829ee62f2e3f058828d92d52a0038bfe89adc",
+   "model-00002-of-00002.safetensors": "be1f25b1cc7b4c314f2acab36b7a9d7f411c16f245b23d6dd6900a89cc203f43",
+   "tokenizer.json": "3b68e40b337d61d12ca034bc1446cfe0fc9a761a0459805f19a756c7b12be08e"
+  },
+  "revision": "ac942ec9cc875767810968c28ad413a466c11528",
+  "source": "models.rasael.example/athar-small"
+ },
+ {
+  "artefact": "athar-tiny-q4",
+  "licence": "LicenseRef-Research-Only",
+  "obtained_from": "the publisher",
+  "publisher": "an external research group",
+  "publisher_sha256": {
+   "LICENSE": "15e3cd225f2fd08dc0afb677565c889d1051c198d0dfabdbd66823cfc3af492d",
+   "README.md": "6e49824938493b5d002d63a9fed9b59c50e05c2915782652fa28023c20f1315b",
+   "config.json": "ce076e84eedb45b30c01c8d05b6f58400b01f8d9570fcc8a219eddf6fbc7d8b1",
+   "generation_config.json": "4dabeac2362842473432525620d5a02a0aa8152d7b377ca4dd4a33acad123189",
+   "model-00001-of-00002.safetensors": "c8a9e94c90fcb6b892c367cb67770cc183985eb9a0e4232c341745f5f10d15c4",
+   "model-00002-of-00002.safetensors": "3fef5d8bbf9f7f3d7ed2bfbd1d18b8517a536ed2f16890aebb93416c21c9dc4a",
+   "tokenizer.json": "3b68e40b337d61d12ca034bc1446cfe0fc9a761a0459805f19a756c7b12be08e"
+  },
+  "revision": "7bf8db2794c6440fa922c1425b08a15a492e4dd5",
+  "source": "research.example/athar-tiny"
+ }
+]

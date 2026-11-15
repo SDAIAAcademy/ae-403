@@ -1,0 +1,8 @@
+numpy>=2.2
+pandas>=2.2
+matplotlib>=3.9
+pyyaml>=6.0
+cryptography>=44
+pyopenssl>=25
+model-signing>=1.1.1
+cyclonedx-python-lib[json-validation]>=11.0

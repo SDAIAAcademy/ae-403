@@ -1,0 +1,53 @@
+{
+ "__frame__": true,
+ "columns": [
+  "start",
+  "day",
+  "minute_of_day",
+  "minutes",
+  "probe_caught",
+  "signal"
+ ],
+ "rows": [
+  [
+   2621,
+   1,
+   1181,
+   105,
+   false,
+   "quality_ar"
+  ],
+  [
+   4110,
+   2,
+   1230,
+   70,
+   false,
+   "ttft"
+  ],
+  [
+   4920,
+   3,
+   600,
+   50,
+   false,
+   "tpot"
+  ],
+  [
+   6600,
+   4,
+   840,
+   40,
+   false,
+   "empty"
+  ],
+  [
+   7500,
+   5,
+   300,
+   17,
+   true,
+   "errors"
+  ]
+ ]
+}

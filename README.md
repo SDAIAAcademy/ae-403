@@ -34,7 +34,7 @@ Participants set and defend reliability standards for AI services that other tea
 | Day 2 | Capacity and failure | Capacity with headroom; Admission control and shedding; Degraded modes; Chaos experiments | [`slides/day2.html`](slides/day2.html) |
 | Day 3 | Incidents and safe releases | Finding silent regressions; Running an incident; Canary and rollback; Learning from incidents | [`slides/day3.html`](slides/day3.html) |
 | Day 4 | Integrity and readiness | The model supply chain; Signing and verification; Bills of materials and admission; Production readiness reviews | [`slides/day4.html`](slides/day4.html) |
-| Capstone | Capstone project presentations |  | [`slides/capstone.html`](slides/capstone.html) |
+| Capstone | Readiness review defences |  | [`slides/capstone.html`](slides/capstone.html) |
 <!-- /academy:units -->
 
 ## Case study

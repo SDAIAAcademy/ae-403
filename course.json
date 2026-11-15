@@ -746,7 +746,7 @@
     {
       "id": "capstone",
       "kind": "capstone",
-      "title": "Capstone project presentations",
+      "title": "Readiness review defences",
       "deck": "slides/capstone.html",
       "subtitle": "A production readiness review defended before a panel, with a live fault to diagnose"
     }

@@ -73,7 +73,7 @@ except NotImplementedError:
 U.keep("lab_2_3_fallback", fb)
 print(fb)
 fb_ok = dict(zip(fb.lang, fb.pass_rate >= 0.85))
-U.ok(fb_ok["en"] and not fb_ok["ar"], "the smaller model keeps English and fails Arabic: averaged, it would have passed")
+U.ok(fb_ok["en"] and not fb_ok["ar"], "the smaller model keeps English (87%) and fails Arabic (73%): only the per-language view says which users lose the minimum service")
 print("both languages together:", round(float((fb.pass_rate * fb.questions).sum() / fb.questions.sum()), 3))
 
 # %% [markdown]

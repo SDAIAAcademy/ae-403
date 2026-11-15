@@ -83,6 +83,21 @@ A production readiness review of a peer's or a supplied AI service, covering obj
 - Has released a service through a canary or blue-green rollout
 - Reads a goodput-versus-concurrency curve (the measurement method is taught in AE-401)
 
+## Pre-work, assessment and follow-up
+
+- **Guided pre-work:** run `labs/00_setup_check.ipynb` (Colab or a laptop with uv), read the
+  Google SRE workbook chapter "Implementing SLOs", and bring one service you operate, with its
+  current alerts, to Day 1.
+- **Supervised entry and exit checks, without AI (20%):** compute error budget burn, set an
+  admission limit from a goodput curve, and order the first actions in an incident.
+- **Capstone rubric (60%) and panel defence (20%).** Passing needs 70% overall and at least 60% on
+  both the capstone rubric and the supervised checks.
+- **AI use:** off for the supervised checks and the Day 3 game day; a tutor that explains but does
+  not set objectives or thresholds in the other labs; allowed in the capstone, which is defended
+  live.
+- **Follow-up task:** within 30 days, apply one reliability standard from the course to a service
+  in your own team or an open-source deployment, and send the evidence.
+
 <!-- academy:tools -->
 ## Tools
 

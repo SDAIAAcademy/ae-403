@@ -1,0 +1,23 @@
+{
+ "__frame__": true,
+ "columns": [
+  "lang",
+  "questions",
+  "answered",
+  "pass_rate"
+ ],
+ "rows": [
+  [
+   "ar",
+   124,
+   1.0,
+   0.726
+  ],
+  [
+   "en",
+   116,
+   1.0,
+   0.871
+  ]
+ ]
+}

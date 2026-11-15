@@ -1,0 +1,23 @@
+{
+ "cache on": {
+  "tracking_answered": 1.0,
+  "help_answered": 0.648,
+  "p95_latency_ms": 1318,
+  "silent_failures": 0,
+  "modes": {
+   "full": 1644,
+   "cache": 1526,
+   "unanswered": 830
+  }
+ },
+ "cache off": {
+  "tracking_answered": 1.0,
+  "help_answered": 0.0,
+  "p95_latency_ms": 1309,
+  "silent_failures": 2377,
+  "modes": {
+   "error": 2377,
+   "full": 1623
+  }
+ }
+}

@@ -107,7 +107,7 @@ def keep(name: str, value):
                "rows": json.loads(value.to_json(orient="values"))}
     else:
         obj = json.loads(json.dumps(value, default=_jsonable))
-    (REF / f"{name}.json").write_text(json.dumps(obj, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    (REF / f"{name}.json").write_text(json.dumps(obj, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
     return value
 
 
@@ -542,7 +542,7 @@ def retry_storm(base_rps: float, capacity_rps: float, seconds: int, fault_window
                 max_retries: int = 3, retry_budget: float | None = None, backoff: bool = False, seed=SEED):
     """A fluid model of client retries. During the fault window every request fails; failed
     requests are retried (immediately, or with exponential backoff and jitter), each retry adds
-    load. Over capacity, the excess fails too. `retry_budget` caps retries at a share of first
+    load. Over capacity goodput collapses, as in Lab 2.1, so the excess drags the served rate down. `retry_budget` caps retries at a share of first
     attempts. Returns a per-second frame: offered, served, failed, retries."""
     rng = random.Random(seed)
     pending = collections.defaultdict(float)  # second -> retries scheduled
@@ -556,8 +556,10 @@ def retry_storm(base_rps: float, capacity_rps: float, seconds: int, fault_window
         offered = first + retries
         if a <= s < b:
             served = 0.0
-        else:
-            served = min(offered, capacity_rps)
+        elif offered <= capacity_rps:
+            served = offered
+        else:  # past the knee goodput collapses (Lab 2.1): requests time out after using capacity
+            served = capacity_rps * max(0.15, 1 - 1.2 * (offered / capacity_rps - 1))
         failed = offered - served
         # each failed request is retried until max_retries; approximate the attempt mix
         share_retryable = 1.0 - (1.0 / (max_retries + 1)) if retries else 1.0

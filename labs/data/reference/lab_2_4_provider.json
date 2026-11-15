@@ -1,0 +1,33 @@
+{
+ "__frame__": true,
+ "columns": [
+  "timeout_ms",
+  "tracking_answered",
+  "help_answered",
+  "p95_latency_ms",
+  "silent_failures"
+ ],
+ "rows": [
+  [
+   3000,
+   1.0,
+   1.0,
+   3891,
+   0
+  ],
+  [
+   6000,
+   1.0,
+   1.0,
+   6891,
+   0
+  ],
+  [
+   10000,
+   1.0,
+   1.0,
+   10891,
+   0
+  ]
+ ]
+}

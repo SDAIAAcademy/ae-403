@@ -1,0 +1,37 @@
+{
+ "__frame__": true,
+ "columns": [
+  "cls",
+  "offered",
+  "shed_share",
+  "met_objective",
+  "meets",
+  "for_the_owner"
+ ],
+ "rows": [
+  [
+   "P1",
+   940,
+   0.0,
+   0.963,
+   true,
+   "keeps its objective through the spike"
+  ],
+  [
+   "P2",
+   1652,
+   0.291,
+   0.707,
+   false,
+   "sheds early and keeps answered requests fast; retry after the spike"
+  ],
+  [
+   "P3",
+   478,
+   0.674,
+   0.224,
+   false,
+   "deferred: batch summaries resume when the spike ends"
+  ]
+ ]
+}

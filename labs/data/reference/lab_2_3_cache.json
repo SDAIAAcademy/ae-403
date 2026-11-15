@@ -1,0 +1,17 @@
+{
+ "table": [
+  {
+   "lang": "ar",
+   "questions": 100,
+   "answered": 0.63,
+   "pass_rate": 0.63
+  },
+  {
+   "lang": "en",
+   "questions": 100,
+   "answered": 0.58,
+   "pass_rate": 0.58
+  }
+ ],
+ "on_hits": 1.0
+}

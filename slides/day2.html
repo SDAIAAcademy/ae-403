@@ -1,158 +1,393 @@
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Yesterday set what users need; today makes the service keep it under load and under failure. Every lab starts from supplied files, including the operating point if Lab 2.1 is not finished.</p></aside>
 </section>
 
 <section class="slide" id="agenda" data-auto="agenda"></section>
 
-<!-- Session 1 -->
-
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea" data-lo="LO2">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="review-day1" data-lo="LO1">
+  <div class="kicker">Review of Day 1</div>
+  <h2>Which number goes on the objectives document?</h2>
+  <div class="quiz" data-type="single" data-lo="LO1">
+    <p class="lead">Over 30 days Athar's sampled quality was 97.8% in English and 95.9% in Arabic, 96.7% together. The objective is 95%. What do you report?</p>
+    <div class="opts">
+      <div class="opt" data-why="Averages the slices, which lets English hide how close Arabic is to its objective">96.7%, within objective</div>
+      <div class="opt" data-ok>Each language against its own objective, with its remaining budget</div>
+      <div class="opt" data-why="Reports the best slice as if it were the service">97.8%, the higher of the two</div>
+      <div class="opt" data-why="Drops the measurement because it is sampled, when the interval makes a sample usable">Nothing until every answer is graded</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The objective is per language: Arabic has 19% of its budget left while English has 57%, and only the slices show it.</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Answer: B. Numbers from Lab 1.3. Ask one participant to say how much Arabic budget is left and what the release policy does with RR-5.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps" data-lo="LO2">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
+<!-- ======================= SESSION 1 ======================= -->
+<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
+
+<section class="slide" id="queue-tail" data-lo="LO2">
+  <div class="kicker">Queueing</div>
+  <h2>Near capacity, the tail grows much faster than the load</h2>
+  <ul class="bullets">
+    <li>Below capacity, a request waits for little more than its own prefill</li>
+    <li>Near capacity, every burst queues, and the 95th percentile shows it first</li>
+    <li>In a self-hosted engine the key-value cache is the hidden limit: when it fills, requests are preempted and computed again</li>
+  </ul>
+  <div class="callout warn mt"><b>What goes wrong.</b> Sizing on average throughput: the engine is "only 80% busy" while a third of users wait seconds for the first token.</div>
+  <aside class="notes"><p>The measurement method (prefill and decode costs, cache arithmetic, curves) is AE-401's; this course uses the curve to decide. If the room has not taken AE-401, the next slide is enough to read one.</p></aside>
+</section>
+
+<section class="slide" id="goodput-definition" data-lo="LO2">
+  <div class="kicker">Goodput</div>
+  <h2>Goodput counts only the requests that met the objectives</h2>
   <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+    <div class="step c-navy"><b>Throughput</b>requests finished a second</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>Filter</b>first token within 1,500 ms and 100 ms a token</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>Goodput</b>good requests a second</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <p class="small mt">A load generator holds a fixed number of requests in flight (inference-perf, k6 or Locust in concurrency mode) and you raise it step by step.</p>
+  <aside class="notes"><p>Tool names are interchangeable examples from the entry; inference-perf is a Kubernetes SIG project for benchmarking inference servers. In the lab, U.Engine plays the engine so every laptop gets the same curve.</p></aside>
+</section>
+
+<section class="slide" id="goodput-curve" data-lo="LO2">
+  <div class="kicker">Lab 2.1 · one replica</div>
+  <h2>Throughput holds past the knee; goodput collapses</h2>
+  <table class="t small">
+    <tr><th class="num">In flight</th><th class="num">Throughput</th><th class="num">Goodput</th><th class="num">First token p95</th></tr>
+    <tr><td class="num">8</td><td class="num">1.63</td><td class="num">1.63</td><td class="num">173 ms</td></tr>
+    <tr class="hl"><td class="num">16</td><td class="num">2.13</td><td class="num">2.13</td><td class="num">211 ms</td></tr>
+    <tr><td class="num">20</td><td class="num">2.21</td><td class="num">2.16</td><td class="num">1,295 ms</td></tr>
+    <tr><td class="num">24</td><td class="num">2.20</td><td class="num">0.59</td><td class="num">3,005 ms</td></tr>
+    <tr><td class="num">32</td><td class="num">2.12</td><td class="num">0.00</td><td class="num">6,848 ms</td></tr>
+  </table>
+  <aside class="notes"><p>Requests a second, from the Lab 2.1 solution run (120 seconds per step, 20 seconds of warm-up). At 20 in flight the cache starts to overflow (14 preemptions); by 24 most requests wait past the threshold. A dashboard of throughput would show nothing wrong.</p></aside>
+</section>
+
+<section class="slide" id="operating-point" data-lo="LO2">
+  <div class="kicker">The operating point</div>
+  <h2>Operate below the peak: 16 in flight, not 20</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>The rule</h4><p class="small mb0">The highest concurrency with goodput within 95% of the peak <b>and</b> first-token p95 at most 80% of the threshold.</p></div>
+    <div class="card c-coral"><h4>Why not 20</h4><p class="small mb0">Its p95 is 1,295 ms against 1,500: a slightly longer prompt or an Arabic-heavy hour tips it over.</p></div>
+  </div>
+  <p class="small mt">16 in flight gives 2.13 good requests a second per replica, 99% of the peak.</p>
+  <aside class="notes"><p>The 80% figure is a course choice for headroom; a team may choose differently, but must choose in writing. Participants defend this rule in the capstone.</p></aside>
+</section>
+
+<section class="slide" id="busiest-hour" data-lo="LO2">
+  <div class="kicker">Headroom</div>
+  <h2>Size for the busiest hour of the month, not a normal evening</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="stat center"><div class="big">4.98</div><div class="lbl">requests a second, a typical daily peak</div></div>
+    <div class="stat center"><div class="big">7.64</div><div class="lbl">at the busiest hour: the sale day</div></div>
+    <div class="stat center"><div class="big">5</div><div class="lbl">replicas: a 39% margin</div></div>
+  </div>
+  <p class="small mt">Replicas = busiest hour × 1.25 headroom ÷ 2.13 per replica, rounded up. Four replicas would leave 11.5%.</p>
+  <aside class="notes"><p>Lab 2.1 numbers on traffic_hourly.csv (day 27, hour 20). The capstone asks for the operating point and the margin, each justified. Ask: what would make the margin disappear? Longer prompts, a bigger Arabic share, a replica down for maintenance.</p></aside>
+</section>
+
+<section class="slide" id="capacity-standard" data-lo="LO2">
+  <div class="kicker">The standard you set</div>
+  <h2>A capacity standard has four lines</h2>
+  <pre class="code s" data-file="Athar capacity standard"><code>measure:   goodput curve per replica, real language mix, every engine or model change
+operate:   16 in flight per replica (95% of peak goodput, p95 TTFT &lt;= 1,200 ms)
+size:      busiest hour of the last 30 days x 1.25, rounded up to whole replicas
+review:    monthly, and before any planned sale or campaign</code></pre>
+  <aside class="notes"><p>This is what an expert brings to another team: not the curve, the rule that turns the curve into a decision. AE-307 covers capacity from first principles if a participant wants the arithmetic behind replica sizing.</p></aside>
+</section>
+
+<section class="slide" id="check-curve" data-lo="LO2">
+  <div class="kicker">Checkpoint</div>
+  <h2>Read the curve</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">A sweep gives goodput 3.1, 3.4, 3.5, 1.2 requests a second at 8, 12, 16 and 20 in flight. First-token p95 at 12 is 600 ms, at 16 it is 1,400 ms; the threshold is 1,500 ms. Where do you set the operating point?</p>
+    <div class="opts">
+      <div class="opt" data-why="Chooses the peak, leaving no headroom below the threshold">16 in flight</div>
+      <div class="opt" data-ok>12 in flight</div>
+      <div class="opt" data-why="Gives away capacity the curve shows is safe">8 in flight</div>
+      <div class="opt" data-why="Reads throughput past the knee as capacity">20 in flight</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> 12 keeps 97% of the peak goodput with the p95 well under the threshold; 16 sits within 100 ms of it.</div>
+  </div>
+  <aside class="notes"><p>Answer: B. This is the supervised check's second item type: an admission limit from a goodput curve, by hand.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-1" data-auto="lab" data-lab="2.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>The sweep takes about ten seconds. Watch for: goodput computed with throughput's filter; choosing the peak; using the mean hour instead of the maximum. The stretch (long prompts) shows the knee moving left: the curve is per workload.</p></aside>
 </section>
 
-<!-- Session 2 -->
-
+<!-- ======================= SESSION 2 ======================= -->
 <section class="slide section" id="s2" data-auto="section" data-session="2"></section>
 
-<section class="slide" id="s2-idea" data-lo="LO2">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
+<section class="slide" id="no-admission" data-lo="LO2">
+  <div class="kicker">Lab 2.2 · no admission control</div>
+  <h2>Without admission, overload fails every class at once</h2>
   <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+    <div class="stat center"><div class="big">3.4%</div><div class="lbl">of P1 tracking requests within 1.5 s</div></div>
+    <div class="stat center"><div class="big">7 min</div><div class="lbl">first-token p95, for every class</div></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <p class="small mt">One replica, a 10-minute spike to about 1.7 times its goodput. The engine admits everything, its cache overflows, and requests are computed twice.</p>
+  <aside class="notes"><p>Lab 2.2 solution run: p95 first token about 436 seconds. Nobody waits seven minutes, of course: they leave and retry, which is Lab 2.4.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps" data-lo="LO2">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
+<section class="slide" id="admission-first" data-lo="LO2">
+  <div class="kicker">Admission control</div>
+  <h2>Admit only what the engine can serve; decide what waits</h2>
   <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+    <div class="step c-navy"><b>Arrive</b>with a class</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>Queue</b>bounded, per class</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>Release</b>highest class first, up to the cap</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>Shed</b>a full queue answers at once</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout tip mt"><b>The cap is the operating point:</b> 16 in flight per replica, from Lab 2.1.</div>
+  <aside class="notes"><p>AE-307 covers priority and shedding at the cluster gateway; here the point is the standard: who decides the classes, and what each class is promised.</p></aside>
+</section>
+
+<section class="slide" id="priority-classes" data-lo="LO2">
+  <div class="kicker">Priority classes</div>
+  <h2>Classes come from what the user is doing, not from who shouts</h2>
+  <table class="t small">
+    <tr><th>Class</th><th>Traffic</th><th>Promise</th></tr>
+    <tr><td>P1</td><td>tracking a parcel out for delivery</td><td>first token within 1.5 s for 95%</td></tr>
+    <tr><td>P2</td><td>general help questions</td><td>1.5 s for 95%, or a clear "try shortly"</td></tr>
+    <tr><td>P3</td><td>staff summaries of complaint threads</td><td>within 30 s, deferrable in a surge</td></tr>
+  </table>
+  <aside class="notes"><p>The SRE book describes request criticality as a first-class notion used by throttling and shedding: the same idea. Ask the room: would you put a staff request above a customer one? Usually not, unless the staff member is on the phone with the customer.</p><p>Sources: Google SRE book, Handling Overload.</p></aside>
+</section>
+
+<section class="slide" id="cap-not-enough" data-lo="LO2">
+  <div class="kicker">Lab 2.2 · three configurations</div>
+  <h2>A cap protects the engine; priorities protect the customers</h2>
+  <table class="t small">
+    <tr><th>Configuration</th><th class="num">P1 met</th><th class="num">P2 met</th><th class="num">P2 shed</th><th class="num">P3 shed</th></tr>
+    <tr><td>none</td><td class="num">3.4%</td><td class="num">4.5%</td><td class="num">0%</td><td class="num">0%</td></tr>
+    <tr><td>cap of 16, equal queues</td><td class="num">80.4%</td><td class="num">8.3%</td><td class="num">18%</td><td class="num">65%</td></tr>
+    <tr class="hl"><td>cap, P3 limited to 2, short P2 queue, 1 s P2 deadline</td><td class="num">96.3%</td><td class="num">70.7%</td><td class="num">29%</td><td class="num">67%</td></tr>
+  </table>
+  <aside class="notes"><p>"Met" is the share of offered requests answered within the class's first-token limit. P3's prompts are three times longer: two of them in flight are enough to slow every first token, which is why it gets its own in-flight limit.</p></aside>
+</section>
+
+<section class="slide" id="shed-early" data-lo="LO3">
+  <div class="kicker">Shedding</div>
+  <h2>Shed early and cheaply, with a message the user understands</h2>
+  <ul class="bullets">
+    <li>A request shed at the gateway costs microseconds and returns at once</li>
+    <li>A request that times out in the engine used capacity and still failed</li>
+    <li>A queued P2 request older than 1 s would miss its objective anyway: drop it</li>
+    <li>Tell the user in their language: "Athar is busy; try again in a minute"</li>
+  </ul>
+  <aside class="notes"><p>Shedding is the first degraded mode (LO3): service kept for the most important traffic. The message matters: a silent failure invites a retry, a clear one invites patience.</p></aside>
+</section>
+
+<section class="slide" id="check-shed" data-lo="LO2">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which traffic do you shed first?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">During the sale-day surge Athar's replicas are at their cap. Which traffic should the gateway shed first?</p>
+    <div class="opts">
+      <div class="opt" data-why="Ranks by arrival order, which sheds whoever is unlucky rather than whoever can wait">The most recent arrivals, whatever their class</div>
+      <div class="opt" data-why="Protects the cheapest requests rather than the most urgent ones">Tracking requests, because they are the most numerous</div>
+      <div class="opt" data-ok>Staff summaries of complaint threads</div>
+      <div class="opt" data-why="Sheds by language, which fails one language's users unnoticed">Arabic requests, because their prompts are longer</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Summaries are batch work that can wait for the surge to pass, and their long prompts free the most capacity.</div>
+  </div>
+  <aside class="notes"><p>Answer: C. Option D is the responsible-use trap: shedding by language would be cheap and would quietly fail 60% of Rasael's users.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-2" data-auto="lab" data-lab="2.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Each replay takes a few seconds. Watch for: a cap above the operating point; equal queue sizes that still let P2 crowd P1. If Lab 2.1 is unfinished, the notebook loads the reference operating point (16).</p></aside>
 </section>
 
-<!-- Session 3 -->
-
+<!-- ======================= SESSION 3 ======================= -->
 <section class="slide section" id="s3" data-auto="section" data-session="3"></section>
 
-<section class="slide" id="s3-idea" data-lo="LO3">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="degraded-ladder" data-lo="LO3">
+  <div class="kicker">Degraded modes</div>
+  <h2>A ladder of modes keeps a minimum service when parts fail</h2>
+  <div class="ladder" style="--n:4">
+    <div class="rung c-teal on"><b>Full</b>model and retrieval<small>normal</small></div>
+    <div class="rung c-cyan off"><b>Fallback</b>a smaller model<small>engine overloaded or down</small></div>
+    <div class="rung c-purple off"><b>Cache</b>saved answers<small>retrieval or model down</small></div>
+    <div class="rung c-coral off"><b>Template</b>tracking API only<small>no model at all</small></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Each rung has an entry condition, an exit condition, a measured quality and a message to the user. A mode nobody has measured is a hope, not a design.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps" data-lo="LO3">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="fallback-fails-arabic" data-lo="LO3">
+  <div class="kicker">Lab 2.3 · quality per mode</div>
+  <h2>The smaller model keeps English and fails Arabic</h2>
+  <div class="bars">
+    <div class="row"><span>Full, English</span><div class="bar c-teal" style="--w:98%"></div><span class="val">98.3%</span></div>
+    <div class="row"><span>Full, Arabic</span><div class="bar c-teal" style="--w:89%"></div><span class="val">89.5%</span></div>
+    <div class="row"><span>Fallback, English</span><div class="bar c-cyan" style="--w:87%"></div><span class="val">87.1%</span></div>
+    <div class="row"><span>Fallback, Arabic</span><div class="bar c-coral" style="--w:73%"></div><span class="val">72.6%</span></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <p class="small mt">Averaged, the fallback passes 79.6%: the number that would have been reported.</p>
+  <aside class="notes"><p>Recorded answers on 240 test questions, graded by code against the facts each answer must state. The minimum service is 85% per language. The full model's Arabic is lower on this hard test set than in daily telemetry: the set over-samples tracking questions.</p></aside>
+</section>
+
+<section class="slide" id="cache-rules" data-lo="LO3">
+  <div class="kicker">The cached-answer mode</div>
+  <h2>A cache serves what is general, fresh and nobody's personal data</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-coral"><h4>Never personal</h4><p class="small mb0">9 of 137 saved answers named a customer, a parcel and a street. Refused.</p></div>
+    <div class="card c-amber"><h4>Never stale</h4><p class="small mb0">7 were older than their help article. Refused.</p></div>
+    <div class="card c-teal"><h4>The rest is right</h4><p class="small mb0">Every answer served from the cache passed: 63% of Arabic and 58% of English help questions hit.</p></div>
+  </div>
+  <aside class="notes"><p>Serving one customer's saved tracking answer to another is a personal data breach under the PDPL, not a quality bug. The refusal rule is code with a test, not a convention. Ask Ithar Al-Hammadi's question: who decided what may be cached, and where is it written?</p></aside>
+</section>
+
+<section class="slide" id="route-by-language" data-lo="LO3">
+  <div class="kicker">Routing</div>
+  <h2>Route degraded traffic by language when the modes differ by language</h2>
+  <table class="t small">
+    <tr><th>Engine down</th><th>Route</th><th class="num">Pass rate</th></tr>
+    <tr><td>English help</td><td>fallback, then cache</td><td class="num">87.1%</td></tr>
+    <tr class="hl"><td>Arabic help</td><td>cache first, then fallback</td><td class="num">91.1%</td></tr>
+    <tr><td>Tracking</td><td>template from the tracking API, no model</td><td class="num">all answered</td></tr>
+  </table>
+  <aside class="notes"><p>Lab 2.3 routes. Arabic users get the cache first because it is right when it answers; the fallback covers the misses. This is the responsible-use line of the entry made concrete: a degraded mode cannot fail one language unnoticed.</p></aside>
+</section>
+
+<section class="slide" id="disclose-mode" data-lo="LO3">
+  <div class="kicker">Responsible use</div>
+  <h2>Every degraded answer says so, in the user's language</h2>
+  <div class="chat">
+    <div class="msg user"><span class="who">Customer</span>What is the fee for a registered letter in Abha?</div>
+    <div class="msg ai"><span class="who">Athar, cache mode</span>Athar is answering from saved answers: details may not reflect the latest updates. Saved answer: 25.</div>
+    <div class="msg ai"><span class="who">أثر، الوضع المخفَّض</span>يعمل أثر حاليًا بوضع مخفَّض، وقد تكون هذه الإجابة أقل اكتمالًا من المعتاد.</div>
+  </div>
+  <aside class="notes"><p>The texts are U.DISCLOSURE in the helper module. The lab checks that 100% of degraded answers start with the disclosure. Users decide what to trust when they are told.</p></aside>
+</section>
+
+<section class="slide" id="check-mode" data-lo="LO3">
+  <div class="kicker">Checkpoint</div>
+  <h2>The fallback passes overall</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">Shuaib reports that the fallback model passes 84% of the test set, against a minimum service of 85%, "close enough to ship". English passes 92%, Arabic 79%. What do you decide?</p>
+    <div class="opts">
+      <div class="opt" data-why="Accepts an average that a 60% Arabic user base cannot rely on">Ship it: 84% is within a point</div>
+      <div class="opt" data-why="Throws away a mode that works for English instead of routing">Remove the fallback mode entirely</div>
+      <div class="opt" data-why="Changes the bar to fit the model instead of the users">Lower the minimum service to 80%</div>
+      <div class="opt" data-ok>Use it for English; route Arabic to the cache first and measure again</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The minimum service is per language. The fallback meets it for English only, so Arabic needs another rung, measured before it is trusted.</div>
+  </div>
+  <aside class="notes"><p>Answer: D.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-3" data-auto="lab" data-lab="2.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: a cache that matches tracking questions (the lab counts leaks); a disclosure only in English. The optional live path: with OPENROUTER_API_KEY set, U.live_answer asks a free hosted model and falls back to the recording on any error; the course's own runs used the recordings.</p></aside>
 </section>
 
-<!-- Session 4 -->
-
+<!-- ======================= SESSION 4 ======================= -->
 <section class="slide section" id="s4" data-auto="section" data-session="4"></section>
 
-<section class="slide" id="s4-idea" data-lo="LO3">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="chaos-method" data-lo="LO3">
+  <div class="kicker">Chaos experiments</div>
+  <h2>A chaos experiment is a hypothesis that could be false</h2>
+  <div class="flow">
+    <div class="step c-navy"><b>Steady state</b>measured</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>Hypothesis</b>the minimum service holds</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>Inject</b>one fault, small radius</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>Compare</b>or abort</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <p class="small mt">Fault injectors such as Chaos Mesh (in a cluster) or Toxiproxy (on a connection) do the injecting; the method is the same in the lab's simulator.</p>
+  <aside class="notes"><p>Write the abort condition first. In production the blast radius is one replica's share of traffic behind a flag, never the whole service. The lab's minimum service: tracking answered for 95%, p95 within 5 s, no silent failures.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps" data-lo="LO3">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="retrieval-outage" data-lo="LO3">
+  <div class="kicker">Lab 2.4 · retrieval outage</div>
+  <h2>With the cache, a retrieval outage costs answers, not errors</h2>
+  <table class="t small">
+    <tr><th></th><th class="num">Tracking answered</th><th class="num">Help answered</th><th class="num">Silent failures</th></tr>
+    <tr class="hl"><td>cache on</td><td class="num">100%</td><td class="num">64.8%</td><td class="num">0</td></tr>
+    <tr><td>cache off</td><td class="num">100%</td><td class="num">0%</td><td class="num">2,377</td></tr>
+  </table>
+  <p class="small mt">4,000 simulated requests. Unanswered help questions get a plain "not available now" message.</p>
+  <aside class="notes"><p>Tracking does not need retrieval: it reads the tracking API. That separation is an architecture decision worth defending in a review: a dependency that only some features need must not take all features down.</p></aside>
+</section>
+
+<section class="slide" id="timeout-length" data-lo="LO3">
+  <div class="kicker">Lab 2.4 · provider timeout</div>
+  <h2>The client timeout decides whether the fallback is in time</h2>
+  <div class="bars">
+    <div class="row"><span>3 s timeout</span><div class="bar c-teal" style="--w:36%"></div><span class="val">3.9 s p95</span></div>
+    <div class="row"><span>6 s timeout</span><div class="bar c-amber" style="--w:63%"></div><span class="val">6.9 s p95</span></div>
+    <div class="row"><span>10 s timeout</span><div class="bar c-coral" style="--w:100%"></div><span class="val">10.9 s p95</span></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <p class="small mt">Every request waits the full timeout before the fallback starts. Only 3 s keeps the 5 s minimum service.</p>
+  <aside class="notes"><p>Answers all arrive eventually in the three runs; what changes is whether the user is still there. Set timeouts from the objective backwards, not from the library default.</p></aside>
+</section>
+
+<section class="slide" id="retry-storm" data-lo="LO3">
+  <div class="kicker">Lab 2.4 · retry storm</div>
+  <h2>A 30-second fault becomes an outage that never ends</h2>
+  <table class="t small">
+    <tr><th>Client policy</th><th class="num">Peak offered</th><th>Recovered</th></tr>
+    <tr><td>immediate retries, up to 3</td><td class="num">24 a second</td><td>never</td></tr>
+    <tr><td>exponential backoff only</td><td class="num">34 a second</td><td>63 s after the fault</td></tr>
+    <tr class="hl"><td>10% retry budget</td><td class="num">6.6 a second</td><td>when the fault ends</td></tr>
+  </table>
+  <p class="small mt">6 requests a second offered, 8.5 served at most. Past the knee goodput collapses, so retries keep the service overloaded.</p>
+  <aside class="notes"><p>The SRE book describes a per-request limit of three attempts and a per-client retry budget of about 10% of requests, and recommends randomised exponential backoff. Backoff alone spreads the storm; the budget stops it.</p><p>Sources: Google SRE book, Handling Overload and Addressing Cascading Failures.</p></aside>
+</section>
+
+<section class="slide" id="minimum-service" data-lo="LO3">
+  <div class="kicker">The standard you set</div>
+  <h2>Write the minimum service as numbers a test can check</h2>
+  <pre class="code s" data-file="Athar minimum service"><code>tracking answered:          &gt;= 95%, any single dependency down
+help questions:             answered, or declined in the user's language; never a raw error
+degraded answer quality:    &gt;= 85% per language, measured per mode
+p95 latency in any mode:    &lt;= 5 s
+clients:                    3-second timeout, 10% retry budget, jittered backoff</code></pre>
+  <aside class="notes"><p>This is the evidence LO3 asks for: chaos results showing each path keeps the minimum service, with quality measured in each mode. The capstone repeats it on the reviewed service.</p></aside>
+</section>
+
+<section class="slide" id="check-storm" data-lo="LO3">
+  <div class="kicker">Checkpoint</div>
+  <h2>The fault is gone; the outage is not</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">A 30-second provider fault ended ten minutes ago. Athar still fails most requests, and the engine shows three times the normal request rate. What is the most likely cause?</p>
+    <div class="opts">
+      <div class="opt" data-ok>Client retries keep the load past the knee, so goodput stays near zero</div>
+      <div class="opt" data-why="Assumes a second fault without evidence; the load points to retries">A new provider fault started</div>
+      <div class="opt" data-why="Confuses a capacity loss with a load increase">Half of the replicas were lost during the fault</div>
+      <div class="opt" data-why="Blames users' real demand for load the fault created">A traffic surge from a marketing campaign</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Three times the normal rate right after a fault is the signature of retries. Shed load and enforce a retry budget; the service then recovers.</div>
+  </div>
+  <aside class="notes"><p>Answer: A. Ask what the first action would be: shed at the gateway to bring the load below the knee, then fix the client policy.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-4" data-auto="lab" data-lab="2.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: a hypothesis that cannot fail ("the service is resilient"); a minimum service without numbers. The stretch combines faults: discuss which rung of the ladder users land on.</p></aside>
 </section>
 
-<section class="slide" id="wrap-up">
+<section class="slide" id="wrap-up" data-lo="LO2 LO3">
   <div class="kicker">Day 2 · wrap-up</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Operate below the knee</h4><p class="small mb0">An operating point with headroom, sized for the busiest hour.</p></div>
+    <div class="card c-cyan"><h4>Decide who waits</h4><p class="small mb0">Priority classes and early shedding protect the users at the door.</p></div>
+    <div class="card c-coral"><h4>Measure every mode</h4><p class="small mb0">Per language, disclosed, tested with injected faults and retries.</p></div>
   </div>
+  <aside class="notes"><p>Ask: which of today's numbers would you most want from the team whose service you review in the capstone?</p></aside>
 </section>
 
-<section class="slide dark" id="next" data-label="Next">
+<section class="slide dark" id="next">
   <div class="kicker">Next</div>
-  <h2>Day 3: Incidents and safe releases</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+  <h2>Day 3: incidents and safe releases</h2>
+  <ul class="bullets">
+    <li>Session 2 is a game day without AI assistance: you will take the roles of incident lead, operator and scribe</li>
+    <li>Optional reading: the SRE workbook chapter on alerting on SLOs</li>
+  </ul>
+  <aside class="notes"><p>Form groups of three tonight for the game day if the room allows; otherwise form them at the start of Session 2.</p></aside>
 </section>

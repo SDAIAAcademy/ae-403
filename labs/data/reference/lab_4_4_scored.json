@@ -1,0 +1,145 @@
+{
+ "__frame__": true,
+ "columns": [
+  "id",
+  "area",
+  "item",
+  "evidence",
+  "likelihood",
+  "impact",
+  "status",
+  "note"
+ ],
+ "rows": [
+  [
+   "O1",
+   "objectives",
+   "Objectives for availability and first-token time",
+   "objectives.latency",
+   3,
+   4,
+   "partial",
+   "99.5% availability and 95% under 2 s to first token, 30 days (Rasael's standard is 1.5 s: partial)"
+  ],
+  [
+   "O2",
+   "objectives",
+   "An answer-quality objective sliced by language",
+   "objectives.quality_by_language",
+   4,
+   5,
+   "partial",
+   "quality objective of 92%, measured on English samples only"
+  ],
+  [
+   "O3",
+   "objectives",
+   "Burn-rate alerts on each objective",
+   "alerts.burn_rate",
+   4,
+   4,
+   "partial",
+   "burn-rate alert on availability; quality has a static threshold on the daily average"
+  ],
+  [
+   "C1",
+   "capacity",
+   "Load test up to the busiest hour with headroom",
+   "capacity.busiest_hour",
+   4,
+   4,
+   "missing",
+   "load test at the average hour (2.1 requests a second); the busiest hour was 6.4"
+  ],
+  [
+   "C2",
+   "capacity",
+   "Admission limit and shedding priorities",
+   "capacity.admission",
+   3,
+   4,
+   "met",
+   "concurrency cap of 12 per replica, two priority classes"
+  ],
+  [
+   "D1",
+   "degradation",
+   "Fallback mode tested under a provider failure",
+   "degradation.fallback_tested",
+   3,
+   4,
+   "partial",
+   "fallback model configured; never exercised with a provider failure"
+  ],
+  [
+   "D2",
+   "degradation",
+   "Degraded answers disclosed to users",
+   "degradation.disclosure",
+   3,
+   3,
+   "met",
+   "reduced-mode banner in Arabic and English"
+  ],
+  [
+   "I1",
+   "incidents",
+   "Runbook with incident roles and a decision log",
+   "incidents.runbook",
+   3,
+   3,
+   "missing",
+   "runbook lists commands, no roles, no decision log"
+  ],
+  [
+   "I2",
+   "incidents",
+   "Breach procedure linked, data protection officer named",
+   "incidents.breach_procedure",
+   2,
+   5,
+   "met",
+   "linked; data protection officer named"
+  ],
+  [
+   "R1",
+   "release",
+   "Canary with an automated quality and latency gate",
+   "release.canary_gate",
+   3,
+   4,
+   "partial",
+   "canary at 10% for 30 minutes, latency gate only"
+  ],
+  [
+   "R2",
+   "release",
+   "Rollback tested in the last 30 days",
+   "release.rollback_tested",
+   2,
+   4,
+   "met",
+   "rollback drill 12 days before the review"
+  ],
+  [
+   "S1",
+   "integrity",
+   "Model signature verified at admission",
+   "integrity.signature",
+   3,
+   5,
+   "missing",
+   "weights pulled from a third-party mirror; no signature"
+  ],
+  [
+   "S2",
+   "integrity",
+   "Bill of materials with licences",
+   "integrity.bom",
+   2,
+   3,
+   "met",
+   "CycloneDX ML-BOM with the licence of each component"
+  ]
+ ]
+}

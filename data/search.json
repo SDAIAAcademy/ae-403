@@ -1,0 +1,1516 @@
+{
+  "v": 1,
+  "engine": "1.0.0",
+  "build": {
+    "at": "2026-11-15T15:04:19Z",
+    "version": "2027.1.0",
+    "commit": "d44e8c9"
+  },
+  "lang": "en",
+  "dir": "ltr",
+  "slides": [
+    {
+      "deck": "day1",
+      "id": "title",
+      "n": 1,
+      "session": 0,
+      "title": "Objectives that match what users need",
+      "text": "SDAIA Academy · Reliability Engineering for AI Services Objectives that match what users need Day 1: Indicators and objectives for latency, availability and answer quality, sliced by language AI Engineering Track4 teaching days + capstone day4 sessions · 4 labsAE-403",
+      "href": "../slides/day1.html#title"
+    },
+    {
+      "deck": "day1",
+      "id": "agenda",
+      "n": 2,
+      "session": 0,
+      "title": "Objectives that match what users need",
+      "text": "Today Objectives that match what users need Session 1 · AI services fail differently An AI service can be up, fast on a probe and still wrong, slow or silent for its users Session 2 · Indicators for latency and quality Indicators as good events over valid events: first-token time, per-token time, availability and a sampled quality grade Session 3 · Objectives and error budgets Objectives tied to what users need, the budget they leave, and a release policy that spends it Session 4 · Objectives for multi-step tasks A booking flow succeeds per task, not per call: completion, cost per completed task and escalation",
+      "href": "../slides/day1.html#agenda"
+    },
+    {
+      "deck": "day1",
+      "id": "setup-check",
+      "n": 3,
+      "session": 0,
+      "title": "One notebook proves the setup: run it before Session 1",
+      "text": "Before the first lab One notebook proves the setup: run it before Session 1 Colab: open 00_setup_check.ipynb from the course page and run all cells Laptop: uv sync in labs/, then the same notebook It imports every library, reads one data file per day and runs the engine simulator once No model is downloaded and no key is needed What every lab starts from A supplied file in labs/data/. No lab needs the result of another lab: if you fall behind, the next lab still starts level.",
+      "href": "../slides/day1.html#setup-check"
+    },
+    {
+      "deck": "day1",
+      "id": "s1",
+      "n": 4,
+      "session": 1,
+      "title": "AI services fail differently",
+      "text": "Session 1 AI services fail differently Name four ways an AI service fails while an uptime check stays green Read per-minute telemetry by language and by mode Separate what users felt from what the probe measured 01",
+      "href": "../slides/day1.html#s1"
+    },
+    {
+      "deck": "day1",
+      "id": "meet-athar",
+      "n": 5,
+      "session": 1,
+      "title": "Athar answers parcel questions for Rasael in Arabic and English",
+      "text": "The case Athar answers parcel questions for Rasael in Arabic and English Gateway admission, priorities, rate limits ↓ Retrieval 3,000 help articles, Arabic and English ↓ Self-hosted model an open-weight model on Rasael's own engine ↓ Tracking API the parcel's status for a parcel number Your role The reliability lead who sets the standards other teams must meet, and defends them. Data All synthetic, fixed seed: telemetry, traffic, answers, incidents, model files.",
+      "href": "../slides/day1.html#meet-athar"
+    },
+    {
+      "deck": "day1",
+      "id": "up-but-wrong",
+      "n": 6,
+      "session": 1,
+      "title": "An AI service can be up and still fail its users",
+      "text": "Four new failure modes An AI service can be up and still fail its users Wrong Fluent answers that are false, often in one language only. Slow to start Long prompts wait in the queue; the first token takes seconds. Slow to stream The answer arrives word by word, slower than reading speed. Empty or cut A 200 with nothing useful: the output limit cut the answer. All four return HTTP 200. A status-code dashboard counts them as success.",
+      "href": "../slides/day1.html#up-but-wrong"
+    },
+    {
+      "deck": "day1",
+      "id": "probe-blind",
+      "n": 7,
+      "session": 1,
+      "title": "A probe measures the probe, not the users",
+      "text": "Why the uptime check is green A probe measures the probe, not the users The probe A real Athar request one tiny English prompt a minute a question plus 1,000 to 3,000 tokens of retrieved articles needs no retrieval fails when the index is wrong or down four output tokens 60 to 300 tokens, streamed never graded right or wrong, in Arabic or English",
+      "href": "../slides/day1.html#probe-blind"
+    },
+    {
+      "deck": "day1",
+      "id": "week-telemetry",
+      "n": 8,
+      "session": 1,
+      "title": "A week of telemetry, per minute and per language",
+      "text": "Lab 1.1 · the data A week of telemetry, per minute and per language minute,day,lang,requests,errors,ttft_p95_ms,tpot_p95_ms,empty_answers,graded,passed 0,0,ar,22,0,914,41.1,0,1,1 0,0,en,11,0,783,33.4,0,0,0 ttft : time to first token; tpot: time per output token after it graded / passed : about 5% of answers are checked by the quality team Minutes count from the start of the week: no clock times, every cohort reads the same data",
+      "href": "../slides/day1.html#week-telemetry"
+    },
+    {
+      "deck": "day1",
+      "id": "what-users-felt",
+      "n": 9,
+      "session": 1,
+      "title": "Five incidents in one week; the probe saw one",
+      "text": "Lab 1.1 · the result Five incidents in one week; the probe saw one Day Minutes Signal Probe 1 105 Arabic quality below 85% green 2 70 first token over 2 s at the evening peak green 3 50 streaming over 120 ms a token green 4 40 empty answers over 5% green 5 17 server errors: the engine restarted red",
+      "href": "../slides/day1.html#what-users-felt"
+    },
+    {
+      "deck": "day1",
+      "id": "small-numbers",
+      "n": 10,
+      "session": 1,
+      "title": "At night, small numbers look like incidents",
+      "text": "What goes wrong in the lab At night, small numbers look like incidents Two failed answers out of eight graded is a 75% pass rate One empty answer out of ten requests is 10% Require a minimum sample (40 graded answers in 30 minutes) and a minimum duration (15 minutes) The rule behind it An indicator without a sample size is an opinion. Every quality number this week comes with its count or its interval.",
+      "href": "../slides/day1.html#small-numbers"
+    },
+    {
+      "deck": "day1",
+      "id": "check-probe",
+      "n": 11,
+      "session": 1,
+      "title": "Which incident turns the probe red?",
+      "text": "Checkpoint Which incident turns the probe red? Athar's uptime check sends one short English prompt a minute. Which of these incidents does it detect? Arabic answers wrong after an index refresh First token over four seconds at the evening peak The engine pods restart and refuse every request Answers cut short at the output limit",
+      "href": "../slides/day1.html#check-probe"
+    },
+    {
+      "deck": "day1",
+      "id": "lab-1-1",
+      "n": 12,
+      "session": 1,
+      "title": "What the uptime check missed",
+      "text": "Lab 1.1 · 25 min What the uptime check missed Read a week of Athar telemetry and list the incidents an uptime check would miss, with their duration and the indicator that shows each one. D1_1_uptime_blind_spots.ipynb Load the week and plot requests, probe and errors 4 min Find the minutes where the probe was green and users were not 7 min Group them into incidents with a start, a duration and a signal 7 min Name the indicator that would have caught each one 7 min ✱ Stretch: Repeat the search for Arabic and English separately and compare",
+      "href": "../slides/day1.html#lab-1-1"
+    },
+    {
+      "deck": "day1",
+      "id": "s2",
+      "n": 13,
+      "session": 2,
+      "title": "Indicators for latency and quality",
+      "text": "Session 2 Indicators for latency and quality Define an indicator as good events over valid events Exclude probes and client cancellations with a written reason Estimate a sampled quality rate with its interval, by language 02",
+      "href": "../slides/day1.html#s2"
+    },
+    {
+      "deck": "day1",
+      "id": "good-over-valid",
+      "n": 14,
+      "session": 2,
+      "title": "An indicator is good events divided by valid events",
+      "text": "An indicator An indicator is good events divided by valid events All events every row in the log → Valid remove what the service owed nobody → Good met the threshold → Indicator good / valid Write every exclusion down with its reason. The exclusions are where an indicator is made to look better than the service.",
+      "href": "../slides/day1.html#good-over-valid"
+    },
+    {
+      "deck": "day1",
+      "id": "exclusions-move-numbers",
+      "n": 15,
+      "session": 2,
+      "title": "The same day gives three availabilities",
+      "text": "Lab 1.2 · one day of requests The same day gives three availabilities Cancels counted as failures 96.58% Probe and cancels excluded 98.95% Probe counted as a user 99.06% A 499 is a user who closed the chat; a 429 is Athar refusing a user. Only one of them is the service's fault.",
+      "href": "../slides/day1.html#exclusions-move-numbers"
+    },
+    {
+      "deck": "day1",
+      "id": "two-latencies",
+      "n": 16,
+      "session": 2,
+      "title": "First-token time and per-token time fail for different reasons",
+      "text": "Latency is two numbers First-token time and per-token time fail for different reasons Time to first token Queueing plus prefill of the whole prompt. Grows with load and with prompt length. Users feel it as \"is it working?\" Time per output token One decode step of the batch. Grows with the batch size. Users feel it as reading slower than the text appears. Athar's thresholds: first token within 1,500 ms, then within 100 ms a token. On the lab day 94.2% and 98.9% of served requests met them.",
+      "href": "../slides/day1.html#two-latencies"
+    },
+    {
+      "deck": "day1",
+      "id": "quality-is-sampled",
+      "n": 17,
+      "session": 2,
+      "title": "Answer quality is a sampled indicator: report its interval",
+      "text": "Quality Answer quality is a sampled indicator: report its interval Language Graded Pass rate 95% interval Arabic 395 94.9% 92.3% to 96.7% English 297 98.0% 95.7% to 99.1% Graders follow a written rubric; the sample is random, not the answers someone complained about.",
+      "href": "../slides/day1.html#quality-is-sampled"
+    },
+    {
+      "deck": "day1",
+      "id": "slice-by-language",
+      "n": 18,
+      "session": 2,
+      "title": "Every quality objective is sliced by language",
+      "text": "Responsible use Every quality objective is sliced by language Athar's traffic is 60% Arabic: an average lets English mask an Arabic failure Degraded modes and model updates fail one language more often than the other The slice is part of the objective, not a dashboard filter The question for any review \"Show me this number for Arabic users only.\" If the team cannot, the objective is not defined yet.",
+      "href": "../slides/day1.html#slice-by-language"
+    },
+    {
+      "deck": "day1",
+      "id": "indicator-spec",
+      "n": 19,
+      "session": 2,
+      "title": "An indicator specification fits on five lines",
+      "text": "Write it down An indicator specification fits on five lines availability: good = status 200; valid = users (not probe), not 499 first_token: good = ttft_ms <= 1500 among served user requests per_token: good = tpot_ms <= 100 among served user requests quality_ar: good = passed; valid = graded Arabic answers (random 6%) quality_en: good = passed; valid = graded English answers (random 6%)",
+      "href": "../slides/day1.html#indicator-spec"
+    },
+    {
+      "deck": "day1",
+      "id": "check-cancel",
+      "n": 20,
+      "session": 2,
+      "title": "Is this request a bad event?",
+      "text": "Checkpoint Is this request a bad event? A customer closes the chat after two seconds, before Athar's first token. The gateway logs a 499. How should the availability indicator count it? As a bad event As a good event As half a bad event Excluded from valid events, and counted in its own abandonment signal",
+      "href": "../slides/day1.html#check-cancel"
+    },
+    {
+      "deck": "day1",
+      "id": "lab-1-2",
+      "n": 21,
+      "session": 2,
+      "title": "Four indicators from one day",
+      "text": "Lab 1.2 · 25 min Four indicators from one day Define first-token time, per-token time, availability and a sampled quality grade on a day of request logs, with the exclusions written down and quality sliced by language with an interval. D1_2_indicators.ipynb Read the request log and its fields 3 min Write the valid-event filter and its exclusions 6 min Latency indicators: first token and per token 6 min Availability as good over valid requests 4 min Quality grade by language, with a 95% interval 6 min ✱ Stretch: How many graded samples per day would narrow the Arabic interval to two points?",
+      "href": "../slides/day1.html#lab-1-2"
+    },
+    {
+      "deck": "day1",
+      "id": "s3",
+      "n": 22,
+      "session": 3,
+      "title": "Objectives and error budgets",
+      "text": "Session 3 Objectives and error budgets Set an objective from a user task, not from last month Compute budget burn over a month and per week Write a release policy that decides from the remaining budget 03",
+      "href": "../slides/day1.html#s3"
+    },
+    {
+      "deck": "day1",
+      "id": "objective-from-task",
+      "n": 23,
+      "session": 3,
+      "title": "Set the objective from the user's task, then check it against history",
+      "text": "An objective Set the objective from the user's task, then check it against history From the task A customer waiting at the door needs the parcel status before the courier leaves: a first token within 1.5 s, an answer that is right. Not from last month \"We had 99.82%, so the objective is 99.8%\" makes every bad month a target and every good one a waste. Athar's four: availability 99.5%; first token within 1,500 ms for 95%; quality 95% for Arabic and 95% for English; all over a rolling 30 days.",
+      "href": "../slides/day1.html#objective-from-task"
+    },
+    {
+      "deck": "day1",
+      "id": "budget-arithmetic",
+      "n": 24,
+      "session": 3,
+      "title": "The error budget is the bad events the objective allows",
+      "text": "Budget arithmetic The error budget is the bad events the objective allows 0.5% of valid requests may fail at 99.5% 0.18% failed in the month (99.82%) 36% of the availability budget burned Burned = bad events / (1 - target) / valid events. It is a count of users, not of minutes.",
+      "href": "../slides/day1.html#budget-arithmetic"
+    },
+    {
+      "deck": "day1",
+      "id": "month-budgets",
+      "n": 25,
+      "session": 3,
+      "title": "Arabic quality has spent four fifths of its budget",
+      "text": "Lab 1.3 · the month Arabic quality has spent four fifths of its budget Availability 36% First token 46% Quality, English 43% Quality, Arabic 81% Normal Arabic operation (97.2% pass) already burns more than half; a 48-hour drop to 80% spent the rest.",
+      "href": "../slides/day1.html#month-budgets"
+    },
+    {
+      "deck": "day1",
+      "id": "tight-objective",
+      "n": 26,
+      "session": 3,
+      "title": "An objective just below normal leaves no room to work",
+      "text": "What goes wrong An objective just below normal leaves no room to work Arabic passes 97.2% on a normal day; the objective is 95% So 56% of the budget goes on days when nothing is wrong Either improve normal Arabic quality, or accept that every Arabic incident freezes releases Both are decisions for the service owner, made with the numbers, before the incident",
+      "href": "../slides/day1.html#tight-objective"
+    },
+    {
+      "deck": "day1",
+      "id": "release-policy",
+      "n": 27,
+      "session": 3,
+      "title": "The policy decides from the remaining budget of what the change touches",
+      "text": "A release policy The policy decides from the remaining budget of what the change touches Lowest remaining budget among the touched objectives Decision 50% or more go 25% to 50% go behind a canary below 25% freeze: reliability and security fixes only The SRE workbook's example policy halts changes other than urgent and security fixes once a service exceeds its budget over four weeks.",
+      "href": "../slides/day1.html#release-policy"
+    },
+    {
+      "deck": "day1",
+      "id": "five-requests",
+      "n": 28,
+      "session": 3,
+      "title": "The policy freezes the change most likely to fix Arabic",
+      "text": "Lab 1.3 · five pending releases The policy freezes the change most likely to fix Arabic Request Touches Decision RR-1 new model v2.5 quality ar, en; first token freeze (19% left) RR-2 shorter English prompt quality en go (57%) RR-3 larger engine batch first token, availability go (54%) RR-4 gateway security patch availability go (exempt) RR-5 Arabic index refresh quality ar freeze (19%)",
+      "href": "../slides/day1.html#five-requests"
+    },
+    {
+      "deck": "day1",
+      "id": "check-budget",
+      "n": 29,
+      "session": 3,
+      "title": "How much budget is left?",
+      "text": "Checkpoint How much budget is left? Over 30 days Athar served 2,000,000 valid requests and 6,000 failed. The availability objective is 99.5%. What share of the error budget remains? 99.7% 0.3% 40% 167%",
+      "href": "../slides/day1.html#check-budget"
+    },
+    {
+      "deck": "day1",
+      "id": "lab-1-3",
+      "n": 30,
+      "session": 3,
+      "title": "Objectives, budget and release policy",
+      "text": "Lab 1.3 · 25 min Objectives, budget and release policy Set objectives for Athar, compute the budget burned over a supplied month and write the release policy that decides five pending release requests. D1_3_error_budgets.ipynb Write the four objectives with their windows 5 min Compute the budget and what the month burned 7 min Find the week that burned most and why 5 min Write the release policy and decide five requests 8 min ✱ Stretch: Add a policy line for a budget spent by a dependency, not by a release",
+      "href": "../slides/day1.html#lab-1-3"
+    },
+    {
+      "deck": "day1",
+      "id": "s4",
+      "n": 31,
+      "session": 4,
+      "title": "Objectives for multi-step tasks",
+      "text": "Session 4 Objectives for multi-step tasks Explain why per-call success hides failed tasks Define completion, cost and escalation indicators for a flow Set objectives a flow can be held to 04",
+      "href": "../slides/day1.html#s4"
+    },
+    {
+      "deck": "day1",
+      "id": "per-call-hides",
+      "n": 32,
+      "session": 4,
+      "title": "Per-call success says 98.9%; one booking in five never happened",
+      "text": "Multi-step tasks Per-call success says 98.9%; one booking in five never happened 98.9% of model and tool calls succeeded 79.5% of redelivery sessions booked a slot 2,000 sessions of the redelivery flow (Lab 1.4). Retried tool errors succeed; sessions fail on calls that worked.",
+      "href": "../slides/day1.html#per-call-hides"
+    },
+    {
+      "deck": "day1",
+      "id": "task-indicators",
+      "n": 33,
+      "session": 4,
+      "title": "Three indicators describe a flow: completion, cost and escalation",
+      "text": "Indicators for a flow Three indicators describe a flow: completion, cost and escalation Completion Sessions that reached the goal, per language. 78.2% Arabic, 81.3% English. Cost per completed task All tokens, including failed sessions, over completed ones: SAR 0.0133 a booking. Escalation Handed to a person: 8.1% Arabic, 7.2% English. A signal, not a failure.",
+      "href": "../slides/day1.html#task-indicators"
+    },
+    {
+      "deck": "day1",
+      "id": "loops-cost",
+      "n": 34,
+      "session": 4,
+      "title": "3% of sessions loop on slot offers and spend 10% of the tokens",
+      "text": "Lab 1.4 · the loops 3% of sessions loop on slot offers and spend 10% of the tokens customer Not that slot. tool call offer_slots(parcel, after=slot_3) customer Not that one either. tool call offer_slots(parcel, after=slot_4) after 6 to 12 offers 70% of looping sessions are abandoned",
+      "href": "../slides/day1.html#loops-cost"
+    },
+    {
+      "deck": "day1",
+      "id": "escalation-signal",
+      "n": 35,
+      "session": 4,
+      "title": "Escalation is the right answer for some parcels; the hand-over is the objective",
+      "text": "Escalation Escalation is the right answer for some parcels; the hand-over is the objective A parcel held by customs cannot be rebooked online: escalating it is correct Pushing escalation to zero makes the assistant book what it should not Measure the hand-over: every escalated session reaches a person, in its language",
+      "href": "../slides/day1.html#escalation-signal"
+    },
+    {
+      "deck": "day1",
+      "id": "flow-objectives",
+      "n": 36,
+      "session": 4,
+      "title": "Objectives for a flow say what is fixable and what is not",
+      "text": "Objectives for the flow Objectives for a flow say what is fixable and what is not Indicator Objective Reason Completion 85% per language, 30 days loops and timed-out confirmations are fixable; ineligible parcels are not Cost per booking SAR 0.012 or less ending the loop removes most of the excess Escalation 9% or less, all handed over the right answer for some parcels",
+      "href": "../slides/day1.html#flow-objectives"
+    },
+    {
+      "deck": "day1",
+      "id": "check-flow",
+      "n": 37,
+      "session": 4,
+      "title": "Which indicator for the redelivery flow?",
+      "text": "Checkpoint Which indicator for the redelivery flow? Ruwaida asks for one headline indicator for the redelivery booking flow on her monthly review. Which do you propose? Share of successful model and tool calls Share of sessions that booked a slot, per language Share of sessions not escalated to a person Median session duration",
+      "href": "../slides/day1.html#check-flow"
+    },
+    {
+      "deck": "day1",
+      "id": "lab-1-4",
+      "n": 38,
+      "session": 4,
+      "title": "Indicators for the redelivery flow",
+      "text": "Lab 1.4 · 25 min Indicators for the redelivery flow Define completion, cost and escalation indicators for the redelivery booking flow from 2,000 recorded sessions, and show what per-call success hides. D1_4_task_objectives.ipynb Read the sessions and their steps 3 min Per-call success against per-task completion 7 min Cost per completed booking, with the loops 7 min Escalation rate and objectives for the flow 8 min ✱ Stretch: Find the step where most abandoned sessions stop",
+      "href": "../slides/day1.html#lab-1-4"
+    },
+    {
+      "deck": "day1",
+      "id": "wrap-up",
+      "n": 39,
+      "session": 4,
+      "title": "Three things to keep",
+      "text": "Day 1 · wrap-up Three things to keep Users, not probes Four of five incidents were invisible to the uptime check. Every number has a slice and a sample Quality per language, with its interval. Budgets decide releases Per objective, from the remaining budget, written before the incident.",
+      "href": "../slides/day1.html#wrap-up"
+    },
+    {
+      "deck": "day1",
+      "id": "next",
+      "n": 40,
+      "session": 4,
+      "title": "Day 2: capacity and failure",
+      "text": "Next Day 2: capacity and failure Bring your objectives from Lab 1.3: Day 2 sizes the service to meet them at the busiest hour Optional reading: the SRE book chapters on handling overload and cascading failures",
+      "href": "../slides/day1.html#next"
+    },
+    {
+      "deck": "day2",
+      "id": "title",
+      "n": 1,
+      "session": 0,
+      "title": "Capacity and failure",
+      "text": "SDAIA Academy · Reliability Engineering for AI Services Capacity and failure Day 2: Admission limits from measured goodput, degraded modes and chaos experiments AI Engineering Track4 teaching days + capstone day4 sessions · 4 labsAE-403",
+      "href": "../slides/day2.html#title"
+    },
+    {
+      "deck": "day2",
+      "id": "agenda",
+      "n": 2,
+      "session": 0,
+      "title": "Capacity and failure",
+      "text": "Today Capacity and failure Session 1 · Capacity with headroom Goodput falls past a concurrency the engine can sustain; the operating point leaves headroom for the busiest hour Session 2 · Admission control and shedding Admit what the engine can serve, queue little, shed the least important traffic first Session 3 · Degraded modes A smaller fallback model and a cached-answer mode keep a minimum service; each one is measured and disclosed Session 4 · Chaos experiments A hypothesis, a blast radius and an abort condition; failures that retries make worse",
+      "href": "../slides/day2.html#agenda"
+    },
+    {
+      "deck": "day2",
+      "id": "review-day1",
+      "n": 3,
+      "session": 0,
+      "title": "Which number goes on the objectives document?",
+      "text": "Review of Day 1 Which number goes on the objectives document? Over 30 days Athar's sampled quality was 97.8% in English and 95.9% in Arabic, 96.7% together. The objective is 95%. What do you report? 96.7%, within objective Each language against its own objective, with its remaining budget 97.8%, the higher of the two Nothing until every answer is graded",
+      "href": "../slides/day2.html#review-day1"
+    },
+    {
+      "deck": "day2",
+      "id": "s1",
+      "n": 4,
+      "session": 1,
+      "title": "Capacity with headroom",
+      "text": "Session 1 Capacity with headroom Read tail latency and goodput from a concurrency sweep Choose an operating point and justify it against the objectives Size replicas for the busiest hour with a stated margin 01",
+      "href": "../slides/day2.html#s1"
+    },
+    {
+      "deck": "day2",
+      "id": "queue-tail",
+      "n": 5,
+      "session": 1,
+      "title": "Near capacity, the tail grows much faster than the load",
+      "text": "Queueing Near capacity, the tail grows much faster than the load Below capacity, a request waits for little more than its own prefill Near capacity, every burst queues, and the 95th percentile shows it first In a self-hosted engine the key-value cache is the hidden limit: when it fills, requests are preempted and computed again What goes wrong. Sizing on average throughput: the engine is \"only 80% busy\" while a third of users wait seconds for the first token.",
+      "href": "../slides/day2.html#queue-tail"
+    },
+    {
+      "deck": "day2",
+      "id": "goodput-definition",
+      "n": 6,
+      "session": 1,
+      "title": "Goodput counts only the requests that met the objectives",
+      "text": "Goodput Goodput counts only the requests that met the objectives Throughput requests finished a second → Filter first token within 1,500 ms and 100 ms a token → Goodput good requests a second A load generator holds a fixed number of requests in flight (inference-perf, k6 or Locust in concurrency mode) and you raise it step by step.",
+      "href": "../slides/day2.html#goodput-definition"
+    },
+    {
+      "deck": "day2",
+      "id": "goodput-curve",
+      "n": 7,
+      "session": 1,
+      "title": "Throughput holds past the knee; goodput collapses",
+      "text": "Lab 2.1 · one replica Throughput holds past the knee; goodput collapses In flight Throughput Goodput First token p95 8 1.63 1.63 173 ms 16 2.13 2.13 211 ms 20 2.21 2.16 1,295 ms 24 2.20 0.59 3,005 ms 32 2.12 0.00 6,848 ms",
+      "href": "../slides/day2.html#goodput-curve"
+    },
+    {
+      "deck": "day2",
+      "id": "operating-point",
+      "n": 8,
+      "session": 1,
+      "title": "Operate below the peak: 16 in flight, not 20",
+      "text": "The operating point Operate below the peak: 16 in flight, not 20 The rule The highest concurrency with goodput within 95% of the peak and first-token p95 at most 80% of the threshold. Why not 20 Its p95 is 1,295 ms against 1,500: a slightly longer prompt or an Arabic-heavy hour tips it over. 16 in flight gives 2.13 good requests a second per replica, 99% of the peak.",
+      "href": "../slides/day2.html#operating-point"
+    },
+    {
+      "deck": "day2",
+      "id": "busiest-hour",
+      "n": 9,
+      "session": 1,
+      "title": "Size for the busiest hour of the month, not a normal evening",
+      "text": "Headroom Size for the busiest hour of the month, not a normal evening 4.98 requests a second, a typical daily peak 7.64 at the busiest hour: the sale day 5 replicas: a 39% margin Replicas = busiest hour × 1.25 headroom ÷ 2.13 per replica, rounded up. Four replicas would leave 11.5%.",
+      "href": "../slides/day2.html#busiest-hour"
+    },
+    {
+      "deck": "day2",
+      "id": "capacity-standard",
+      "n": 10,
+      "session": 1,
+      "title": "A capacity standard has four lines",
+      "text": "The standard you set A capacity standard has four lines measure: goodput curve per replica, real language mix, every engine or model change operate: 16 in flight per replica (95% of peak goodput, p95 TTFT <= 1,200 ms) size: busiest hour of the last 30 days x 1.25, rounded up to whole replicas review: monthly, and before any planned sale or campaign",
+      "href": "../slides/day2.html#capacity-standard"
+    },
+    {
+      "deck": "day2",
+      "id": "check-curve",
+      "n": 11,
+      "session": 1,
+      "title": "Read the curve",
+      "text": "Checkpoint Read the curve A sweep gives goodput 3.1, 3.4, 3.5, 1.2 requests a second at 8, 12, 16 and 20 in flight. First-token p95 at 12 is 600 ms, at 16 it is 1,400 ms; the threshold is 1,500 ms. Where do you set the operating point? 16 in flight 12 in flight 8 in flight 20 in flight",
+      "href": "../slides/day2.html#check-curve"
+    },
+    {
+      "deck": "day2",
+      "id": "lab-2-1",
+      "n": 12,
+      "session": 1,
+      "title": "Goodput curve and operating point",
+      "text": "Lab 2.1 · 25 min Goodput curve and operating point Load-test the simulated self-hosted engine at rising concurrency, find where goodput falls, set the operating point and size the replicas for the busiest hour with a margin. D2_1_goodput_operating_point.ipynb Run one load step and read its latencies 4 min Sweep concurrency and compute goodput 7 min Find the knee and choose the operating point 6 min Replicas and margin for the busiest hour 8 min ✱ Stretch: Repeat the sweep with long prompts and see the knee move",
+      "href": "../slides/day2.html#lab-2-1"
+    },
+    {
+      "deck": "day2",
+      "id": "s2",
+      "n": 13,
+      "session": 2,
+      "title": "Admission control and shedding",
+      "text": "Session 2 Admission control and shedding Set a concurrency cap from the operating point Rank traffic into priority classes with a reason Show by replay that priority traffic keeps its objective 02",
+      "href": "../slides/day2.html#s2"
+    },
+    {
+      "deck": "day2",
+      "id": "no-admission",
+      "n": 14,
+      "session": 2,
+      "title": "Without admission, overload fails every class at once",
+      "text": "Lab 2.2 · no admission control Without admission, overload fails every class at once 3.4% of P1 tracking requests within 1.5 s 7 min first-token p95, for every class One replica, a 10-minute spike to about 1.7 times its goodput. The engine admits everything, its cache overflows, and requests are computed twice.",
+      "href": "../slides/day2.html#no-admission"
+    },
+    {
+      "deck": "day2",
+      "id": "admission-first",
+      "n": 15,
+      "session": 2,
+      "title": "Admit only what the engine can serve; decide what waits",
+      "text": "Admission control Admit only what the engine can serve; decide what waits Arrive with a class → Queue bounded, per class → Release highest class first, up to the cap → Shed a full queue answers at once The cap is the operating point: 16 in flight per replica, from Lab 2.1.",
+      "href": "../slides/day2.html#admission-first"
+    },
+    {
+      "deck": "day2",
+      "id": "priority-classes",
+      "n": 16,
+      "session": 2,
+      "title": "Classes come from what the user is doing, not from who shouts",
+      "text": "Priority classes Classes come from what the user is doing, not from who shouts Class Traffic Promise P1 tracking a parcel out for delivery first token within 1.5 s for 95% P2 general help questions 1.5 s for 95%, or a clear \"try shortly\" P3 staff summaries of complaint threads within 30 s, deferrable in a surge",
+      "href": "../slides/day2.html#priority-classes"
+    },
+    {
+      "deck": "day2",
+      "id": "cap-not-enough",
+      "n": 17,
+      "session": 2,
+      "title": "A cap protects the engine; priorities protect the customers",
+      "text": "Lab 2.2 · three configurations A cap protects the engine; priorities protect the customers Configuration P1 met P2 met P2 shed P3 shed none 3.4% 4.5% 0% 0% cap of 16, equal queues 80.4% 8.3% 18% 65% cap, P3 limited to 2, short P2 queue, 1 s P2 deadline 96.3% 70.7% 29% 67%",
+      "href": "../slides/day2.html#cap-not-enough"
+    },
+    {
+      "deck": "day2",
+      "id": "shed-early",
+      "n": 18,
+      "session": 2,
+      "title": "Shed early and cheaply, with a message the user understands",
+      "text": "Shedding Shed early and cheaply, with a message the user understands A request shed at the gateway costs microseconds and returns at once A request that times out in the engine used capacity and still failed A queued P2 request older than 1 s would miss its objective anyway: drop it Tell the user in their language: \"Athar is busy; try again in a minute\"",
+      "href": "../slides/day2.html#shed-early"
+    },
+    {
+      "deck": "day2",
+      "id": "check-shed",
+      "n": 19,
+      "session": 2,
+      "title": "Which traffic do you shed first?",
+      "text": "Checkpoint Which traffic do you shed first? During the sale-day surge Athar's replicas are at their cap. Which traffic should the gateway shed first? The most recent arrivals, whatever their class Tracking requests, because they are the most numerous Staff summaries of complaint threads Arabic requests, because their prompts are longer",
+      "href": "../slides/day2.html#check-shed"
+    },
+    {
+      "deck": "day2",
+      "id": "lab-2-2",
+      "n": 20,
+      "session": 2,
+      "title": "A cap and priority shedding",
+      "text": "Lab 2.2 · 25 min A cap and priority shedding Add a concurrency cap and three priority classes in front of the engine, then replay the overload trace and check that priority traffic still meets its objective. D2_2_admission_shedding.ipynb Replay the overload trace with no admission control 4 min Add the concurrency cap and a bounded queue 7 min Add priority classes and shed from the lowest 7 min Check each class against its objective 7 min ✱ Stretch: Shed by deadline: drop a queued request that can no longer meet its objective",
+      "href": "../slides/day2.html#lab-2-2"
+    },
+    {
+      "deck": "day2",
+      "id": "s3",
+      "n": 21,
+      "session": 3,
+      "title": "Degraded modes",
+      "text": "Session 3 Degraded modes Design degraded modes with entry and exit conditions Measure answer quality in each mode by language Keep personal answers out of any cache and tell users plainly 03",
+      "href": "../slides/day2.html#s3"
+    },
+    {
+      "deck": "day2",
+      "id": "degraded-ladder",
+      "n": 22,
+      "session": 3,
+      "title": "A ladder of modes keeps a minimum service when parts fail",
+      "text": "Degraded modes A ladder of modes keeps a minimum service when parts fail Full model and retrieval normal Fallback a smaller model engine overloaded or down Cache saved answers retrieval or model down Template tracking API only no model at all",
+      "href": "../slides/day2.html#degraded-ladder"
+    },
+    {
+      "deck": "day2",
+      "id": "fallback-fails-arabic",
+      "n": 23,
+      "session": 3,
+      "title": "The smaller model keeps English and fails Arabic",
+      "text": "Lab 2.3 · quality per mode The smaller model keeps English and fails Arabic Full, English 98.3% Full, Arabic 89.5% Fallback, English 87.1% Fallback, Arabic 72.6% Averaged, the fallback passes 79.6%: the number that would have been reported.",
+      "href": "../slides/day2.html#fallback-fails-arabic"
+    },
+    {
+      "deck": "day2",
+      "id": "cache-rules",
+      "n": 24,
+      "session": 3,
+      "title": "A cache serves what is general, fresh and nobody's personal data",
+      "text": "The cached-answer mode A cache serves what is general, fresh and nobody's personal data Never personal 9 of 137 saved answers named a customer, a parcel and a street. Refused. Never stale 7 were older than their help article. Refused. The rest is right Every answer served from the cache passed: 63% of Arabic and 58% of English help questions hit.",
+      "href": "../slides/day2.html#cache-rules"
+    },
+    {
+      "deck": "day2",
+      "id": "route-by-language",
+      "n": 25,
+      "session": 3,
+      "title": "Route degraded traffic by language when the modes differ by language",
+      "text": "Routing Route degraded traffic by language when the modes differ by language Engine down Route Pass rate English help fallback, then cache 87.1% Arabic help cache first, then fallback 91.1% Tracking template from the tracking API, no model all answered",
+      "href": "../slides/day2.html#route-by-language"
+    },
+    {
+      "deck": "day2",
+      "id": "disclose-mode",
+      "n": 26,
+      "session": 3,
+      "title": "Every degraded answer says so, in the user's language",
+      "text": "Responsible use Every degraded answer says so, in the user's language CustomerWhat is the fee for a registered letter in Abha? Athar, cache modeAthar is answering from saved answers: details may not reflect the latest updates. Then the saved answer. Athar, fallback modeAthar is running in reduced mode: this answer may be less complete than usual. Then the smaller model's answer. أثر، الإجابات المحفوظةيجيب أثر حاليًا من إجابات محفوظة، وقد لا تعكس التفاصيل آخر التحديثات.",
+      "href": "../slides/day2.html#disclose-mode"
+    },
+    {
+      "deck": "day2",
+      "id": "check-mode",
+      "n": 27,
+      "session": 3,
+      "title": "The fallback passes overall",
+      "text": "Checkpoint The fallback passes overall Shuaib reports that the fallback model passes 84% of the test set, against a minimum service of 85%, \"close enough to ship\". English passes 92%, Arabic 79%. What do you decide? Ship it: 84% is within a point Remove the fallback mode entirely Lower the minimum service to 80% Use it for English; route Arabic to the cache first and measure again",
+      "href": "../slides/day2.html#check-mode"
+    },
+    {
+      "deck": "day2",
+      "id": "lab-2-3",
+      "n": 28,
+      "session": 3,
+      "title": "Fallback model and cached answers",
+      "text": "Lab 2.3 · 25 min Fallback model and cached answers Configure a smaller fallback model and a cached-answer mode, route by health signals, measure quality in each mode by language and keep personal tracking answers out of the cache. D2_3_degraded_modes.ipynb Grade the full mode on the question set 4 min Grade the fallback model by language 6 min Build the cached-answer mode and its refusal rule 7 min Route by health signals and disclose the mode 8 min ✱ Stretch: Set the cache freshness limit from how often help articles change",
+      "href": "../slides/day2.html#lab-2-3"
+    },
+    {
+      "deck": "day2",
+      "id": "s4",
+      "n": 29,
+      "session": 4,
+      "title": "Chaos experiments",
+      "text": "Session 4 Chaos experiments Write a chaos experiment as a falsifiable hypothesis Inject dependency failures and measure the minimum service Stop a retry storm with a retry budget and backoff 04",
+      "href": "../slides/day2.html#s4"
+    },
+    {
+      "deck": "day2",
+      "id": "chaos-method",
+      "n": 30,
+      "session": 4,
+      "title": "A chaos experiment is a hypothesis that could be false",
+      "text": "Chaos experiments A chaos experiment is a hypothesis that could be false Steady state measured → Hypothesis the minimum service holds → Inject one fault, small radius → Compare or abort Fault injectors such as Chaos Mesh (in a cluster) or Toxiproxy (on a connection) do the injecting; the method is the same in the lab's simulator.",
+      "href": "../slides/day2.html#chaos-method"
+    },
+    {
+      "deck": "day2",
+      "id": "retrieval-outage",
+      "n": 31,
+      "session": 4,
+      "title": "With the cache, a retrieval outage costs answers, not errors",
+      "text": "Lab 2.4 · retrieval outage With the cache, a retrieval outage costs answers, not errors Tracking answered Help answered Silent failures cache on 100% 64.8% 0 cache off 100% 0% 2,377 4,000 simulated requests. Unanswered help questions get a plain \"not available now\" message.",
+      "href": "../slides/day2.html#retrieval-outage"
+    },
+    {
+      "deck": "day2",
+      "id": "timeout-length",
+      "n": 32,
+      "session": 4,
+      "title": "The client timeout decides whether the fallback is in time",
+      "text": "Lab 2.4 · provider timeout The client timeout decides whether the fallback is in time 3 s timeout 3.9 s p95 6 s timeout 6.9 s p95 10 s timeout 10.9 s p95 Every request waits the full timeout before the fallback starts. Only 3 s keeps the 5 s minimum service.",
+      "href": "../slides/day2.html#timeout-length"
+    },
+    {
+      "deck": "day2",
+      "id": "retry-storm",
+      "n": 33,
+      "session": 4,
+      "title": "A 30-second fault becomes an outage that never ends",
+      "text": "Lab 2.4 · retry storm A 30-second fault becomes an outage that never ends Client policy Peak offered Recovered immediate retries, up to 3 24 a second never exponential backoff only 34 a second 63 s after the fault 10% retry budget 6.6 a second when the fault ends 6 requests a second offered, 8.5 served at most. Past the knee goodput collapses, so retries keep the service overloaded.",
+      "href": "../slides/day2.html#retry-storm"
+    },
+    {
+      "deck": "day2",
+      "id": "minimum-service",
+      "n": 34,
+      "session": 4,
+      "title": "Write the minimum service as numbers a test can check",
+      "text": "The standard you set Write the minimum service as numbers a test can check tracking answered: >= 95%, any single dependency down help questions: answered, or declined in the user's language; never a raw error degraded answer quality: >= 85% per language, measured per mode p95 latency in any mode: <= 5 s clients: 3-second timeout, 10% retry budget, jittered backoff",
+      "href": "../slides/day2.html#minimum-service"
+    },
+    {
+      "deck": "day2",
+      "id": "check-storm",
+      "n": 35,
+      "session": 4,
+      "title": "The fault is gone; the outage is not",
+      "text": "Checkpoint The fault is gone; the outage is not A 30-second provider fault ended ten minutes ago. Athar still fails most requests, and the engine shows three times the normal request rate. What is the most likely cause? Client retries keep the load past the knee, so goodput stays near zero A new provider fault started Half of the replicas were lost during the fault A traffic surge from a marketing campaign",
+      "href": "../slides/day2.html#check-storm"
+    },
+    {
+      "deck": "day2",
+      "id": "lab-2-4",
+      "n": 36,
+      "session": 4,
+      "title": "Outage, timeout and retry storm",
+      "text": "Lab 2.4 · 25 min Outage, timeout and retry storm Inject a retrieval outage, a provider timeout and a retry storm into the simulated service and check that the minimum service holds in each. D2_4_chaos.ipynb Write the hypothesis and the minimum service 4 min Retrieval outage: does the cached mode hold? 6 min Provider timeout: does the fallback take over? 6 min Retry storm, then a retry budget with backoff 9 min ✱ Stretch: Run the three faults at once and say which mode the users get",
+      "href": "../slides/day2.html#lab-2-4"
+    },
+    {
+      "deck": "day2",
+      "id": "wrap-up",
+      "n": 37,
+      "session": 4,
+      "title": "Three things to keep",
+      "text": "Day 2 · wrap-up Three things to keep Operate below the knee An operating point with headroom, sized for the busiest hour. Decide who waits Priority classes and early shedding protect the users at the door. Measure every mode Per language, disclosed, tested with injected faults and retries.",
+      "href": "../slides/day2.html#wrap-up"
+    },
+    {
+      "deck": "day2",
+      "id": "next",
+      "n": 38,
+      "session": 4,
+      "title": "Day 3: incidents and safe releases",
+      "text": "Next Day 3: incidents and safe releases Session 2 is a game day without AI assistance: you will take the roles of incident lead, operator and scribe Optional reading: the SRE workbook chapter on alerting on SLOs",
+      "href": "../slides/day2.html#next"
+    },
+    {
+      "deck": "day3",
+      "id": "title",
+      "n": 1,
+      "session": 0,
+      "title": "Incidents and safe releases",
+      "text": "SDAIA Academy · Reliability Engineering for AI Services Incidents and safe releases Day 3: Burn-rate alerts on quality, incident leadership, canaries and blameless learning AI Engineering Track4 teaching days + capstone day4 sessions · 4 labsAE-403",
+      "href": "../slides/day3.html#title"
+    },
+    {
+      "deck": "day3",
+      "id": "agenda",
+      "n": 2,
+      "session": 0,
+      "title": "Incidents and safe releases",
+      "text": "Today Incidents and safe releases Session 1 · Finding silent regressions A quality budget burns silently; multi-window burn-rate alerts, sliced by language, find it in minutes Session 2 · Running an incident Roles, a decision log, mitigation before diagnosis, and personal data handled through the breach procedure Session 3 · Canary and rollback A canary with enough samples and a per-language quality gate rolls back without a human Session 4 · Learning from incidents Blameless reviews find contributing factors, own the actions and turn the cases into tests",
+      "href": "../slides/day3.html#agenda"
+    },
+    {
+      "deck": "day3",
+      "id": "review-day2",
+      "n": 3,
+      "session": 0,
+      "title": "Which degraded mode for Arabic help questions?",
+      "text": "Review of Day 2 Which degraded mode for Arabic help questions? The engine is down. The fallback model passes 87% of English and 73% of Arabic test questions; the cache answers 63% of Arabic help questions, all correctly. The minimum service is 85% per language. What do Arabic help questions get? The fallback model, like English An apology for every Arabic question The cache first, the fallback on a miss, both disclosed The full cache, including saved tracking answers",
+      "href": "../slides/day3.html#review-day2"
+    },
+    {
+      "deck": "day3",
+      "id": "s1",
+      "n": 4,
+      "session": 1,
+      "title": "Finding silent regressions",
+      "text": "Session 1 Finding silent regressions Compute burn rate on a quality indicator Build a multi-window, multi-burn-rate alert Locate a regression in time and in a slice 01",
+      "href": "../slides/day3.html#s1"
+    },
+    {
+      "deck": "day3",
+      "id": "silent-regression",
+      "n": 5,
+      "session": 1,
+      "title": "A model update can fail one language without a single error",
+      "text": "Silent regressions A model update can fail one language without a single error Every request returns 200, latency is normal, the probe is green Arabic answers fail 38% of the time; English is unchanged Only the sampled quality indicator moves, and only in its Arabic slice The replayed day replay_day.csv: 288 five-minute slots. Athar v2.4 goes out at slot 130.",
+      "href": "../slides/day3.html#silent-regression"
+    },
+    {
+      "deck": "day3",
+      "id": "burn-rate",
+      "n": 6,
+      "session": 1,
+      "title": "Burn rate is how fast the budget is being spent",
+      "text": "Burn rate Burn rate is how fast the budget is being spent 1× spends the 30-day budget in 30 days 6× spends 5% of it in 6 hours 14.4× spends 2% of it in one hour Burn rate = error rate in the window ÷ (1 − objective). With a 95% quality objective, 14.4× means 72% of answers failing.",
+      "href": "../slides/day3.html#burn-rate"
+    },
+    {
+      "deck": "day3",
+      "id": "two-windows",
+      "n": 7,
+      "session": 1,
+      "title": "Two windows: one proves it matters, one proves it is still happening",
+      "text": "Multi-window alerts Two windows: one proves it matters, one proves it is still happening def fires(g, long, short, rate): lw = U.burn_rate(g.bad, g.graded, 0.95, long) sw = U.burn_rate(g.bad, g.graded, 0.95, short) return (lw > rate) & (sw > rate) Without the short window, the alert keeps firing for hours after the fix; without the long one, a single bad five minutes pages someone.",
+      "href": "../slides/day3.html#two-windows"
+    },
+    {
+      "deck": "day3",
+      "id": "when-it-fires",
+      "n": 8,
+      "session": 1,
+      "title": "The averaged alert never fires; the Arabic one fires in 35 minutes",
+      "text": "Lab 3.1 · the replay The averaged alert never fires; the Arabic one fires in 35 minutes Tier All traffic Arabic slice fast page: 1 h and 5 min at 14.4× never never slow page: 6 h and 30 min at 6× never after 255 min quality: 1 h and 5 min at 6× never after 35 min After the update Arabic burns at about 8×, English at about 0.6×, all traffic at about 5×.",
+      "href": "../slides/day3.html#when-it-fires"
+    },
+    {
+      "deck": "day3",
+      "id": "locate-regression",
+      "n": 9,
+      "session": 1,
+      "title": "Put the change log next to the slice: slot 131 against a deploy at 130",
+      "text": "Locating it Put the change log next to the slice: slot 131 against a deploy at 130 slot 40 help index refresh (English) slot 130 model update: athar-v2.4 slot 210 gateway configuration Arabic 30-minute error rate above 10% from slot 131, for the rest of the day The English slice did not move: the change is language-specific A step change right after a release points at the release",
+      "href": "../slides/day3.html#locate-regression"
+    },
+    {
+      "deck": "day3",
+      "id": "alert-as-code",
+      "n": 10,
+      "session": 1,
+      "title": "The alert is code in the repository, reviewed like code",
+      "text": "The rule The alert is code in the repository, reviewed like code - alert: AtharArabicQualityBurn expr: (athar:quality_bad:ratio_rate1h{lang=\"ar\"} > (6 * 0.05)) and (athar:quality_bad:ratio_rate5m{lang=\"ar\"} > (6 * 0.05)) labels: severity: page",
+      "href": "../slides/day3.html#alert-as-code"
+    },
+    {
+      "deck": "day3",
+      "id": "check-averaged",
+      "n": 11,
+      "session": 1,
+      "title": "Why did the alert stay silent?",
+      "text": "Checkpoint Why did the alert stay silent? After v2.4, 38% of Arabic answers fail and English is unchanged. Arabic is 60% of traffic. The 6× quality alert on all traffic never fires. Why? Too few answers are graded to see it The English slice keeps the combined burn rate near 5×, below the threshold The five-minute window is too short The 95% objective is too strict",
+      "href": "../slides/day3.html#check-averaged"
+    },
+    {
+      "deck": "day3",
+      "id": "lab-3-1",
+      "n": 12,
+      "session": 1,
+      "title": "A burn-rate alert on quality",
+      "text": "Lab 3.1 · 25 min A burn-rate alert on quality Build a burn-rate alert on the sampled quality indicator and locate the regression in a replayed day, first on all traffic and then by language. D3_1_quality_burn_rate.ipynb Quality burn rate per five minutes 5 min Two windows and two burn rates 7 min Replay the day: when does it fire? 5 min Slice by language and locate the regression 8 min ✱ Stretch: Write the alert as a Prometheus rule and count its pages over the month",
+      "href": "../slides/day3.html#lab-3-1"
+    },
+    {
+      "deck": "day3",
+      "id": "s2",
+      "n": 13,
+      "session": 2,
+      "title": "Running an incident",
+      "text": "Session 2 Running an incident Run an incident in three roles with a decision log Mitigate before diagnosing Decide on breach notification from the facts 02",
+      "href": "../slides/day3.html#s2"
+    },
+    {
+      "deck": "day3",
+      "id": "three-roles",
+      "n": 14,
+      "session": 2,
+      "title": "Three roles keep deciding, doing and recording apart",
+      "text": "Incident roles Three roles keep deciding, doing and recording apart Incident lead Decides and sets priorities. Talks to the service owner. Does not type commands. Operator Runs the mitigation and reports what the system shows. Scribe Keeps the decision log: minute, role, decision, reason.",
+      "href": "../slides/day3.html#three-roles"
+    },
+    {
+      "deck": "day3",
+      "id": "mitigate-first",
+      "n": 15,
+      "session": 2,
+      "title": "Mitigate first; diagnose on a copy",
+      "text": "The first rule Mitigate first; diagnose on a copy 5 min to mitigate when the lead rolls back first: 32 exposed answers 35 min when the team diagnoses first: 56 exposed answers Lab 3.2's simulator. A rollback is reversible; the minutes customers spend receiving wrong answers are not.",
+      "href": "../slides/day3.html#mitigate-first"
+    },
+    {
+      "deck": "day3",
+      "id": "decision-log",
+      "n": 16,
+      "session": 2,
+      "title": "Every decision gets a minute, an owner and a reason",
+      "text": "The decision log Every decision gets a minute, an owner and a reason T+ Role Decision Reason 1 lead declare quality alert; release 35 minutes earlier 5 lead roll back v2.4 complaints confirm impact; only recent change; reversible 10 lead page the DPO a customer saw another customer's address 40 lead notify SDAIA names and addresses exposed: harm likely",
+      "href": "../slides/day3.html#decision-log"
+    },
+    {
+      "deck": "day3",
+      "id": "breach-procedure",
+      "n": 17,
+      "session": 2,
+      "title": "Personal data in answers is a breach: follow the procedure",
+      "text": "Responsible use Personal data in answers is a breach: follow the procedure Contain stop the exposure: the rollback → Assess data, people, likely harm, with the DPO → Notify SDAIA within 72 hours of awareness, if harm is expected → Document the notice, the actions, the lessons",
+      "href": "../slides/day3.html#breach-procedure"
+    },
+    {
+      "deck": "day3",
+      "id": "awareness-clock",
+      "n": 18,
+      "session": 2,
+      "title": "The 72 hours start at awareness, not at the root cause",
+      "text": "What goes wrong The 72 hours start at awareness, not at the root cause Awareness came at T+9, when a customer reported another person's address Waiting for the root cause before assessing spends the clock on the wrong question Preserve the evidence before the rollback overwrites the logs you will need",
+      "href": "../slides/day3.html#awareness-clock"
+    },
+    {
+      "deck": "day3",
+      "id": "check-first-action",
+      "n": 19,
+      "session": 2,
+      "title": "Order the first actions",
+      "text": "Checkpoint Order the first actions The Arabic quality alert pages you; v2.4 went out 35 minutes ago. Put the first four actions in order. Declare the incident and assign the roles Roll back to v2.3 Page the data protection officer once personal data is reported Start root-cause analysis",
+      "href": "../slides/day3.html#check-first-action"
+    },
+    {
+      "deck": "day3",
+      "id": "lab-3-2",
+      "n": 20,
+      "session": 2,
+      "title": "Game day: a model-update regression",
+      "text": "Lab 3.2 · 25 min Game day: a model-update regression Run a game day on a model-update regression as incident lead, operator and scribe, without AI assistance, keeping a decision log and deciding on breach notification. D3_2_game_day.ipynb Read the roles and the first page 3 min Detect and declare: first decisions 6 min Mitigate: choose and apply the action 7 min Personal data in answers: the breach decision 5 min Close and hand over the log 4 min ✱ Stretch: Rerun the drill with a different first action and compare time to mitigate",
+      "href": "../slides/day3.html#lab-3-2"
+    },
+    {
+      "deck": "day3",
+      "id": "s3",
+      "n": 21,
+      "session": 3,
+      "title": "Canary and rollback",
+      "text": "Session 3 Canary and rollback Design canary steps with analysis at each step Size the minimum sample for a quality gate Roll back automatically on latency or quality 03",
+      "href": "../slides/day3.html#s3"
+    },
+    {
+      "deck": "day3",
+      "id": "canary-recap",
+      "n": 22,
+      "session": 3,
+      "title": "A canary is a release that can stop itself",
+      "text": "Recap from AE-305 A canary is a release that can stop itself 5% 10 min → 25% 20 min → 50% 20 min → 100% promote Analysis at every step; a failed step rolls back without a human. Progressive delivery tools such as Argo Rollouts or Flagger run the steps; your gate decides them.",
+      "href": "../slides/day3.html#canary-recap"
+    },
+    {
+      "deck": "day3",
+      "id": "old-gate",
+      "n": 23,
+      "session": 3,
+      "title": "Ten minutes at 5% promoted the int4 model on 27 Arabic answers",
+      "text": "Lab 3.3 · the old pipeline Ten minutes at 5% promoted the int4 model on 27 Arabic answers Latency Canary p95 1,174 ms against stable 1,455 ms: the 4-bit model is faster. Quality 26 of 27 graded Arabic answers passed. Its true Arabic rate is 90.5%, against 97% for stable.",
+      "href": "../slides/day3.html#old-gate"
+    },
+    {
+      "deck": "day3",
+      "id": "minimum-sample",
+      "n": 24,
+      "session": 3,
+      "title": "No quality verdict below 200 graded answers per language",
+      "text": "The minimum sample No quality verdict below 200 graded answers per language Latency is judged at every step: it has thousands of samples Quality is judged on the cumulative canary samples, once each language has 200 Before that the step continues, and the release cannot reach 100% Canary answers are graded at 30%, stable ones at 5%, to reach 200 in minutes",
+      "href": "../slides/day3.html#minimum-sample"
+    },
+    {
+      "deck": "day3",
+      "id": "canary-decisions",
+      "n": 25,
+      "session": 3,
+      "title": "v2.6 is promoted; the int4 model rolls back at 25%",
+      "text": "Lab 3.3 · the designed gate v2.6 is promoted; the int4 model rolls back at 25% Candidate 5% 25% 50% Decision v2.6 continue (35 ar) pass (305 ar) pass promoted v2.6-int4 continue (27 ar) fail: ar 91.2% against 96.6% rolled back",
+      "href": "../slides/day3.html#canary-decisions"
+    },
+    {
+      "deck": "day3",
+      "id": "gate-as-policy",
+      "n": 26,
+      "session": 3,
+      "title": "The release gate is the error budget policy, automated",
+      "text": "The standard you set The release gate is the error budget policy, automated Rule Value first-token p95 at most 1.2 × stable, every step quality per language at least stable minus 3 points minimum sample 200 graded answers per language, cumulative on failure automatic rollback, alert to the release engineer",
+      "href": "../slides/day3.html#gate-as-policy"
+    },
+    {
+      "deck": "day3",
+      "id": "check-canary",
+      "n": 27,
+      "session": 3,
+      "title": "The canary passed; should it have?",
+      "text": "Checkpoint The canary passed; should it have? A canary ran 10 minutes at 5% and passed with 25 of 26 Arabic answers correct, against 97% for stable. What do you do before promoting? Promote: 96% is within the 3-point margin Roll back: the sample is too small to trust Continue at a larger share until each language has the minimum sample Ask the evaluation team to approve by hand",
+      "href": "../slides/day3.html#check-canary"
+    },
+    {
+      "deck": "day3",
+      "id": "lab-3-3",
+      "n": 28,
+      "session": 3,
+      "title": "Canary with automated rollback",
+      "text": "Lab 3.3 · 25 min Canary with automated rollback Release two candidate model versions as canaries with automated rollback on a latency and quality gate: one promotes, one rolls back on Arabic quality. D3_3_canary_rollback.ipynb Read the steps and the gate 3 min Write the analysis for one step 7 min Add the minimum-sample rule 6 min Run both candidates and read the decisions 9 min ✱ Stretch: Translate the gate into the supplied Argo Rollouts analysis template",
+      "href": "../slides/day3.html#lab-3-3"
+    },
+    {
+      "deck": "day3",
+      "id": "s4",
+      "n": 29,
+      "session": 4,
+      "title": "Learning from incidents",
+      "text": "Session 4 Learning from incidents Write a blameless timeline and contributing factors Write corrective actions with an owner and a test Turn an incident's failing cases into a regression test 04",
+      "href": "../slides/day3.html#s4"
+    },
+    {
+      "deck": "day3",
+      "id": "blameless",
+      "n": 30,
+      "session": 4,
+      "title": "A blameless review asks what made the error easy, not who made it",
+      "text": "Blameless reviews A blameless review asks what made the error easy, not who made it Not a factor \"The engineer did not test Arabic.\" A factor \"The evaluation set had no Arabic tracking questions and no Eastern Arabic digits.\" The SRE book: a blameless postmortem focuses on the contributing causes without indicting any individual or team.",
+      "href": "../slides/day3.html#blameless"
+    },
+    {
+      "deck": "day3",
+      "id": "contributing-factors",
+      "n": 31,
+      "session": 4,
+      "title": "Five conditions made the incident possible",
+      "text": "Lab 3.4 · INC-0731 Five conditions made the incident possible The offline evaluation set had no Arabic tracking questions The v2.4 prompt template dropped digit normalisation The tracking lookup fell back to the nearest parcel instead of refusing The release went to everyone at once, with no quality gate On-call had no written authority to roll back",
+      "href": "../slides/day3.html#contributing-factors"
+    },
+    {
+      "deck": "day3",
+      "id": "owned-actions",
+      "n": 32,
+      "session": 4,
+      "title": "An action has an owning role, a date and a check",
+      "text": "Corrective actions An action has an owning role, a date and a check Action Owner Days Done when Normalise digits in the gateway model platform 7 unit test with Eastern Arabic digits passes Lookup refuses inexact matches tracking API team 7 unknown number returns \"not found\" Every model release through the canary gate release engineer 21 pipeline refuses a release without a verdict",
+      "href": "../slides/day3.html#owned-actions"
+    },
+    {
+      "deck": "day3",
+      "id": "case-to-test",
+      "n": 33,
+      "session": 4,
+      "title": "The incident's cases become a test that failed before the fix",
+      "text": "From case to test The incident's cases become a test that failed before the fix def check_case(answer, case): a = U.normalise_digits(answer) problems = [] if case[\"asked_parcel\"] not in a: problems.append(\"does not name the parcel asked about\") if [p for p in U.PARCEL_RE.findall(a) if p != case[\"asked_parcel\"]]: problems.append(\"names another customer's parcel\") return problems v2.4 passes 0 of 12 cases; v2.4.1 passes 12 of 12.",
+      "href": "../slides/day3.html#case-to-test"
+    },
+    {
+      "deck": "day3",
+      "id": "review-template",
+      "n": 34,
+      "session": 4,
+      "title": "Every review has the same five parts",
+      "text": "The standard you set Every review has the same five parts Timeline from the decision log, in minutes from the page Impact users, answers, data, budget spent Factors conditions, each with evidence Actions owned, dated, checked Tests the cases, in the release gate",
+      "href": "../slides/day3.html#review-template"
+    },
+    {
+      "deck": "day3",
+      "id": "check-factor",
+      "n": 35,
+      "session": 4,
+      "title": "Which line belongs in the review?",
+      "text": "Checkpoint Which line belongs in the review? Four draft lines for INC-0731's contributing factors. Which one belongs in a blameless review? The release engineer should have checked Arabic before shipping Human error during the template change Arabic customers received wrong answers The release pipeline had no gate on Arabic answer quality",
+      "href": "../slides/day3.html#check-factor"
+    },
+    {
+      "deck": "day3",
+      "id": "lab-3-4",
+      "n": 36,
+      "session": 4,
+      "title": "Blameless review and regression test",
+      "text": "Lab 3.4 · 25 min Blameless review and regression test Write a blameless review of a supplied incident and turn its failing cases into a regression test that fails on the bad version and passes on the fixed one. D3_4_blameless_review.ipynb Read the incident record 4 min Timeline and contributing factors 7 min Owned corrective actions 5 min The regression test: fails before, passes after 9 min ✱ Stretch: Add the test to the canary gate of Lab 3.3",
+      "href": "../slides/day3.html#lab-3-4"
+    },
+    {
+      "deck": "day3",
+      "id": "wrap-up",
+      "n": 37,
+      "session": 4,
+      "title": "Three things to keep",
+      "text": "Day 3 · wrap-up Three things to keep Alert per slice Quality alerts per language, with windows short enough for step changes. Mitigate, then diagnose Roles, a decision log, and the breach procedure from awareness. Gates and tests A canary with a minimum sample; every incident leaves a test behind.",
+      "href": "../slides/day3.html#wrap-up"
+    },
+    {
+      "deck": "day3",
+      "id": "next",
+      "n": 38,
+      "session": 4,
+      "title": "Day 4: integrity and readiness",
+      "text": "Next Day 4: integrity and readiness Where model files come from, how to prove they were not changed, and how to admit only verified models The last session starts the capstone: a readiness review of another team's service",
+      "href": "../slides/day3.html#next"
+    },
+    {
+      "deck": "day4",
+      "id": "title",
+      "n": 1,
+      "session": 0,
+      "title": "Integrity and readiness",
+      "text": "SDAIA Academy · Reliability Engineering for AI Services Integrity and readiness Day 4: Model provenance, signatures, bills of materials and production readiness reviews AI Engineering Track4 teaching days + capstone day4 sessions · 4 labsAE-403",
+      "href": "../slides/day4.html#title"
+    },
+    {
+      "deck": "day4",
+      "id": "agenda",
+      "n": 2,
+      "session": 0,
+      "title": "Integrity and readiness",
+      "text": "Today Integrity and readiness Session 1 · The model supply chain A model is files from somewhere; provenance and a hash for every file say which ones Session 2 · Signing and verification A signed manifest of hashes binds every file to a signer; verification fails on any change Session 3 · Bills of materials and admission A machine learning bill of materials and an admission policy reject unsigned or unlicensed models Session 4 · Production readiness reviews A readiness review ranks findings by risk and sets launch conditions the owner can meet",
+      "href": "../slides/day4.html#agenda"
+    },
+    {
+      "deck": "day4",
+      "id": "review-day3",
+      "n": 3,
+      "session": 0,
+      "title": "Which action closes INC-0731's biggest gap?",
+      "text": "Review of Day 3 Which action closes INC-0731's biggest gap? INC-0731's review lists five contributing factors. Which corrective action would have stopped v2.4 before it reached all Arabic users? Remind release engineers to test Arabic carefully Shorten the alert's long window to 30 minutes Fix the digit normalisation in the prompt template Route every model release through a canary with a per-language quality gate",
+      "href": "../slides/day4.html#review-day3"
+    },
+    {
+      "deck": "day4",
+      "id": "s1",
+      "n": 4,
+      "session": 1,
+      "title": "The model supply chain",
+      "text": "Session 1 The model supply chain Trace a model artefact to its source and revision Hash every file and compare with the publisher's list Name where tampering hides in a model folder 01",
+      "href": "../slides/day4.html#s1"
+    },
+    {
+      "deck": "day4",
+      "id": "model-is-files",
+      "n": 5,
+      "session": 1,
+      "title": "A model is a folder of files from somewhere",
+      "text": "The model supply chain A model is a folder of files from somewhere Publisher trains and releases → Hub or mirror stores and serves copies → Your registry what the pipeline pulls → Engine loads it for users Each hop is a place where a file can be swapped: weights, tokenizer, configuration, even the licence.",
+      "href": "../slides/day4.html#model-is-files"
+    },
+    {
+      "deck": "day4",
+      "id": "what-can-change",
+      "n": 6,
+      "session": 1,
+      "title": "Every file in the folder changes behaviour, not only the weights",
+      "text": "Where tampering hides Every file in the folder changes behaviour, not only the weights Weights A changed shard plants a behaviour that only some inputs trigger. Tokenizer and config A changed vocabulary or setting silently changes every answer. Loadable code Pickled formats can run code when loaded; safetensors stores tensors only.",
+      "href": "../slides/day4.html#what-can-change"
+    },
+    {
+      "deck": "day4",
+      "id": "provenance-record",
+      "n": 7,
+      "session": 1,
+      "title": "Three candidate fallback models, three provenance records",
+      "text": "Lab 4.1 · provenance Three candidate fallback models, three provenance records Artefact Publisher Obtained from Licence athar-small-v1 Rasael ML platform team the publisher Apache-2.0 athar-small-v1-mirror Rasael ML platform team a third-party mirror Apache-2.0 athar-tiny-q4 an external research group the publisher research use only",
+      "href": "../slides/day4.html#provenance-record"
+    },
+    {
+      "deck": "day4",
+      "id": "hash-finding",
+      "n": 8,
+      "session": 1,
+      "title": "One shard of the mirrored copy is not what the publisher released",
+      "text": "Lab 4.1 · the finding One shard of the mirrored copy is not what the publisher released artefact athar-small-v1-mirror file model-00002-of-00002.safetensors expected be1f25b1cc7b4c31... found eff1f6fb22ae544a... decision do not admit; obtain from the publisher and verify its signature 64 bytes of 24,576 differ. A hash proves the bytes differ, not who changed them or why.",
+      "href": "../slides/day4.html#hash-finding"
+    },
+    {
+      "deck": "day4",
+      "id": "hash-list-limit",
+      "n": 9,
+      "session": 1,
+      "title": "A hash list from the same place as the files proves nothing",
+      "text": "What goes wrong A hash list from the same place as the files proves nothing Whoever can change a shard on a mirror can change the list beside it The list must be signed by the publisher, and the key must reach you another way Then a change to any file, or to the list, fails verification",
+      "href": "../slides/day4.html#hash-list-limit"
+    },
+    {
+      "deck": "day4",
+      "id": "check-hash",
+      "n": 10,
+      "session": 1,
+      "title": "The hashes match; is the model safe to admit?",
+      "text": "Checkpoint The hashes match; is the model safe to admit? Every file of a downloaded model matches the hash list published on the same mirror. What can you conclude? The files are the publisher's originals The files match that list, and nothing more until the list is verified The model may be used commercially The model will answer as well as the original",
+      "href": "../slides/day4.html#check-hash"
+    },
+    {
+      "deck": "day4",
+      "id": "lab-4-1",
+      "n": 11,
+      "session": 1,
+      "title": "Provenance and the tampered file",
+      "text": "Lab 4.1 · 25 min Provenance and the tampered file Trace the provenance of three model artefacts and find the tampered file by its hash. D4_1_provenance.ipynb Read the three provenance records 5 min Hash every file of each artefact 6 min Compare with the publisher's list 7 min Write the finding for the release engineer 7 min ✱ Stretch: Find which file types can run code when loaded",
+      "href": "../slides/day4.html#lab-4-1"
+    },
+    {
+      "deck": "day4",
+      "id": "s2",
+      "n": 12,
+      "session": 2,
+      "title": "Signing and verification",
+      "text": "Session 2 Signing and verification Sign a model folder as a manifest of hashed files Verify the signature at admission Explain what a signature proves and what it does not 02",
+      "href": "../slides/day4.html#s2"
+    },
+    {
+      "deck": "day4",
+      "id": "signed-manifest",
+      "n": 13,
+      "session": 2,
+      "title": "Sign a manifest of every file's hash, not one archive",
+      "text": "Model signing Sign a manifest of every file's hash, not one archive Hash every file in the folder → Statement an in-toto list of files and digests → Sign in a DSSE envelope → Bundle a Sigstore bundle beside the model",
+      "href": "../slides/day4.html#signed-manifest"
+    },
+    {
+      "deck": "day4",
+      "id": "key-or-keyless",
+      "n": 14,
+      "session": 2,
+      "title": "Sign with a key you guard, or keylessly with an identity",
+      "text": "Two ways to sign Sign with a key you guard, or keylessly with an identity A key An elliptic-curve key pair. Verification needs the public key from a trusted channel. The lab uses this: no account, no network. Keyless (Sigstore) A short-lived certificate for a sign-in identity, recorded in a public transparency log. Verification names the identity and its provider.",
+      "href": "../slides/day4.html#key-or-keyless"
+    },
+    {
+      "deck": "day4",
+      "id": "sign-code",
+      "n": 15,
+      "session": 2,
+      "title": "Three lines sign; three lines verify",
+      "text": "Lab 4.2 Three lines sign; three lines verify model_signing.signing.Config().use_elliptic_key_signer( private_key=\"key.priv\").sign(model, \"model.sig\") model_signing.verifying.Config().use_elliptic_key_verifier( public_key=\"key.pub\").verify(model, \"model.sig\") # raises on failure",
+      "href": "../slides/day4.html#sign-code"
+    },
+    {
+      "deck": "day4",
+      "id": "verify-results",
+      "n": 16,
+      "session": 2,
+      "title": "Change one character, or use another key, and verification fails",
+      "text": "Lab 4.2 · results Change one character, or use another key, and verification fails Check Result signed folder, signer's public key verified tokenizer.json with one number changed signature mismatch: hash mismatch for tokenizer.json original folder, a different public key key mismatch",
+      "href": "../slides/day4.html#verify-results"
+    },
+    {
+      "deck": "day4",
+      "id": "what-signature-proves",
+      "n": 17,
+      "session": 2,
+      "title": "A signature proves who signed which bytes, nothing more",
+      "text": "Limits A signature proves who signed which bytes, nothing more Proves: every file is what the key holder signed Does not prove: that the model is good, safe or free of planted behaviour Does not prove: that you may use it: licences are a separate rule Where the key comes from The pipeline holds the trusted public key. A key shipped beside the model can be replaced with the model.",
+      "href": "../slides/day4.html#what-signature-proves"
+    },
+    {
+      "deck": "day4",
+      "id": "check-signature",
+      "n": 18,
+      "session": 2,
+      "title": "The signature verifies",
+      "text": "Checkpoint The signature verifies A model folder and its signature bundle both came from a partner's file share, along with the public key to check them. The signature verifies. What has been shown? The partner released these exact files The model contains no planted behaviour Only that the files match whoever holds that key, which could be anyone with access to the share Rasael may deploy it in production",
+      "href": "../slides/day4.html#check-signature"
+    },
+    {
+      "deck": "day4",
+      "id": "lab-4-2",
+      "n": 19,
+      "session": 2,
+      "title": "Sign and verify a model folder",
+      "text": "Lab 4.2 · 25 min Sign and verify a model folder Sign a manifest of model files with a key, verify it, and show that a changed file fails verification. D4_2_signing.ipynb Generate a key pair 3 min Sign the model folder 6 min Read the signed statement 5 min Verify, change one file, verify again 7 min Verify against the wrong key 4 min ✱ Stretch: Sign only the files the engine loads and say what that leaves out",
+      "href": "../slides/day4.html#lab-4-2"
+    },
+    {
+      "deck": "day4",
+      "id": "s3",
+      "n": 20,
+      "session": 3,
+      "title": "Bills of materials and admission",
+      "text": "Session 3 Bills of materials and admission Write a CycloneDX ML-BOM for a model Write an admission policy with logged reasons Run the gate on valid, tampered and unlicensed artefacts 03",
+      "href": "../slides/day4.html#s3"
+    },
+    {
+      "deck": "day4",
+      "id": "ml-bom",
+      "n": 21,
+      "session": 3,
+      "title": "A machine learning bill of materials says what the release contains",
+      "text": "Bills of materials A machine learning bill of materials says what the release contains \"components\": [{ \"type\": \"machine-learning-model\", \"name\": \"athar-small-v1\", \"publisher\": \"Rasael ML platform team\", \"licenses\": [{\"license\": {\"id\": \"Apache-2.0\"}}], \"modelCard\": {\"modelParameters\": {\"task\": \"text-generation\"}}, \"components\": [{\"type\": \"file\", \"name\": \"model-00001-of-00002.safetensors\", \"hashes\": [{\"alg\": \"SHA-256\", \"content\": \"750bb039...\"}]}] }]",
+      "href": "../slides/day4.html#ml-bom"
+    },
+    {
+      "deck": "day4",
+      "id": "admission-rules",
+      "n": 22,
+      "session": 3,
+      "title": "Four rules, all of which must pass, each logged with its reason",
+      "text": "The admission gate Four rules, all of which must pass, each logged with its reason The signature verifies with the release key the pipeline holds The bill of materials validates, and its hashes equal the signed digests The licence is on the allow list (Apache-2.0, MIT) No file format that runs code when loaded",
+      "href": "../slides/day4.html#admission-rules"
+    },
+    {
+      "deck": "day4",
+      "id": "gate-run",
+      "n": 23,
+      "session": 3,
+      "title": "The gate admits one artefact and rejects two, for different reasons",
+      "text": "Lab 4.3 · the pipeline run The gate admits one artefact and rejects two, for different reasons Artefact Signature BOM Licence Decision athar-small-v1 verified matches Apache-2.0 admit athar-small-v1-mirror mismatch shard 2 differs Apache-2.0 reject athar-tiny-q4 verified matches research only reject",
+      "href": "../slides/day4.html#gate-run"
+    },
+    {
+      "deck": "day4",
+      "id": "cluster-admission",
+      "n": 24,
+      "session": 3,
+      "title": "The cluster refuses any pod the gate did not admit",
+      "text": "In the cluster The cluster refuses any pod the gate did not admit validate: failureAction: Enforce pattern: metadata: annotations: models.rasael.example/signature: \"verified\" models.rasael.example/licence: \"Apache-2.0 | MIT\"",
+      "href": "../slides/day4.html#cluster-admission"
+    },
+    {
+      "deck": "day4",
+      "id": "classification-note",
+      "n": 25,
+      "session": 3,
+      "title": "The model's records are classified data too",
+      "text": "Data governance The model's records are classified data too Admission logs and BOMs name suppliers, versions and keys: classify them before sharing Telemetry with answers can hold personal data: it inherits the answers' classification Where the release key and the model store live is a cloud control to review",
+      "href": "../slides/day4.html#classification-note"
+    },
+    {
+      "deck": "day4",
+      "id": "check-admission",
+      "n": 26,
+      "session": 3,
+      "title": "Which artefact does the gate admit?",
+      "text": "Checkpoint Which artefact does the gate admit? Four candidate models for the fallback mode. Rasael's allow list is Apache-2.0 and MIT. Which one passes all four rules? Apache-2.0, signature mismatch on one shard Research-only licence, signature verified MIT, signature verified, safetensors files, BOM hashes match Apache-2.0, signature verified, weights in a pickled .bin file",
+      "href": "../slides/day4.html#check-admission"
+    },
+    {
+      "deck": "day4",
+      "id": "lab-4-3",
+      "n": 27,
+      "session": 3,
+      "title": "Bill of materials and admission gate",
+      "text": "Lab 4.3 · 25 min Bill of materials and admission gate Write a bill of materials for the valid artefact and a policy that rejects unsigned, tampered or unlicensed models, then run the gate on all three with logs. D4_3_bom_admission.ipynb Write the ML-BOM and validate it 8 min Write the admission rules 7 min Run the gate on the three artefacts 6 min Read the logs as the auditor would 4 min ✱ Stretch: Map each rule to the supplied Kyverno policy",
+      "href": "../slides/day4.html#lab-4-3"
+    },
+    {
+      "deck": "day4",
+      "id": "s4",
+      "n": 28,
+      "session": 4,
+      "title": "Production readiness reviews",
+      "text": "Session 4 Production readiness reviews Apply a readiness checklist to another team's evidence Rank findings by likelihood and impact Set a launch decision with dated conditions 04",
+      "href": "../slides/day4.html#s4"
+    },
+    {
+      "deck": "day4",
+      "id": "readiness-review",
+      "n": 29,
+      "session": 4,
+      "title": "A readiness review decides whether another team's service may launch",
+      "text": "Readiness reviews A readiness review decides whether another team's service may launch Evidence Measured results, not claims: curves, logs, replays, drills. Ranking Findings ordered by risk to users and to the organisation. Decision Launch, launch with dated conditions, or not yet, and what would change it.",
+      "href": "../slides/day4.html#readiness-review"
+    },
+    {
+      "deck": "day4",
+      "id": "checklist-areas",
+      "n": 30,
+      "session": 4,
+      "title": "Thirteen items in six areas: this week, as questions",
+      "text": "The checklist Thirteen items in six areas: this week, as questions Area The question Objectives Per language, with burn-rate alerts? Capacity Load-tested to the busiest hour, with admission limits? Degradation Modes tested under faults, and disclosed? Incidents Roles, a decision log, the breach procedure? Release A canary with a quality gate; a tested rollback? Integrity A verified signature and a bill of materials?",
+      "href": "../slides/day4.html#checklist-areas"
+    },
+    {
+      "deck": "day4",
+      "id": "read-the-claim",
+      "n": 31,
+      "session": 4,
+      "title": "Read every claim: \"met\" is the team's word, not the review's",
+      "text": "Lab 4.4 · Taqdir Read every claim: \"met\" is the team's word, not the review's Taqdir teamObjectives for availability and first-token time: met. 95% under 2 s to first token. ReviewerRasael's standard is 1.5 s. Partial.",
+      "href": "../slides/day4.html#read-the-claim"
+    },
+    {
+      "deck": "day4",
+      "id": "ranked-findings",
+      "n": 32,
+      "session": 4,
+      "title": "Risk = likelihood × impact × gap; the top three decide the review",
+      "text": "Lab 4.4 · ranked Risk = likelihood × impact × gap; the top three decide the review Finding Status Risk Load test only at the average hour (2.1 a second; the busiest was 6.4) missing 16 Weights from a third-party mirror, unsigned missing 15 Quality objective on English samples only partial 10 Runbook without roles or a decision log missing 9 Quality alert on a daily average partial 8",
+      "href": "../slides/day4.html#ranked-findings"
+    },
+    {
+      "deck": "day4",
+      "id": "launch-decision",
+      "n": 33,
+      "session": 4,
+      "title": "Not yet: an unsigned model blocks the launch",
+      "text": "The decision Not yet: an unsigned model blocks the launch Blocking Missing with impact 5: the model signature. Nobody can show the weights are the publisher's, and Lab 4.1 found a tampered mirror. Conditions Busiest-hour load test and per-language quality within 14 days; runbook and quality alerts within 30, each with its proof.",
+      "href": "../slides/day4.html#launch-decision"
+    },
+    {
+      "deck": "day4",
+      "id": "capstone-kickoff",
+      "n": 34,
+      "session": 4,
+      "title": "Your capstone is this review, on a real or supplied service, with measured evidence",
+      "text": "The capstone Your capstone is this review, on a real or supplied service, with measured evidence A peer's service, or the supplied Athar v2.7 release pack (labs/capstone/) Objectives, capacity, degradation, an incident drill, release integrity, a decision A public GitHub repository; a 10-minute defence with 5 minutes of panel questions During the questions, the panel injects a fault and you diagnose it live",
+      "href": "../slides/day4.html#capstone-kickoff"
+    },
+    {
+      "deck": "day4",
+      "id": "check-launch",
+      "n": 35,
+      "session": 4,
+      "title": "Which launch decision?",
+      "text": "Checkpoint Which launch decision? A service has every item met except two partial ones: its canary gates on latency only, and its fallback was never tested under a provider failure. Both have likelihood 4 and impact 4, so each scores a risk of 8. What do you decide under Rasael's rule? Do not launch until both are fixed Launch with two dated conditions, each with the evidence that proves it Launch without conditions Ask the team to rerun their own checklist",
+      "href": "../slides/day4.html#check-launch"
+    },
+    {
+      "deck": "day4",
+      "id": "lab-4-4",
+      "n": 36,
+      "session": 4,
+      "title": "Readiness review of Taqdir",
+      "text": "Lab 4.4 · 25 min Readiness review of Taqdir Apply the readiness checklist to Taqdir, the cross-border team's delivery-estimate assistant, and rank the findings by risk. D4_4_readiness_review.ipynb Read the checklist and the evidence pack 5 min Score each item from the evidence 7 min Rank the findings by risk 6 min Launch decision and conditions 7 min ✱ Stretch: Choose the capstone service and the first three items you will test",
+      "href": "../slides/day4.html#lab-4-4"
+    },
+    {
+      "deck": "day4",
+      "id": "wrap-up",
+      "n": 37,
+      "session": 4,
+      "title": "Three things to keep",
+      "text": "Day 4 · wrap-up Three things to keep Hash what you received Against a list you can trust. Verify before admission Signature, bill of materials, licence, format: all logged. Review by risk Evidence over claims; a decision with dated, provable conditions.",
+      "href": "../slides/day4.html#wrap-up"
+    },
+    {
+      "deck": "day4",
+      "id": "next",
+      "n": 38,
+      "session": 4,
+      "title": "Capstone day: the readiness review before the panel",
+      "text": "Next Capstone day: the readiness review before the panel Bring your repository, its logs and a running service (or the simulator) for the live fault The supervised exit check, without AI, runs before the defences",
+      "href": "../slides/day4.html#next"
+    },
+    {
+      "deck": "capstone",
+      "id": "title",
+      "n": 1,
+      "session": 0,
+      "title": "Readiness review defences",
+      "text": "SDAIA Academy · Reliability Engineering for AI Services Readiness review defences Capstone: A production readiness review defended before a panel, with a live fault to diagnose AI Engineering Track4 teaching days + capstone day10 min talk and demo · 5 min Q&AAE-403",
+      "href": "../slides/capstone.html#title"
+    },
+    {
+      "deck": "capstone",
+      "id": "agenda",
+      "n": 2,
+      "session": 0,
+      "title": "How the day runs",
+      "text": "Capstone How the day runs Exit check and final prep the supervised check without AI, the rubric, a last rehearsal Defences ten minutes of review, five of questions with a live fault Review and closing peer feedback, the trainer's review, the follow-up task",
+      "href": "../slides/capstone.html#agenda"
+    },
+    {
+      "deck": "capstone",
+      "id": "deliverable",
+      "n": 3,
+      "session": 0,
+      "title": "A readiness review of a real or supplied service, with measured evidence",
+      "text": "The capstone A readiness review of a real or supplied service, with measured evidence A public GitHub repository: the review, the code and notebooks behind every number, the logs Load-test, chaos and pipeline logs, the drill's decision log, and a commit history that shows the work Findings ranked by risk, a launch decision, and dated conditions that each name their proof Synthetic data only: no personal data, no keys, no private model weights Brief and template labs/capstone/README.md and TEMPLATE_README.md. The supplied service is Athar v2.7 (athar_v27_pack.json), running on the course's simulator.",
+      "href": "../slides/capstone.html#deliverable"
+    },
+    {
+      "deck": "capstone",
+      "id": "rubric",
+      "n": 4,
+      "session": 0,
+      "title": "The rubric",
+      "text": "How reviews are scored The rubric Objectives and alerts 20% Capacity and degradation 25% Incident drill and review 20% Release integrity 15% Readiness decision 20% Every claim carries a number and the log it came from. \"Met\" is the team's word; a review shows the measurement.",
+      "href": "../slides/capstone.html#rubric"
+    },
+    {
+      "deck": "capstone",
+      "id": "format",
+      "n": 5,
+      "session": 0,
+      "title": "Ten minutes of review, then five of questions with a live fault",
+      "text": "Format Ten minutes of review, then five of questions with a live fault 1 · The service What it does, for whom, its objectives. Two minutes. 2 · The evidence Capacity, degradation, the drill, the release gate: measured. Five minutes. 3 · The decision The top three findings, the decision, the conditions. Three minutes. Peer feedback. After each defence, everyone writes one strength, one question and one suggestion.",
+      "href": "../slides/capstone.html#format"
+    },
+    {
+      "deck": "capstone",
+      "id": "live-fault",
+      "n": 6,
+      "session": 0,
+      "title": "The panel injects a fault; you diagnose it aloud",
+      "text": "In the questions The panel injects a fault; you diagnose it aloud 1 · Inject the assessor starts one fault, unannounced → 2 · Detect which indicator moved, and which alert fires → 3 · Mitigate the first action, and why before the root cause → 4 · Explain what your review predicted, and what it missed The reasoning is scored, not the speed. Say what you look at first and why; a wrong first guess that you correct from the data is a good answer.",
+      "href": "../slides/capstone.html#live-fault"
+    },
+    {
+      "deck": "capstone",
+      "id": "week-recap",
+      "n": 7,
+      "session": 0,
+      "title": "The week in four questions",
+      "text": "What the panel will look for The week in four questions What does good mean? Indicators per language, budgets that change releases. What survives the busiest hour? An operating point with margin, shedding by priority, honest degraded modes. Who acts when it breaks? Roles, a decision log, a canary that rolls back, a review without blame. What are we running? Hashes, signatures, a bill of materials, a ranked launch decision.",
+      "href": "../slides/capstone.html#week-recap"
+    },
+    {
+      "deck": "capstone",
+      "id": "running-order",
+      "n": 8,
+      "session": 0,
+      "title": "Who defends when",
+      "text": "Running order Who defends when # Presenter Service reviewed 1 2 3 4 5 6 7 8",
+      "href": "../slides/capstone.html#running-order"
+    },
+    {
+      "deck": "capstone",
+      "id": "final-prep",
+      "n": 9,
+      "session": 0,
+      "title": "Final prep · 20 minutes",
+      "text": "Before the first defence Final prep · 20 minutes Rehearse once, record a backup, open your service or the simulator on this screen.",
+      "href": "../slides/capstone.html#final-prep"
+    },
+    {
+      "deck": "capstone",
+      "id": "now-presenting",
+      "n": 10,
+      "session": 0,
+      "title": "Now presenting",
+      "text": "Now defending",
+      "href": "../slides/capstone.html#now-presenting"
+    },
+    {
+      "deck": "capstone",
+      "id": "review",
+      "n": 11,
+      "session": 0,
+      "title": "What the reviews showed",
+      "text": "Trainer review What the reviews showed Strongest patterns What several reviews got right. Common gaps What most reviews would fix next. One surprise Something the live faults showed.",
+      "href": "../slides/capstone.html#review"
+    },
+    {
+      "deck": "capstone",
+      "id": "what-next",
+      "n": 12,
+      "session": 0,
+      "title": "Keep going",
+      "text": "After the course Keep going The follow-up task: within 30 days, apply one standard from the course to a service in your team or an open-source deployment, and send the evidence Your review stays yours: keep it reproducible and act on the first condition you named today The AE Expert badge: this course is one of the AE-400 courses that help prepare for it",
+      "href": "../slides/capstone.html#what-next"
+    },
+    {
+      "deck": "capstone",
+      "id": "thanks",
+      "n": 13,
+      "session": 0,
+      "title": "Thank you",
+      "text": "SDAIA Academy Thank you Reliability Engineering for AI Services",
+      "href": "../slides/capstone.html#thanks"
+    }
+  ]
+}

@@ -1,0 +1,1052 @@
+{
+  "v": 1,
+  "engine": "1.0.0",
+  "build": {
+    "at": "2026-11-15T15:04:19Z",
+    "version": "2027.1.0",
+    "commit": "d44e8c9"
+  },
+  "lang": "en",
+  "dir": "ltr",
+  "langs": [
+    "en"
+  ],
+  "alt": {},
+  "course": {
+    "id": "ae-403",
+    "code": "AE-403",
+    "version": "2027.1.0",
+    "title": "Reliability Engineering for AI Services",
+    "tagline": "Set, measure and defend the reliability standards of an AI service: objectives, capacity, degraded modes, incidents, safe releases and verified models",
+    "description": "Participants set and defend reliability standards for AI services that other teams build. For a fictional postal and parcels operator running a bilingual tracking assistant on a self-hosted open-weight model with retrieval, they write service level objectives for availability, latency and answer quality, set admission limits with headroom from measured goodput, design and chaos-test degradation paths, lead incident drills and blameless reviews, release through canaries with automated rollback, and admit models only after verifying signatures and bills of materials.",
+    "track": "ai-engineering",
+    "track_name": "AI Engineering Track",
+    "level": 400,
+    "badge": {
+      "name": "AI Engineering",
+      "level": "Expert"
+    },
+    "audience": "Specialists. Engineers who have completed the level 300 core or can show equivalent work: a production AI system they built, operated and can defend.",
+    "prerequisites": [
+      "AE-305 Operating Machine Learning and Language Model Systems",
+      "AE-307 Container Orchestration and Cloud Infrastructure for AI Workloads",
+      "Has written alerting rules on service metrics",
+      "Runs containers on a single-node cluster",
+      "Has released a service through a canary or blue-green rollout",
+      "Reads a goodput-versus-concurrency curve (the measurement method is taught in AE-401)",
+      "Setup: a laptop CPU with uv, or Google Colab. Nothing downloads a model; the self-hosted engine is a calibrated simulator and the answers are recorded. Run 00_setup_check before Day 1; see labs/README.md."
+    ],
+    "url": "https://sdaiaacademy.github.io/ae-403/",
+    "repo": "SDAIAAcademy/ae-403",
+    "home": "../index.html",
+    "format": "intensive",
+    "format_note": "Intensive: 4 teaching days of four sessions and a capstone day, with guided pre-work and a tracked follow-up task",
+    "shape": "4 teaching days + capstone day",
+    "hours": {
+      "instruction": 6,
+      "lab": 7,
+      "guided_self_study": 6,
+      "assessment": 1,
+      "capstone": 6,
+      "total": 26
+    },
+    "unit": "day",
+    "outcomes": [
+      {
+        "id": "LO1",
+        "text": "Design service level objectives for availability, latency and answer quality, with error budgets and a release policy, given a month of synthetic telemetry and a sampled online quality signal",
+        "level": "Performance",
+        "evidence": "an objectives document defended against a reviewer's challenges"
+      },
+      {
+        "id": "LO2",
+        "text": "Decide an admission limit and shedding priorities that keep headroom for the busiest hour, given the self-hosted model, a recorded traffic trace and the service objectives",
+        "level": "Performance",
+        "evidence": "a justified operating point and margin, and an overload replay in which priority traffic still meets its objective"
+      },
+      {
+        "id": "LO3",
+        "text": "Design degradation for overload and dependency failure using load shedding, a smaller fallback model and a cached-answer mode, given overload, retrieval outage and provider timeout scenarios",
+        "level": "Performance",
+        "evidence": "chaos test results showing each path keeps the minimum service, with quality measured in each mode"
+      },
+      {
+        "id": "LO4",
+        "text": "Lead an incident drill from detection to recovery and write a blameless review, given a silent quality regression after a model update",
+        "level": "Performance",
+        "evidence": "a timeline, a decision log, owned corrective actions and a new regression test"
+      },
+      {
+        "id": "LO5",
+        "text": "Build a release gate that verifies model signatures, a bill of materials and licences before deployment, given signed, tampered and unlicensed model artefacts",
+        "level": "Performance",
+        "evidence": "a pipeline run that admits the valid artefact and rejects the others, with logs"
+      },
+      {
+        "id": "LO6",
+        "text": "Review another team's AI service for production readiness and set launch conditions, given a peer's service, its telemetry and a readiness checklist",
+        "level": "Performance",
+        "evidence": "ranked findings and a launch decision defended before a panel"
+      }
+    ],
+    "case_study": {
+      "name": "Rasael Post and Parcels",
+      "summary": "Rasael Post and Parcels is a fictional national postal and parcels operator whose bilingual assistant, Athar, answers tracking, redelivery and help questions on a self-hosted open-weight model with retrieval over 3,000 Arabic and English help articles. Participants set its objectives, decide its admission limit, design and chaos-test its degraded modes, run an incident drill on a silent quality regression, release through a canary, and admit models only after verifying signatures and bills of materials; all telemetry, traffic, answers, incidents and model artefacts are synthetic and generated with a fixed seed."
+    },
+    "days": [
+      {
+        "id": "day1",
+        "kind": "day",
+        "n": 1,
+        "number": 1,
+        "label": "Day 1",
+        "title": "Objectives that match what users need",
+        "subtitle": "Indicators and objectives for latency, availability and answer quality, sliced by language",
+        "shape": "4 sessions · 4 labs",
+        "deck": "../slides/day1.html",
+        "md": "../slides/day1.md",
+        "url": "https://sdaiaacademy.github.io/ae-403/slides/day1.html",
+        "sessions": [
+          {
+            "n": 1,
+            "label": "Session 1",
+            "title": "AI services fail differently",
+            "summary": "An AI service can be up, fast on a probe and still wrong, slow or silent for its users",
+            "outcomes": [
+              "Name four ways an AI service fails while an uptime check stays green",
+              "Read per-minute telemetry by language and by mode",
+              "Separate what users felt from what the probe measured"
+            ],
+            "lo": [
+              "LO1"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "1.1",
+              "title": "What the uptime check missed",
+              "summary": "Read a week of Athar telemetry and list the incidents an uptime check would miss, with their duration and the indicator that shows each one.",
+              "minutes": 25,
+              "href": "../labs/D1_1_uptime_blind_spots.ipynb",
+              "steps": [
+                {
+                  "text": "Load the week and plot requests, probe and errors",
+                  "minutes": 4
+                },
+                {
+                  "text": "Find the minutes where the probe was green and users were not",
+                  "minutes": 7
+                },
+                {
+                  "text": "Group them into incidents with a start, a duration and a signal",
+                  "minutes": 7
+                },
+                {
+                  "text": "Name the indicator that would have caught each one",
+                  "minutes": 7
+                }
+              ],
+              "stretch": "Repeat the search for Arabic and English separately and compare"
+            }
+          },
+          {
+            "n": 2,
+            "label": "Session 2",
+            "title": "Indicators for latency and quality",
+            "summary": "Indicators as good events over valid events: first-token time, per-token time, availability and a sampled quality grade",
+            "outcomes": [
+              "Define an indicator as good events over valid events",
+              "Exclude probes and client cancellations with a written reason",
+              "Estimate a sampled quality rate with its interval, by language"
+            ],
+            "lo": [
+              "LO1"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "1.2",
+              "title": "Four indicators from one day",
+              "summary": "Define first-token time, per-token time, availability and a sampled quality grade on a day of request logs, with the exclusions written down and quality sliced by language with an interval.",
+              "minutes": 25,
+              "href": "../labs/D1_2_indicators.ipynb",
+              "steps": [
+                {
+                  "text": "Read the request log and its fields",
+                  "minutes": 3
+                },
+                {
+                  "text": "Write the valid-event filter and its exclusions",
+                  "minutes": 6
+                },
+                {
+                  "text": "Latency indicators: first token and per token",
+                  "minutes": 6
+                },
+                {
+                  "text": "Availability as good over valid requests",
+                  "minutes": 4
+                },
+                {
+                  "text": "Quality grade by language, with a 95% interval",
+                  "minutes": 6
+                }
+              ],
+              "stretch": "How many graded samples per day would narrow the Arabic interval to two points?"
+            }
+          },
+          {
+            "n": 3,
+            "label": "Session 3",
+            "title": "Objectives and error budgets",
+            "summary": "Objectives tied to what users need, the budget they leave, and a release policy that spends it",
+            "outcomes": [
+              "Set an objective from a user task, not from last month",
+              "Compute budget burn over a month and per week",
+              "Write a release policy that decides from the remaining budget"
+            ],
+            "lo": [
+              "LO1"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "1.3",
+              "title": "Objectives, budget and release policy",
+              "summary": "Set objectives for Athar, compute the budget burned over a supplied month and write the release policy that decides five pending release requests.",
+              "minutes": 25,
+              "href": "../labs/D1_3_error_budgets.ipynb",
+              "steps": [
+                {
+                  "text": "Write the four objectives with their windows",
+                  "minutes": 5
+                },
+                {
+                  "text": "Compute the budget and what the month burned",
+                  "minutes": 7
+                },
+                {
+                  "text": "Find the week that burned most and why",
+                  "minutes": 5
+                },
+                {
+                  "text": "Write the release policy and decide five requests",
+                  "minutes": 8
+                }
+              ],
+              "stretch": "Add a policy line for a budget spent by a dependency, not by a release"
+            }
+          },
+          {
+            "n": 4,
+            "label": "Session 4",
+            "title": "Objectives for multi-step tasks",
+            "summary": "A booking flow succeeds per task, not per call: completion, cost per completed task and escalation",
+            "outcomes": [
+              "Explain why per-call success hides failed tasks",
+              "Define completion, cost and escalation indicators for a flow",
+              "Set objectives a flow can be held to"
+            ],
+            "lo": [
+              "LO1"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "1.4",
+              "title": "Indicators for the redelivery flow",
+              "summary": "Define completion, cost and escalation indicators for the redelivery booking flow from 2,000 recorded sessions, and show what per-call success hides.",
+              "minutes": 25,
+              "href": "../labs/D1_4_task_objectives.ipynb",
+              "steps": [
+                {
+                  "text": "Read the sessions and their steps",
+                  "minutes": 3
+                },
+                {
+                  "text": "Per-call success against per-task completion",
+                  "minutes": 7
+                },
+                {
+                  "text": "Cost per completed booking, with the loops",
+                  "minutes": 7
+                },
+                {
+                  "text": "Escalation rate and objectives for the flow",
+                  "minutes": 8
+                }
+              ],
+              "stretch": "Find the step where most abandoned sessions stop"
+            }
+          }
+        ]
+      },
+      {
+        "id": "day2",
+        "kind": "day",
+        "n": 2,
+        "number": 2,
+        "label": "Day 2",
+        "title": "Capacity and failure",
+        "subtitle": "Admission limits from measured goodput, degraded modes and chaos experiments",
+        "shape": "4 sessions · 4 labs",
+        "deck": "../slides/day2.html",
+        "md": "../slides/day2.md",
+        "url": "https://sdaiaacademy.github.io/ae-403/slides/day2.html",
+        "sessions": [
+          {
+            "n": 1,
+            "label": "Session 1",
+            "title": "Capacity with headroom",
+            "summary": "Goodput falls past a concurrency the engine can sustain; the operating point leaves headroom for the busiest hour",
+            "outcomes": [
+              "Read tail latency and goodput from a concurrency sweep",
+              "Choose an operating point and justify it against the objectives",
+              "Size replicas for the busiest hour with a stated margin"
+            ],
+            "lo": [
+              "LO2"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "2.1",
+              "title": "Goodput curve and operating point",
+              "summary": "Load-test the simulated self-hosted engine at rising concurrency, find where goodput falls, set the operating point and size the replicas for the busiest hour with a margin.",
+              "minutes": 25,
+              "href": "../labs/D2_1_goodput_operating_point.ipynb",
+              "steps": [
+                {
+                  "text": "Run one load step and read its latencies",
+                  "minutes": 4
+                },
+                {
+                  "text": "Sweep concurrency and compute goodput",
+                  "minutes": 7
+                },
+                {
+                  "text": "Find the knee and choose the operating point",
+                  "minutes": 6
+                },
+                {
+                  "text": "Replicas and margin for the busiest hour",
+                  "minutes": 8
+                }
+              ],
+              "stretch": "Repeat the sweep with long prompts and see the knee move"
+            }
+          },
+          {
+            "n": 2,
+            "label": "Session 2",
+            "title": "Admission control and shedding",
+            "summary": "Admit what the engine can serve, queue little, shed the least important traffic first",
+            "outcomes": [
+              "Set a concurrency cap from the operating point",
+              "Rank traffic into priority classes with a reason",
+              "Show by replay that priority traffic keeps its objective"
+            ],
+            "lo": [
+              "LO2",
+              "LO3"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "2.2",
+              "title": "A cap and priority shedding",
+              "summary": "Add a concurrency cap and three priority classes in front of the engine, then replay the overload trace and check that priority traffic still meets its objective.",
+              "minutes": 25,
+              "href": "../labs/D2_2_admission_shedding.ipynb",
+              "steps": [
+                {
+                  "text": "Replay the overload trace with no admission control",
+                  "minutes": 4
+                },
+                {
+                  "text": "Add the concurrency cap and a bounded queue",
+                  "minutes": 7
+                },
+                {
+                  "text": "Add priority classes and shed from the lowest",
+                  "minutes": 7
+                },
+                {
+                  "text": "Check each class against its objective",
+                  "minutes": 7
+                }
+              ],
+              "stretch": "Shed by deadline: drop a queued request that can no longer meet its objective"
+            }
+          },
+          {
+            "n": 3,
+            "label": "Session 3",
+            "title": "Degraded modes",
+            "summary": "A smaller fallback model and a cached-answer mode keep a minimum service; each one is measured and disclosed",
+            "outcomes": [
+              "Design degraded modes with entry and exit conditions",
+              "Measure answer quality in each mode by language",
+              "Keep personal answers out of any cache and tell users plainly"
+            ],
+            "lo": [
+              "LO3"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "2.3",
+              "title": "Fallback model and cached answers",
+              "summary": "Configure a smaller fallback model and a cached-answer mode, route by health signals, measure quality in each mode by language and keep personal tracking answers out of the cache.",
+              "minutes": 25,
+              "href": "../labs/D2_3_degraded_modes.ipynb",
+              "steps": [
+                {
+                  "text": "Grade the full mode on the question set",
+                  "minutes": 4
+                },
+                {
+                  "text": "Grade the fallback model by language",
+                  "minutes": 6
+                },
+                {
+                  "text": "Build the cached-answer mode and its refusal rule",
+                  "minutes": 7
+                },
+                {
+                  "text": "Route by health signals and disclose the mode",
+                  "minutes": 8
+                }
+              ],
+              "stretch": "Set the cache freshness limit from how often help articles change"
+            }
+          },
+          {
+            "n": 4,
+            "label": "Session 4",
+            "title": "Chaos experiments",
+            "summary": "A hypothesis, a blast radius and an abort condition; failures that retries make worse",
+            "outcomes": [
+              "Write a chaos experiment as a falsifiable hypothesis",
+              "Inject dependency failures and measure the minimum service",
+              "Stop a retry storm with a retry budget and backoff"
+            ],
+            "lo": [
+              "LO3"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "2.4",
+              "title": "Outage, timeout and retry storm",
+              "summary": "Inject a retrieval outage, a provider timeout and a retry storm into the simulated service and check that the minimum service holds in each.",
+              "minutes": 25,
+              "href": "../labs/D2_4_chaos.ipynb",
+              "steps": [
+                {
+                  "text": "Write the hypothesis and the minimum service",
+                  "minutes": 4
+                },
+                {
+                  "text": "Retrieval outage: does the cached mode hold?",
+                  "minutes": 6
+                },
+                {
+                  "text": "Provider timeout: does the fallback take over?",
+                  "minutes": 6
+                },
+                {
+                  "text": "Retry storm, then a retry budget with backoff",
+                  "minutes": 9
+                }
+              ],
+              "stretch": "Run the three faults at once and say which mode the users get"
+            }
+          }
+        ]
+      },
+      {
+        "id": "day3",
+        "kind": "day",
+        "n": 3,
+        "number": 3,
+        "label": "Day 3",
+        "title": "Incidents and safe releases",
+        "subtitle": "Burn-rate alerts on quality, incident leadership, canaries and blameless learning",
+        "shape": "4 sessions · 4 labs",
+        "deck": "../slides/day3.html",
+        "md": "../slides/day3.md",
+        "url": "https://sdaiaacademy.github.io/ae-403/slides/day3.html",
+        "sessions": [
+          {
+            "n": 1,
+            "label": "Session 1",
+            "title": "Finding silent regressions",
+            "summary": "A quality budget burns silently; multi-window burn-rate alerts, sliced by language, find it in minutes",
+            "outcomes": [
+              "Compute burn rate on a quality indicator",
+              "Build a multi-window, multi-burn-rate alert",
+              "Locate a regression in time and in a slice"
+            ],
+            "lo": [
+              "LO1",
+              "LO4"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "3.1",
+              "title": "A burn-rate alert on quality",
+              "summary": "Build a burn-rate alert on the sampled quality indicator and locate the regression in a replayed day, first on all traffic and then by language.",
+              "minutes": 25,
+              "href": "../labs/D3_1_quality_burn_rate.ipynb",
+              "steps": [
+                {
+                  "text": "Quality burn rate per five minutes",
+                  "minutes": 5
+                },
+                {
+                  "text": "Two windows and two burn rates",
+                  "minutes": 7
+                },
+                {
+                  "text": "Replay the day: when does it fire?",
+                  "minutes": 5
+                },
+                {
+                  "text": "Slice by language and locate the regression",
+                  "minutes": 8
+                }
+              ],
+              "stretch": "Write the alert as a Prometheus rule and count its pages over the month"
+            }
+          },
+          {
+            "n": 2,
+            "label": "Session 2",
+            "title": "Running an incident",
+            "summary": "Roles, a decision log, mitigation before diagnosis, and personal data handled through the breach procedure",
+            "outcomes": [
+              "Run an incident in three roles with a decision log",
+              "Mitigate before diagnosing",
+              "Decide on breach notification from the facts"
+            ],
+            "lo": [
+              "LO4"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "3.2",
+              "title": "Game day: a model-update regression",
+              "summary": "Run a game day on a model-update regression as incident lead, operator and scribe, without AI assistance, keeping a decision log and deciding on breach notification.",
+              "minutes": 25,
+              "href": "../labs/D3_2_game_day.ipynb",
+              "steps": [
+                {
+                  "text": "Read the roles and the first page",
+                  "minutes": 3
+                },
+                {
+                  "text": "Detect and declare: first decisions",
+                  "minutes": 6
+                },
+                {
+                  "text": "Mitigate: choose and apply the action",
+                  "minutes": 7
+                },
+                {
+                  "text": "Personal data in answers: the breach decision",
+                  "minutes": 5
+                },
+                {
+                  "text": "Close and hand over the log",
+                  "minutes": 4
+                }
+              ],
+              "stretch": "Rerun the drill with a different first action and compare time to mitigate"
+            }
+          },
+          {
+            "n": 3,
+            "label": "Session 3",
+            "title": "Canary and rollback",
+            "summary": "A canary with enough samples and a per-language quality gate rolls back without a human",
+            "outcomes": [
+              "Design canary steps with analysis at each step",
+              "Size the minimum sample for a quality gate",
+              "Roll back automatically on latency or quality"
+            ],
+            "lo": [
+              "LO1",
+              "LO4"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "3.3",
+              "title": "Canary with automated rollback",
+              "summary": "Release two candidate model versions as canaries with automated rollback on a latency and quality gate: one promotes, one rolls back on Arabic quality.",
+              "minutes": 25,
+              "href": "../labs/D3_3_canary_rollback.ipynb",
+              "steps": [
+                {
+                  "text": "Read the steps and the gate",
+                  "minutes": 3
+                },
+                {
+                  "text": "Write the analysis for one step",
+                  "minutes": 7
+                },
+                {
+                  "text": "Add the minimum-sample rule",
+                  "minutes": 6
+                },
+                {
+                  "text": "Run both candidates and read the decisions",
+                  "minutes": 9
+                }
+              ],
+              "stretch": "Translate the gate into the supplied Argo Rollouts analysis template"
+            }
+          },
+          {
+            "n": 4,
+            "label": "Session 4",
+            "title": "Learning from incidents",
+            "summary": "Blameless reviews find contributing factors, own the actions and turn the cases into tests",
+            "outcomes": [
+              "Write a blameless timeline and contributing factors",
+              "Write corrective actions with an owner and a test",
+              "Turn an incident's failing cases into a regression test"
+            ],
+            "lo": [
+              "LO4"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "3.4",
+              "title": "Blameless review and regression test",
+              "summary": "Write a blameless review of a supplied incident and turn its failing cases into a regression test that fails on the bad version and passes on the fixed one.",
+              "minutes": 25,
+              "href": "../labs/D3_4_blameless_review.ipynb",
+              "steps": [
+                {
+                  "text": "Read the incident record",
+                  "minutes": 4
+                },
+                {
+                  "text": "Timeline and contributing factors",
+                  "minutes": 7
+                },
+                {
+                  "text": "Owned corrective actions",
+                  "minutes": 5
+                },
+                {
+                  "text": "The regression test: fails before, passes after",
+                  "minutes": 9
+                }
+              ],
+              "stretch": "Add the test to the canary gate of Lab 3.3"
+            }
+          }
+        ]
+      },
+      {
+        "id": "day4",
+        "kind": "day",
+        "n": 4,
+        "number": 4,
+        "label": "Day 4",
+        "title": "Integrity and readiness",
+        "subtitle": "Model provenance, signatures, bills of materials and production readiness reviews",
+        "shape": "4 sessions · 4 labs",
+        "deck": "../slides/day4.html",
+        "md": "../slides/day4.md",
+        "url": "https://sdaiaacademy.github.io/ae-403/slides/day4.html",
+        "sessions": [
+          {
+            "n": 1,
+            "label": "Session 1",
+            "title": "The model supply chain",
+            "summary": "A model is files from somewhere; provenance and a hash for every file say which ones",
+            "outcomes": [
+              "Trace a model artefact to its source and revision",
+              "Hash every file and compare with the publisher's list",
+              "Name where tampering hides in a model folder"
+            ],
+            "lo": [
+              "LO5"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "4.1",
+              "title": "Provenance and the tampered file",
+              "summary": "Trace the provenance of three model artefacts and find the tampered file by its hash.",
+              "minutes": 25,
+              "href": "../labs/D4_1_provenance.ipynb",
+              "steps": [
+                {
+                  "text": "Read the three provenance records",
+                  "minutes": 5
+                },
+                {
+                  "text": "Hash every file of each artefact",
+                  "minutes": 6
+                },
+                {
+                  "text": "Compare with the publisher's list",
+                  "minutes": 7
+                },
+                {
+                  "text": "Write the finding for the release engineer",
+                  "minutes": 7
+                }
+              ],
+              "stretch": "Find which file types can run code when loaded"
+            }
+          },
+          {
+            "n": 2,
+            "label": "Session 2",
+            "title": "Signing and verification",
+            "summary": "A signed manifest of hashes binds every file to a signer; verification fails on any change",
+            "outcomes": [
+              "Sign a model folder as a manifest of hashed files",
+              "Verify the signature at admission",
+              "Explain what a signature proves and what it does not"
+            ],
+            "lo": [
+              "LO5"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "4.2",
+              "title": "Sign and verify a model folder",
+              "summary": "Sign a manifest of model files with a key, verify it, and show that a changed file fails verification.",
+              "minutes": 25,
+              "href": "../labs/D4_2_signing.ipynb",
+              "steps": [
+                {
+                  "text": "Generate a key pair",
+                  "minutes": 3
+                },
+                {
+                  "text": "Sign the model folder",
+                  "minutes": 6
+                },
+                {
+                  "text": "Read the signed statement",
+                  "minutes": 5
+                },
+                {
+                  "text": "Verify, change one file, verify again",
+                  "minutes": 7
+                },
+                {
+                  "text": "Verify against the wrong key",
+                  "minutes": 4
+                }
+              ],
+              "stretch": "Sign only the files the engine loads and say what that leaves out"
+            }
+          },
+          {
+            "n": 3,
+            "label": "Session 3",
+            "title": "Bills of materials and admission",
+            "summary": "A machine learning bill of materials and an admission policy reject unsigned or unlicensed models",
+            "outcomes": [
+              "Write a CycloneDX ML-BOM for a model",
+              "Write an admission policy with logged reasons",
+              "Run the gate on valid, tampered and unlicensed artefacts"
+            ],
+            "lo": [
+              "LO5"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "4.3",
+              "title": "Bill of materials and admission gate",
+              "summary": "Write a bill of materials for the valid artefact and a policy that rejects unsigned, tampered or unlicensed models, then run the gate on all three with logs.",
+              "minutes": 25,
+              "href": "../labs/D4_3_bom_admission.ipynb",
+              "steps": [
+                {
+                  "text": "Write the ML-BOM and validate it",
+                  "minutes": 8
+                },
+                {
+                  "text": "Write the admission rules",
+                  "minutes": 7
+                },
+                {
+                  "text": "Run the gate on the three artefacts",
+                  "minutes": 6
+                },
+                {
+                  "text": "Read the logs as the auditor would",
+                  "minutes": 4
+                }
+              ],
+              "stretch": "Map each rule to the supplied Kyverno policy"
+            }
+          },
+          {
+            "n": 4,
+            "label": "Session 4",
+            "title": "Production readiness reviews",
+            "summary": "A readiness review ranks findings by risk and sets launch conditions the owner can meet",
+            "outcomes": [
+              "Apply a readiness checklist to another team's evidence",
+              "Rank findings by likelihood and impact",
+              "Set a launch decision with dated conditions"
+            ],
+            "lo": [
+              "LO6"
+            ],
+            "minutes": 50,
+            "lab": {
+              "id": "4.4",
+              "title": "Readiness review of Taqdir",
+              "summary": "Apply the readiness checklist to Taqdir, the cross-border team's delivery-estimate assistant, and rank the findings by risk.",
+              "minutes": 25,
+              "href": "../labs/D4_4_readiness_review.ipynb",
+              "steps": [
+                {
+                  "text": "Read the checklist and the evidence pack",
+                  "minutes": 5
+                },
+                {
+                  "text": "Score each item from the evidence",
+                  "minutes": 7
+                },
+                {
+                  "text": "Rank the findings by risk",
+                  "minutes": 6
+                },
+                {
+                  "text": "Launch decision and conditions",
+                  "minutes": 7
+                }
+              ],
+              "stretch": "Choose the capstone service and the first three items you will test"
+            }
+          }
+        ]
+      },
+      {
+        "id": "capstone",
+        "kind": "capstone",
+        "n": 5,
+        "number": null,
+        "label": "Capstone",
+        "title": "Readiness review defences",
+        "subtitle": "A production readiness review defended before a panel, with a live fault to diagnose",
+        "shape": "",
+        "deck": "../slides/capstone.html",
+        "md": "../slides/capstone.md",
+        "url": "https://sdaiaacademy.github.io/ae-403/slides/capstone.html",
+        "sessions": []
+      }
+    ],
+    "capstone": {
+      "summary": "A production readiness review of a peer's or a supplied AI service, covering objectives, capacity, degradation, incidents and release integrity with measured evidence in a public repository, defended before a panel of experienced engineers. The follow-up task applies one reliability standard to a service in the participant's own team or an open-source deployment",
+      "submission": "A public GitHub repository link: the readiness review (objectives, capacity, degradation, incident drill, release integrity) with its measured evidence, logs and commit history",
+      "talk_minutes": 10,
+      "qa_minutes": 5,
+      "rubric": [
+        {
+          "criterion": "Objectives and alerts",
+          "weight": 20
+        },
+        {
+          "criterion": "Capacity and degradation",
+          "weight": 25
+        },
+        {
+          "criterion": "Incident drill and review",
+          "weight": 20
+        },
+        {
+          "criterion": "Release integrity",
+          "weight": 15
+        },
+        {
+          "criterion": "Readiness decision",
+          "weight": 20
+        }
+      ]
+    },
+    "labs": {
+      "kind": "notebooks",
+      "base": "labs/"
+    },
+    "tools": [
+      {
+        "slot": "Inference engine",
+        "examples": [
+          "vLLM",
+          "SGLang",
+          "llama.cpp server"
+        ]
+      },
+      {
+        "slot": "Load generation",
+        "examples": [
+          "inference-perf",
+          "k6",
+          "Locust"
+        ]
+      },
+      {
+        "slot": "Metrics, traces and alerting",
+        "examples": [
+          "Prometheus with Grafana",
+          "an OpenTelemetry collector"
+        ]
+      },
+      {
+        "slot": "Fault injection",
+        "examples": [
+          "Chaos Mesh",
+          "Toxiproxy"
+        ]
+      },
+      {
+        "slot": "Progressive delivery",
+        "examples": [
+          "Argo Rollouts",
+          "Flagger"
+        ]
+      },
+      {
+        "slot": "Signing, bills of materials and admission",
+        "examples": [
+          "OpenSSF Model Signing",
+          "CycloneDX ML-BOM",
+          "Kyverno"
+        ]
+      },
+      {
+        "slot": "Single-node cluster",
+        "examples": [
+          "kind",
+          "k3s"
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "group": "Objectives, alerts and incidents",
+        "items": [
+          {
+            "title": "Google SRE Workbook: Implementing SLOs",
+            "url": "https://sre.google/workbook/implementing-slos/"
+          },
+          {
+            "title": "Google SRE Workbook: Example Error Budget Policy",
+            "url": "https://sre.google/workbook/error-budget-policy/"
+          },
+          {
+            "title": "Google SRE Workbook: Alerting on SLOs",
+            "url": "https://sre.google/workbook/alerting-on-slos/"
+          },
+          {
+            "title": "Google SRE Workbook: Incident Response",
+            "url": "https://sre.google/workbook/incident-response/"
+          },
+          {
+            "title": "Google SRE Book: Postmortem Culture: Learning from Failure",
+            "url": "https://sre.google/sre-book/postmortem-culture/"
+          },
+          {
+            "title": "Google SRE Book: The Evolving SRE Engagement Model (production readiness reviews)",
+            "url": "https://sre.google/sre-book/evolving-sre-engagement-model/"
+          },
+          {
+            "title": "OpenTelemetry semantic conventions for generative AI: metrics",
+            "url": "https://github.com/open-telemetry/semantic-conventions-genai"
+          }
+        ]
+      },
+      {
+        "group": "Capacity, overload and degradation",
+        "items": [
+          {
+            "title": "Google SRE Book: Handling Overload",
+            "url": "https://sre.google/sre-book/handling-overload/"
+          },
+          {
+            "title": "Google SRE Book: Addressing Cascading Failures",
+            "url": "https://sre.google/sre-book/addressing-cascading-failures/"
+          },
+          {
+            "title": "vLLM documentation: Metrics",
+            "url": "https://docs.vllm.ai/en/latest/design/metrics.html"
+          },
+          {
+            "title": "inference-perf: a benchmarking tool for generative AI inference (Kubernetes SIGs)",
+            "url": "https://github.com/kubernetes-sigs/inference-perf"
+          },
+          {
+            "title": "Toxiproxy",
+            "url": "https://github.com/Shopify/toxiproxy"
+          },
+          {
+            "title": "Chaos Mesh documentation",
+            "url": "https://chaos-mesh.org/docs/"
+          }
+        ]
+      },
+      {
+        "group": "Releases and model integrity",
+        "items": [
+          {
+            "title": "Google SRE Workbook: Canarying Releases",
+            "url": "https://sre.google/workbook/canarying-releases/"
+          },
+          {
+            "title": "Argo Rollouts: Analysis and Progressive Delivery",
+            "url": "https://argo-rollouts.readthedocs.io/en/stable/features/analysis/"
+          },
+          {
+            "title": "Flagger documentation",
+            "url": "https://docs.flagger.app/"
+          },
+          {
+            "title": "OpenSSF Model Signing (sigstore/model-transparency)",
+            "url": "https://github.com/sigstore/model-transparency"
+          },
+          {
+            "title": "CycloneDX: Machine Learning Bill of Materials (ML-BOM)",
+            "url": "https://cyclonedx.org/capabilities/mlbom/"
+          },
+          {
+            "title": "CycloneDX specification overview",
+            "url": "https://cyclonedx.org/specification/overview/"
+          },
+          {
+            "title": "Kyverno: validate rules",
+            "url": "https://kyverno.io/docs/policy-types/cluster-policy/validate/"
+          }
+        ]
+      },
+      {
+        "group": "National references",
+        "items": [
+          {
+            "title": "Personal Data Protection Law (SDAIA)",
+            "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf"
+          },
+          {
+            "title": "Personal Data Breach Incidents procedural guide (SDAIA)",
+            "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataBreachIncidents.pdf"
+          },
+          {
+            "title": "NDMO Data Classification Policy",
+            "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf"
+          },
+          {
+            "title": "National Cybersecurity Authority: Cloud Cybersecurity Controls (CCC)",
+            "url": "https://nca.gov.sa/en/regulatory-documents/controls-list/ccc/"
+          },
+          {
+            "title": "National AI Risk Management Framework: executive summary (SDAIA)",
+            "url": "https://sdaia.gov.sa/en/MediaCenter/KnowledgeCenter/ResearchLibrary/ExecutiveSummaryEn.pdf"
+          }
+        ]
+      }
+    ]
+  }
+}

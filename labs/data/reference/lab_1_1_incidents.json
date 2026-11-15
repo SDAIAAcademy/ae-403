@@ -1,0 +1,47 @@
+{
+ "__frame__": true,
+ "columns": [
+  "start",
+  "day",
+  "minute_of_day",
+  "minutes",
+  "probe_caught"
+ ],
+ "rows": [
+  [
+   2621,
+   1,
+   1181,
+   105,
+   false
+  ],
+  [
+   4110,
+   2,
+   1230,
+   70,
+   false
+  ],
+  [
+   4920,
+   3,
+   600,
+   50,
+   false
+  ],
+  [
+   6600,
+   4,
+   840,
+   40,
+   false
+  ],
+  [
+   7500,
+   5,
+   300,
+   17,
+   true
+  ]
+ ]
+}

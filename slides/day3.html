@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-ax="deck" data-track="ai-engineering">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 3 · Incidents and safe releases · Reliability Engineering for AI Services</title>
+<meta name="generator" content="SDAIA Academy engine 1.0.0">
+<link rel="icon" href="../_engine/icon.svg">
+<link rel="alternate" type="text/markdown" href="day3.md">
+<link rel="describedby" href="../llms.txt">
+<link rel="stylesheet" href="../_engine/academy.css">
+</head>
+<body>
+<div class="deck" data-course="Reliability Engineering for AI Services" data-track="ai-engineering" data-day="Day 3">
+<section class="slide title" id="title" data-auto="title" data-label="Welcome" data-n="1">
+  <div class="kicker">SDAIA Academy · Reliability Engineering for AI Services</div>
+  <h1>Incidents and safe releases</h1>
+  <p class="lead mt">Day 3: Burn-rate alerts on quality, incident leadership, canaries and blameless learning</p>
+  <div class="meta"><span class="track">AI Engineering Track</span><span>4 teaching days + capstone day</span><span>4 sessions · 4 labs</span><span>AE-403</span></div>
+  <aside class="notes"><p>Today follows one incident from its alert to its review: a model update that broke Arabic answers silently. Session 2 is a game day without AI assistance; groups of three. Every lab starts from supplied files.</p></aside>
+</section>
+
+<section class="slide" id="agenda" data-auto="agenda" data-label="Agenda" data-n="2">
+  <div class="kicker">Today</div>
+  <h2>Incidents and safe releases</h2>
+  <div class="agenda"><div class="item"><div><b>Session 1 · Finding silent regressions</b><small>A quality budget burns silently; multi-window burn-rate alerts, sliced by language, find it in minutes</small></div></div><div class="item"><div><b>Session 2 · Running an incident</b><small>Roles, a decision log, mitigation before diagnosis, and personal data handled through the breach procedure</small></div></div><div class="item"><div><b>Session 3 · Canary and rollback</b><small>A canary with enough samples and a per-language quality gate rolls back without a human</small></div></div><div class="item"><div><b>Session 4 · Learning from incidents</b><small>Blameless reviews find contributing factors, own the actions and turn the cases into tests</small></div></div></div>
+</section>
+
+<section class="slide" id="review-day2" data-lo="LO3" data-n="3">
+  <div class="kicker">Review of Day 2</div>
+  <h2>Which degraded mode for Arabic help questions?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3" data-id="review-day2-q1">
+    <p class="lead">The engine is down. The fallback model passes 87% of English and 73% of Arabic test questions; the cache answers 63% of Arabic help questions, all correctly. The minimum service is 85% per language. What do Arabic help questions get?</p>
+    <div class="opts">
+      <div class="opt" data-why="Applies one route to both languages although their modes perform differently" data-k="A">The fallback model, like English</div>
+      <div class="opt" data-why="Gives up a service that the cache can partly keep" data-k="B">An apology for every Arabic question</div>
+      <div class="opt" data-ok data-k="C">The cache first, the fallback on a miss, both disclosed</div>
+      <div class="opt" data-why="Serves cached answers without the freshness and personal-data checks" data-k="D">The full cache, including saved tracking answers</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Routed this way, Arabic help passed 91.1% in Lab 2.3, above the minimum; the fallback alone gave 72.6%.</div>
+  </div>
+  <aside class="notes"><p>Answer: C. Option D is the breach trap of Lab 2.3: saved tracking answers carry another customer's name and address.</p></aside>
+</section>
+
+<!-- ======================= SESSION 1 ======================= -->
+<section class="slide section" id="s1" data-auto="section" data-session="1" data-n="4">
+  <div class="kicker">Session 1</div>
+  <h1>Finding silent regressions</h1>
+  <ul class="bullets outcomes"><li>Compute burn rate on a quality indicator</li><li>Build a multi-window, multi-burn-rate alert</li><li>Locate a regression in time and in a slice</li></ul>
+  <div class="sess-no">01</div>
+</section>
+
+<section class="slide" id="silent-regression" data-lo="LO4" data-n="5" data-session="1">
+  <div class="kicker">Silent regressions</div>
+  <h2>A model update can fail one language without a single error</h2>
+  <div class="cols cols-2">
+    <ul class="bullets small">
+      <li>Every request returns 200, latency is normal, the probe is green</li>
+      <li>Arabic answers fail 38% of the time; English is unchanged</li>
+      <li>Only the sampled quality indicator moves, and only in its Arabic slice</li>
+    </ul>
+    <div class="card c-coral flat"><h4>The replayed day</h4><p class="small mb0"><code>replay_day.csv</code>: 288 five-minute slots. Athar v2.4 goes out at slot 130.</p></div>
+  </div>
+  <aside class="notes"><p>This is the same kind of failure as Day 1's first incident, now caused by a release. The question of the session: how fast does your alerting find it?</p></aside>
+</section>
+
+<section class="slide" id="burn-rate" data-lo="LO1 LO4" data-n="6" data-session="1">
+  <div class="kicker">Burn rate</div>
+  <h2>Burn rate is how fast the budget is being spent</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="stat center"><div class="big">1×</div><div class="lbl">spends the 30-day budget in 30 days</div></div>
+    <div class="stat center"><div class="big">6×</div><div class="lbl">spends 5% of it in 6 hours</div></div>
+    <div class="stat center"><div class="big">14.4×</div><div class="lbl">spends 2% of it in one hour</div></div>
+  </div>
+  <p class="small mt">Burn rate = error rate in the window ÷ (1 − objective). With a 95% quality objective, 14.4× means 72% of answers failing.</p>
+  <aside class="notes"><p>The SRE workbook's recommended starting points: page at 14.4× over one hour and five minutes, and at 6× over six hours and thirty minutes; ticket at 1× over three days. They were designed for availability budgets of 0.1%, where 14.4× is an error rate of 1.4%.</p><p>Sources: Google SRE workbook, Alerting on SLOs.</p></aside>
+</section>
+
+<section class="slide" id="two-windows" data-lo="LO4" data-n="7" data-session="1">
+  <div class="kicker">Multi-window alerts</div>
+  <h2>Two windows: one proves it matters, one proves it is still happening</h2>
+  <pre class="code s" data-file="Lab 3.1"><code>def fires(g, long, short, rate):
+    lw = U.burn_rate(g.bad, g.graded, 0.95, long)
+    sw = U.burn_rate(g.bad, g.graded, 0.95, short)
+    return (lw &gt; rate) &amp; (sw &gt; rate)</code></pre>
+  <p class="small mt">Without the short window, the alert keeps firing for hours after the fix; without the long one, a single bad five minutes pages someone.</p>
+  <aside class="notes"><p>Windows are counted in five-minute slots: one hour is 12 slots. Ask: what happens to a regression that affects ten minutes in every hour? The workbook discusses this weakness of short windows.</p></aside>
+</section>
+
+<section class="slide" id="when-it-fires" data-lo="LO1 LO4" data-n="8" data-session="1">
+  <div class="kicker">Lab 3.1 · the replay</div>
+  <h2>The averaged alert never fires; the Arabic one fires in 35 minutes</h2>
+  <table class="t small">
+    <tr><th>Tier</th><th>All traffic</th><th>Arabic slice</th></tr>
+    <tr><td>fast page: 1 h and 5 min at 14.4×</td><td>never</td><td>never</td></tr>
+    <tr><td>slow page: 6 h and 30 min at 6×</td><td>never</td><td>after 255 min</td></tr>
+    <tr class="hl"><td>quality: 1 h and 5 min at 6×</td><td>never</td><td>after 35 min</td></tr>
+  </table>
+  <p class="small mt">After the update Arabic burns at about 8×, English at about 0.6×, all traffic at about 5×.</p>
+  <aside class="notes"><p>The third tier is the course's proposal for quality objectives: step changes after releases need a short long-window. It costs more pages on noisy days; the stretch counts them over the month.</p></aside>
+</section>
+
+<section class="slide" id="locate-regression" data-lo="LO4" data-n="9" data-session="1">
+  <div class="kicker">Locating it</div>
+  <h2>Put the change log next to the slice: slot 131 against a deploy at 130</h2>
+  <div class="cols cols-2">
+    <div class="trace s">
+      <div class="ev result dim"><b>slot 40</b>help index refresh (English)</div>
+      <div class="ev error"><b>slot 130</b>model update: athar-v2.4</div>
+      <div class="ev result dim"><b>slot 210</b>gateway configuration</div>
+    </div>
+    <ul class="bullets small">
+      <li>Arabic 30-minute error rate above 10% from slot 131, for the rest of the day</li>
+      <li>The English slice did not move: the change is language-specific</li>
+      <li>A step change right after a release points at the release</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>Correlation is enough to decide a rollback, not to explain it. The explanation comes in Lab 3.4: Eastern Arabic digits and a dropped normalisation step.</p></aside>
+</section>
+
+<section class="slide" id="alert-as-code" data-lo="LO4" data-n="10" data-session="1">
+  <div class="kicker">The rule</div>
+  <h2>The alert is code in the repository, reviewed like code</h2>
+  <pre class="code s" data-file="Prometheus rule (Lab 3.1)"><code>- alert: AtharArabicQualityBurn
+  expr: (athar:quality_bad:ratio_rate1h{lang="ar"} &gt; (6 * 0.05))
+    and (athar:quality_bad:ratio_rate5m{lang="ar"} &gt; (6 * 0.05))
+  labels:
+    severity: page</code></pre>
+  <aside class="notes"><p>The recording rules athar:quality_bad:* are assumed to exist; Prometheus with Grafana is one example of the metrics slot. One rule per language, generated from the objectives file so they never drift apart.</p></aside>
+</section>
+
+<section class="slide" id="check-averaged" data-lo="LO4" data-n="11" data-session="1">
+  <div class="kicker">Checkpoint</div>
+  <h2>Why did the alert stay silent?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4" data-id="check-averaged-q1">
+    <p class="lead">After v2.4, 38% of Arabic answers fail and English is unchanged. Arabic is 60% of traffic. The 6× quality alert on all traffic never fires. Why?</p>
+    <div class="opts">
+      <div class="opt" data-why="Blames sampling, but the Arabic slice alone has enough samples to fire" data-k="A">Too few answers are graded to see it</div>
+      <div class="opt" data-ok data-k="B">The English slice keeps the combined burn rate near 5×, below the threshold</div>
+      <div class="opt" data-why="Confuses the two windows: the short window is above the threshold too" data-k="C">The five-minute window is too short</div>
+      <div class="opt" data-why="Treats the objective as the cause; any objective averaged over both languages hides the slice" data-k="D">The 95% objective is too strict</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Averaging dilutes a one-language failure. The objective and its alert must be per language.</div>
+  </div>
+  <aside class="notes"><p>Answer: B.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-3-1" data-auto="lab" data-lab="3.1" data-label="Lab 3.1" data-n="12" data-session="1">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 3.1 · 25 min</div><h2>A burn-rate alert on quality</h2><p class="lead small">Build a burn-rate alert on the sampled quality indicator and locate the regression in a replayed day, first on all traffic and then by language.</p><a class="nb" href="../labs/D3_1_quality_burn_rate.ipynb">D3_1_quality_burn_rate.ipynb</a></div><ul class="checklist"><li>Quality burn rate per five minutes <span class="min">5 min</span></li><li>Two windows and two burn rates <span class="min">7 min</span></li><li>Replay the day: when does it fire? <span class="min">5 min</span></li><li>Slice by language and locate the regression <span class="min">8 min</span></li><li class="stretch">✱ Stretch: Write the alert as a Prometheus rule and count its pages over the month</li></ul></div>
+  <aside class="notes"><p>Watch for: windows given in minutes instead of slots; a burn rate computed on requests instead of graded answers. The stretch writes the rule and counts how often it would have paged in the month.</p></aside>
+</section>
+
+<!-- ======================= SESSION 2 ======================= -->
+<section class="slide section" id="s2" data-auto="section" data-session="2" data-n="13">
+  <div class="kicker">Session 2</div>
+  <h1>Running an incident</h1>
+  <ul class="bullets outcomes"><li>Run an incident in three roles with a decision log</li><li>Mitigate before diagnosing</li><li>Decide on breach notification from the facts</li></ul>
+  <div class="sess-no">02</div>
+</section>
+
+<section class="slide" id="three-roles" data-lo="LO4" data-n="14" data-session="2">
+  <div class="kicker">Incident roles</div>
+  <h2>Three roles keep deciding, doing and recording apart</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-navy"><h4>Incident lead</h4><p class="small mb0">Decides and sets priorities. Talks to the service owner. Does not type commands.</p></div>
+    <div class="card c-teal"><h4>Operator</h4><p class="small mb0">Runs the mitigation and reports what the system shows.</p></div>
+    <div class="card c-purple"><h4>Scribe</h4><p class="small mb0">Keeps the decision log: minute, role, decision, reason.</p></div>
+  </div>
+  <aside class="notes"><p>The SRE workbook's incident response chapter separates command, operations and communications roles. Three is enough for a team of Athar's size; the separation matters more than the titles.</p><p>Sources: Google SRE workbook, Incident Response.</p></aside>
+</section>
+
+<section class="slide" id="mitigate-first" data-lo="LO4" data-n="15" data-session="2">
+  <div class="kicker">The first rule</div>
+  <h2>Mitigate first; diagnose on a copy</h2>
+  <div class="cols cols-2">
+    <div class="stat center"><div class="big">5 min</div><div class="lbl">to mitigate when the lead rolls back first: 32 exposed answers</div></div>
+    <div class="stat center"><div class="big">35 min</div><div class="lbl">when the team diagnoses first: 56 exposed answers</div></div>
+  </div>
+  <p class="small mt">Lab 3.2's simulator. A rollback is reversible; the minutes customers spend receiving wrong answers are not.</p>
+  <aside class="notes"><p>The exposed answers are answers carrying another customer's parcel record. The 35 minutes before the page count in both plans: alerting speed is part of the incident.</p></aside>
+</section>
+
+<section class="slide" id="decision-log" data-lo="LO4" data-n="16" data-session="2">
+  <div class="kicker">The decision log</div>
+  <h2>Every decision gets a minute, an owner and a reason</h2>
+  <table class="t small">
+    <tr><th class="num">T+</th><th>Role</th><th>Decision</th><th>Reason</th></tr>
+    <tr><td class="num">1</td><td>lead</td><td>declare</td><td>quality alert; release 35 minutes earlier</td></tr>
+    <tr><td class="num">5</td><td>lead</td><td>roll back v2.4</td><td>complaints confirm impact; only recent change; reversible</td></tr>
+    <tr><td class="num">10</td><td>lead</td><td>page the DPO</td><td>a customer saw another customer's address</td></tr>
+    <tr><td class="num">40</td><td>lead</td><td>notify SDAIA</td><td>names and addresses exposed: harm likely</td></tr>
+  </table>
+  <aside class="notes"><p>From the lab's reference plan. The log is the material of Lab 3.4's review; a log without reasons cannot be reviewed fairly, because nobody can see what was known at the time.</p></aside>
+</section>
+
+<section class="slide" id="breach-procedure" data-lo="LO4" data-n="17" data-session="2">
+  <div class="kicker">Responsible use</div>
+  <h2>Personal data in answers is a breach: follow the procedure</h2>
+  <div class="flow">
+    <div class="step c-coral"><b>Contain</b>stop the exposure: the rollback</div>
+    <div class="arrow">→</div>
+    <div class="step c-purple"><b>Assess</b>data, people, likely harm, with the DPO</div>
+    <div class="arrow">→</div>
+    <div class="step c-navy"><b>Notify</b>SDAIA within 72 hours of awareness, if harm is expected</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>Document</b>the notice, the actions, the lessons</div>
+  </div>
+  <aside class="notes"><p>SDAIA's procedural guide for handling personal data breach incidents: notify SDAIA within 72 hours of becoming aware when the incident is expected to harm the data or the data subjects, through the national platform; contain; notify data subjects without undue delay when it harms them; keep the documents. National Cybersecurity Authority reporting rules may apply as well. Ithar Al-Hammadi decides with the lead, not after the incident.</p><p>Sources: SDAIA, Procedural Guide for Handling Personal Data Breach Incidents; Personal Data Protection Law.</p></aside>
+</section>
+
+<section class="slide" id="awareness-clock" data-lo="LO4" data-n="18" data-session="2">
+  <div class="kicker">What goes wrong</div>
+  <h2>The 72 hours start at awareness, not at the root cause</h2>
+  <ul class="bullets">
+    <li>Awareness came at T+9, when a customer reported another person's address</li>
+    <li>Waiting for the root cause before assessing spends the clock on the wrong question</li>
+    <li>Preserve the evidence before the rollback overwrites the logs you will need</li>
+  </ul>
+  <aside class="notes"><p>The breach guide lists what the notice contains: a description, the categories and numbers of people, the risks and remedies, whether data subjects are told, and contacts. The assessment at T+20 gathers exactly these.</p></aside>
+</section>
+
+<section class="slide" id="check-first-action" data-lo="LO4" data-n="19" data-session="2">
+  <div class="kicker">Checkpoint</div>
+  <h2>Order the first actions</h2>
+  <div class="quiz" data-type="order" data-lo="LO4" data-id="check-first-action-q1">
+    <p class="lead">The Arabic quality alert pages you; v2.4 went out 35 minutes ago. Put the first four actions in order.</p>
+    <div class="opts">
+      <div class="opt" data-k="A">Declare the incident and assign the roles</div>
+      <div class="opt" data-k="B">Roll back to v2.3</div>
+      <div class="opt" data-k="C">Page the data protection officer once personal data is reported</div>
+      <div class="opt" data-k="D">Start root-cause analysis</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Roles first so decisions have an owner, then the reversible mitigation, then the breach procedure, and only then the diagnosis.</div>
+  </div>
+  <aside class="notes"><p>This is the supervised check's third item type: order first actions in an incident, AI-off. Discuss any group that put root cause second: what did each minute cost?</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-3-2" data-auto="lab" data-lab="3.2" data-label="Lab 3.2" data-n="20" data-session="2">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 3.2 · 25 min</div><h2>Game day: a model-update regression</h2><p class="lead small">Run a game day on a model-update regression as incident lead, operator and scribe, without AI assistance, keeping a decision log and deciding on breach notification.</p><a class="nb" href="../labs/D3_2_game_day.ipynb">D3_2_game_day.ipynb</a></div><ul class="checklist"><li>Read the roles and the first page <span class="min">3 min</span></li><li>Detect and declare: first decisions <span class="min">6 min</span></li><li>Mitigate: choose and apply the action <span class="min">7 min</span></li><li>Personal data in answers: the breach decision <span class="min">5 min</span></li><li>Close and hand over the log <span class="min">4 min</span></li><li class="stretch">✱ Stretch: Rerun the drill with a different first action and compare time to mitigate</li></ul></div>
+  <aside class="notes"><p>AI-off: no assistant in the room. Groups of three; rotate roles in the stretch. Watch for: a plan with no reason column; notifying SDAIA without an assessment; customers told before the DPO is involved. Debrief with two groups' logs side by side.</p></aside>
+</section>
+
+<!-- ======================= SESSION 3 ======================= -->
+<section class="slide section" id="s3" data-auto="section" data-session="3" data-n="21">
+  <div class="kicker">Session 3</div>
+  <h1>Canary and rollback</h1>
+  <ul class="bullets outcomes"><li>Design canary steps with analysis at each step</li><li>Size the minimum sample for a quality gate</li><li>Roll back automatically on latency or quality</li></ul>
+  <div class="sess-no">03</div>
+</section>
+
+<section class="slide" id="canary-recap" data-lo="LO1 LO4" data-n="22" data-session="3">
+  <div class="kicker">Recap from AE-305</div>
+  <h2>A canary is a release that can stop itself</h2>
+  <div class="flow">
+    <div class="step c-teal"><b>5%</b>10 min</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>25%</b>20 min</div>
+    <div class="arrow">→</div>
+    <div class="step c-purple"><b>50%</b>20 min</div>
+    <div class="arrow">→</div>
+    <div class="step c-navy"><b>100%</b>promote</div>
+  </div>
+  <p class="small mt">Analysis at every step; a failed step rolls back without a human. Progressive delivery tools such as Argo Rollouts or Flagger run the steps; your gate decides them.</p>
+  <aside class="notes"><p>AE-305 Day 2 built a canary on replayed traffic. Here the question is the standard: what must a gate check, on how many samples, before a model reaches everyone? The supplied labs/release/analysis-template.yaml shows the same gate in Argo Rollouts form.</p></aside>
+</section>
+
+<section class="slide" id="old-gate" data-lo="LO1 LO4" data-n="23" data-session="3">
+  <div class="kicker">Lab 3.3 · the old pipeline</div>
+  <h2>Ten minutes at 5% promoted the int4 model on 27 Arabic answers</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>Latency</h4><p class="small mb0">Canary p95 1,174 ms against stable 1,455 ms: the 4-bit model is faster.</p></div>
+    <div class="card c-coral"><h4>Quality</h4><p class="small mb0">26 of 27 graded Arabic answers passed. Its true Arabic rate is 90.5%, against 97% for stable.</p></div>
+  </div>
+  <aside class="notes"><p>The true rates are the simulator's settings; the participants see only the samples. With 27 samples a 90% model passes the gate by luck about a quarter of the time; on this run it did.</p></aside>
+</section>
+
+<section class="slide" id="minimum-sample" data-lo="LO4" data-n="24" data-session="3">
+  <div class="kicker">The minimum sample</div>
+  <h2>No quality verdict below 200 graded answers per language</h2>
+  <ul class="bullets">
+    <li>Latency is judged at every step: it has thousands of samples</li>
+    <li>Quality is judged on the cumulative canary samples, once each language has 200</li>
+    <li>Before that the step continues, and the release cannot reach 100%</li>
+    <li>Canary answers are graded at 30%, stable ones at 5%, to reach 200 in minutes</li>
+  </ul>
+  <aside class="notes"><p>200 is a course choice: it detects a drop of a few points from 97% with reasonable confidence. Participants must justify their own number in the capstone. The SRE workbook's canarying chapter discusses population size and the reduced overall error rate a canary sees.</p><p>Sources: Google SRE workbook, Canarying Releases.</p></aside>
+</section>
+
+<section class="slide" id="canary-decisions" data-lo="LO1 LO4" data-n="25" data-session="3">
+  <div class="kicker">Lab 3.3 · the designed gate</div>
+  <h2>v2.6 is promoted; the int4 model rolls back at 25%</h2>
+  <table class="t small">
+    <tr><th>Candidate</th><th>5%</th><th>25%</th><th>50%</th><th>Decision</th></tr>
+    <tr><td>v2.6</td><td>continue (35 ar)</td><td>pass (305 ar)</td><td>pass</td><td>promoted</td></tr>
+    <tr class="hl"><td>v2.6-int4</td><td>continue (27 ar)</td><td>fail: ar 91.2% against 96.6%</td><td></td><td>rolled back</td></tr>
+  </table>
+  <aside class="notes"><p>At 25% the English sample also dipped below stable (96.0% against 99.1%, a lucky stable sample). Ask: would you investigate English too? Yes, but the Arabic gap alone is decisive.</p></aside>
+</section>
+
+<section class="slide" id="gate-as-policy" data-lo="LO1 LO4" data-n="26" data-session="3">
+  <div class="kicker">The standard you set</div>
+  <h2>The release gate is the error budget policy, automated</h2>
+  <table class="t small">
+    <tr><th>Rule</th><th>Value</th></tr>
+    <tr><td>first-token p95</td><td>at most 1.2 × stable, every step</td></tr>
+    <tr><td>quality per language</td><td>at least stable minus 3 points</td></tr>
+    <tr><td>minimum sample</td><td>200 graded answers per language, cumulative</td></tr>
+    <tr><td>on failure</td><td>automatic rollback, alert to the release engineer</td></tr>
+  </table>
+  <aside class="notes"><p>Link back to Day 1: RR-1, the frozen model update, can go through this gate as a fix only because the gate measures Arabic quality. That is the escape the release policy needed.</p></aside>
+</section>
+
+<section class="slide" id="check-canary" data-lo="LO4" data-n="27" data-session="3">
+  <div class="kicker">Checkpoint</div>
+  <h2>The canary passed; should it have?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4" data-id="check-canary-q1">
+    <p class="lead">A canary ran 10 minutes at 5% and passed with 25 of 26 Arabic answers correct, against 97% for stable. What do you do before promoting?</p>
+    <div class="opts">
+      <div class="opt" data-why="Treats a pass on a tiny sample as evidence of quality" data-k="A">Promote: 96% is within the 3-point margin</div>
+      <div class="opt" data-why="Discards a candidate on no evidence of a problem" data-k="B">Roll back: the sample is too small to trust</div>
+      <div class="opt" data-ok data-k="C">Continue at a larger share until each language has the minimum sample</div>
+      <div class="opt" data-why="Moves the decision to people without new evidence" data-k="D">Ask the evaluation team to approve by hand</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> 26 answers cannot tell 97% from 90%. The gate holds the decision until the sample can.</div>
+  </div>
+  <aside class="notes"><p>Answer: C.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-3-3" data-auto="lab" data-lab="3.3" data-label="Lab 3.3" data-n="28" data-session="3">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 3.3 · 25 min</div><h2>Canary with automated rollback</h2><p class="lead small">Release two candidate model versions as canaries with automated rollback on a latency and quality gate: one promotes, one rolls back on Arabic quality.</p><a class="nb" href="../labs/D3_3_canary_rollback.ipynb">D3_3_canary_rollback.ipynb</a></div><ul class="checklist"><li>Read the steps and the gate <span class="min">3 min</span></li><li>Write the analysis for one step <span class="min">7 min</span></li><li>Add the minimum-sample rule <span class="min">6 min</span></li><li>Run both candidates and read the decisions <span class="min">9 min</span></li><li class="stretch">✱ Stretch: Translate the gate into the supplied Argo Rollouts analysis template</li></ul></div>
+  <aside class="notes"><p>Watch for: judging quality per step instead of cumulatively; letting "continue" reach 100%. The stretch maps the Python gate onto the Argo Rollouts template: the minimum-sample rule needs a metric the template does not have yet.</p></aside>
+</section>
+
+<!-- ======================= SESSION 4 ======================= -->
+<section class="slide section" id="s4" data-auto="section" data-session="4" data-n="29">
+  <div class="kicker">Session 4</div>
+  <h1>Learning from incidents</h1>
+  <ul class="bullets outcomes"><li>Write a blameless timeline and contributing factors</li><li>Write corrective actions with an owner and a test</li><li>Turn an incident's failing cases into a regression test</li></ul>
+  <div class="sess-no">04</div>
+</section>
+
+<section class="slide" id="blameless" data-lo="LO4" data-n="30" data-session="4">
+  <div class="kicker">Blameless reviews</div>
+  <h2>A blameless review asks what made the error easy, not who made it</h2>
+  <div class="cols cols-2">
+    <div class="card c-coral flat"><h4>Not a factor</h4><p class="small mb0">"The engineer did not test Arabic."</p></div>
+    <div class="card c-teal flat"><h4>A factor</h4><p class="small mb0">"The evaluation set had no Arabic tracking questions and no Eastern Arabic digits."</p></div>
+  </div>
+  <p class="small mt">The SRE book: a blameless postmortem focuses on the contributing causes without indicting any individual or team.</p>
+  <aside class="notes"><p>The second sentence leads to a fix any engineer benefits from; the first leads to a more careful engineer and the same gap. Lab 3.4's check flags names and phrases such as "human error" and "should have".</p><p>Sources: Google SRE book, Postmortem Culture.</p></aside>
+</section>
+
+<section class="slide" id="contributing-factors" data-lo="LO4" data-n="31" data-session="4">
+  <div class="kicker">Lab 3.4 · INC-0731</div>
+  <h2>Five conditions made the incident possible</h2>
+  <ol class="bullets small">
+    <li>The offline evaluation set had no Arabic tracking questions</li>
+    <li>The v2.4 prompt template dropped digit normalisation</li>
+    <li>The tracking lookup fell back to the nearest parcel instead of refusing</li>
+    <li>The release went to everyone at once, with no quality gate</li>
+    <li>On-call had no written authority to roll back</li>
+  </ol>
+  <aside class="notes"><p>Each factor in the lab carries its evidence from the record (a chat line, a fact, a timeline entry). Factor 3 is why a quality bug became a personal data breach: an unsafe default in a dependency.</p></aside>
+</section>
+
+<section class="slide" id="owned-actions" data-lo="LO4" data-n="32" data-session="4">
+  <div class="kicker">Corrective actions</div>
+  <h2>An action has an owning role, a date and a check</h2>
+  <table class="t small">
+    <tr><th>Action</th><th>Owner</th><th class="num">Days</th><th>Done when</th></tr>
+    <tr><td>Normalise digits in the gateway</td><td>model platform</td><td class="num">7</td><td>unit test with Eastern Arabic digits passes</td></tr>
+    <tr><td>Lookup refuses inexact matches</td><td>tracking API team</td><td class="num">7</td><td>unknown number returns "not found"</td></tr>
+    <tr><td>Every model release through the canary gate</td><td>release engineer</td><td class="num">21</td><td>pipeline refuses a release without a verdict</td></tr>
+  </table>
+  <aside class="notes"><p>Three of the five actions from the lab. "Be more careful" has no check, so it is not an action. Owners are roles: people change jobs, roles stay.</p></aside>
+</section>
+
+<section class="slide" id="case-to-test" data-lo="LO4" data-n="33" data-session="4">
+  <div class="kicker">From case to test</div>
+  <h2>The incident's cases become a test that failed before the fix</h2>
+  <pre class="code s" data-file="Lab 3.4"><code>def check_case(answer, case):
+    a = U.normalise_digits(answer)
+    problems = []
+    if case["asked_parcel"] not in a:
+        problems.append("does not name the parcel asked about")
+    if [p for p in U.PARCEL_RE.findall(a) if p != case["asked_parcel"]]:
+        problems.append("names another customer's parcel")
+    return problems</code></pre>
+  <p class="small mt">v2.4 passes 0 of 12 cases; v2.4.1 passes 12 of 12.</p>
+  <aside class="notes"><p>Replaying recorded failures as regression cases was AE-305's Day 4 technique; here the source is the review. A test that passes on the broken version proves nothing: make it fail first.</p></aside>
+</section>
+
+<section class="slide" id="review-template" data-lo="LO4" data-n="34" data-session="4">
+  <div class="kicker">The standard you set</div>
+  <h2>Every review has the same five parts</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-navy"><h4>Timeline</h4><p class="small mb0">from the decision log, in minutes from the page</p></div>
+    <div class="card c-teal"><h4>Impact</h4><p class="small mb0">users, answers, data, budget spent</p></div>
+    <div class="card c-coral"><h4>Factors</h4><p class="small mb0">conditions, each with evidence</p></div>
+  </div>
+  <div class="cols cols-2 gap-s mt-s">
+    <div class="card c-purple"><h4>Actions</h4><p class="small mb0">owned, dated, checked</p></div>
+    <div class="card c-cyan"><h4>Tests</h4><p class="small mb0">the cases, in the release gate</p></div>
+  </div>
+  <aside class="notes"><p>The capstone's incident evidence is exactly this: a timeline, a decision log, owned corrective actions and a new regression test (LO4's evidence line in the catalog).</p></aside>
+</section>
+
+<section class="slide" id="check-factor" data-lo="LO4" data-n="35" data-session="4">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which line belongs in the review?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4" data-id="check-factor-q1">
+    <p class="lead">Four draft lines for INC-0731's contributing factors. Which one belongs in a blameless review?</p>
+    <div class="opts">
+      <div class="opt" data-why="Names a person's behaviour, which invites blame and no fix" data-k="A">The release engineer should have checked Arabic before shipping</div>
+      <div class="opt" data-why="Labels the cause instead of finding the condition behind it" data-k="B">Human error during the template change</div>
+      <div class="opt" data-why="States an outcome, not a condition anyone can change" data-k="C">Arabic customers received wrong answers</div>
+      <div class="opt" data-ok data-k="D">The release pipeline had no gate on Arabic answer quality</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> It names a condition of the system, with an obvious owner and an action that removes it.</div>
+  </div>
+  <aside class="notes"><p>Answer: D.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-3-4" data-auto="lab" data-lab="3.4" data-label="Lab 3.4" data-n="36" data-session="4">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 3.4 · 25 min</div><h2>Blameless review and regression test</h2><p class="lead small">Write a blameless review of a supplied incident and turn its failing cases into a regression test that fails on the bad version and passes on the fixed one.</p><a class="nb" href="../labs/D3_4_blameless_review.ipynb">D3_4_blameless_review.ipynb</a></div><ul class="checklist"><li>Read the incident record <span class="min">4 min</span></li><li>Timeline and contributing factors <span class="min">7 min</span></li><li>Owned corrective actions <span class="min">5 min</span></li><li>The regression test: fails before, passes after <span class="min">9 min</span></li><li class="stretch">✱ Stretch: Add the test to the canary gate of Lab 3.3</li></ul></div>
+  <aside class="notes"><p>Watch for: factors without evidence; actions owned by names; a regression test that only checks for the asked parcel and misses the leaked one. Ask two participants to read a factor aloud and let the room test it for blame.</p></aside>
+</section>
+
+<section class="slide" id="wrap-up" data-lo="LO4" data-n="37" data-session="4">
+  <div class="kicker">Day 3 · wrap-up</div>
+  <h2>Three things to keep</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Alert per slice</h4><p class="small mb0">Quality alerts per language, with windows short enough for step changes.</p></div>
+    <div class="card c-cyan"><h4>Mitigate, then diagnose</h4><p class="small mb0">Roles, a decision log, and the breach procedure from awareness.</p></div>
+    <div class="card c-coral"><h4>Gates and tests</h4><p class="small mb0">A canary with a minimum sample; every incident leaves a test behind.</p></div>
+  </div>
+  <aside class="notes"><p>Ask: which of today's artefacts would you demand first from another team?</p></aside>
+</section>
+
+<section class="slide dark" id="next" data-n="38" data-session="4">
+  <div class="kicker">Next</div>
+  <h2>Day 4: integrity and readiness</h2>
+  <ul class="bullets">
+    <li>Where model files come from, how to prove they were not changed, and how to admit only verified models</li>
+    <li>The last session starts the capstone: a readiness review of another team's service</li>
+  </ul>
+  <aside class="notes"><p>Ask participants to think about which service they will review: a peer's from the cohort, or the supplied Athar release pack.</p></aside>
+</section>
+</div>
+<script type="application/json" id="academy-data">{"v":1,"engine":"1.0.0","build":{"at":"2026-11-15T15:04:19Z","version":"2027.1.0","commit":"d44e8c9"},"course":{"id":"ae-403","code":"AE-403","title":"Reliability Engineering for AI Services","track":"ai-engineering","lang":"en","dir":"ltr","url":"https://sdaiaacademy.github.io/ae-403/","repo":"SDAIAAcademy/ae-403","home":"../index.html"},"deck":{"id":"day3","kind":"day","day":3,"label":"Day 3","title":"Incidents and safe releases","prev":"day2.html","next":"day4.html","md":"day3.md","alt":{}},"sessions":[{"n":1,"label":"Session 1","title":"Finding silent regressions","slide":"s1","outcomes":["Compute burn rate on a quality indicator","Build a multi-window, multi-burn-rate alert","Locate a regression in time and in a slice"],"minutes":50,"lab":{"id":"3.1","title":"A burn-rate alert on quality","minutes":25,"href":"../labs/D3_1_quality_burn_rate.ipynb"}},{"n":2,"label":"Session 2","title":"Running an incident","slide":"s2","outcomes":["Run an incident in three roles with a decision log","Mitigate before diagnosing","Decide on breach notification from the facts"],"minutes":50,"lab":{"id":"3.2","title":"Game day: a model-update regression","minutes":25,"href":"../labs/D3_2_game_day.ipynb"}},{"n":3,"label":"Session 3","title":"Canary and rollback","slide":"s3","outcomes":["Design canary steps with analysis at each step","Size the minimum sample for a quality gate","Roll back automatically on latency or quality"],"minutes":50,"lab":{"id":"3.3","title":"Canary with automated rollback","minutes":25,"href":"../labs/D3_3_canary_rollback.ipynb"}},{"n":4,"label":"Session 4","title":"Learning from incidents","slide":"s4","outcomes":["Write a blameless timeline and contributing factors","Write corrective actions with an owner and a test","Turn an incident's failing cases into a regression test"],"minutes":50,"lab":{"id":"3.4","title":"Blameless review and regression test","minutes":25,"href":"../labs/D3_4_blameless_review.ipynb"}}],"slides":[{"id":"title","n":1,"title":"Incidents and safe releases","kind":"title","session":0,"hash":"36b88b8d","md":"#### [day3#title] Incidents and safe releases\n\n*SDAIA Academy · Reliability Engineering for AI Services*\n\nDay 3: Burn-rate alerts on quality, incident leadership, canaries and blameless learning\n\nAI Engineering Track · 4 teaching days + capstone day · 4 sessions · 4 labs · AE-403","notes":"Today follows one incident from its alert to its review: a model update that broke Arabic answers silently. Session 2 is a game day without AI assistance; groups of three. Every lab starts from supplied files.","minutes":null,"lo":[]},{"id":"agenda","n":2,"title":"Incidents and safe releases","kind":"content","session":0,"hash":"b3770b97","md":"#### [day3#agenda] Incidents and safe releases\n\n*Today*\n\n- **Session 1 · Finding silent regressions**: A quality budget burns silently; multi-window burn-rate alerts, sliced by language, find it in minutes\n- **Session 2 · Running an incident**: Roles, a decision log, mitigation before diagnosis, and personal data handled through the breach procedure\n- **Session 3 · Canary and rollback**: A canary with enough samples and a per-language quality gate rolls back without a human\n- **Session 4 · Learning from incidents**: Blameless reviews find contributing factors, own the actions and turn the cases into tests","notes":"","minutes":null,"lo":[]},{"id":"review-day2","n":3,"title":"Which degraded mode for Arabic help questions?","kind":"quiz","session":0,"hash":"67634f82","md":"#### [day3#review-day2] Which degraded mode for Arabic help questions?\n\n*Review of Day 2*\n\n**Question:** The engine is down. The fallback model passes 87% of English and 73% of Arabic test questions; the cache answers 63% of Arabic help questions, all correctly. The minimum service is 85% per language. What do Arabic help questions get?\n\n- A. The fallback model, like English\n- B. An apology for every Arabic question\n- C. The cache first, the fallback on a miss, both disclosed\n- D. The full cache, including saved tracking answers","notes":"Answer: C. Option D is the breach trap of Lab 2.3: saved tracking answers carry another customer's name and address.","minutes":null,"lo":["LO3"]},{"id":"s1","n":4,"title":"Finding silent regressions","kind":"section","session":1,"hash":"71c755a3","md":"#### [day3#s1] Finding silent regressions\n\n*Session 1*\n\n- Compute burn rate on a quality indicator\n- Build a multi-window, multi-burn-rate alert\n- Locate a regression in time and in a slice","notes":"","minutes":null,"lo":["LO1","LO4"]},{"id":"silent-regression","n":5,"title":"A model update can fail one language without a single error","kind":"content","session":1,"hash":"dc648bbf","md":"#### [day3#silent-regression] A model update can fail one language without a single error\n\n*Silent regressions*\n\n- Every request returns 200, latency is normal, the probe is green\n- Arabic answers fail 38% of the time; English is unchanged\n- Only the sampled quality indicator moves, and only in its Arabic slice\n\n- **The replayed day.** `replay_day.csv`: 288 five-minute slots. Athar v2.4 goes out at slot 130.","notes":"This is the same kind of failure as Day 1's first incident, now caused by a release. The question of the session: how fast does your alerting find it?","minutes":null,"lo":["LO4"]},{"id":"burn-rate","n":6,"title":"Burn rate is how fast the budget is being spent","kind":"content","session":1,"hash":"1c3fe60b","md":"#### [day3#burn-rate] Burn rate is how fast the budget is being spent\n\n*Burn rate*\n\n- **1×** spends the 30-day budget in 30 days\n- **6×** spends 5% of it in 6 hours\n- **14.4×** spends 2% of it in one hour\n\nBurn rate = error rate in the window ÷ (1 − objective). With a 95% quality objective, 14.4× means 72% of answers failing.","notes":"The SRE workbook's recommended starting points: page at 14.4× over one hour and five minutes, and at 6× over six hours and thirty minutes; ticket at 1× over three days. They were designed for availability budgets of 0.1%, where 14.4× is an error rate of 1.4%.\n\nSources: Google SRE workbook, Alerting on SLOs.","minutes":null,"lo":["LO1","LO4"]},{"id":"two-windows","n":7,"title":"Two windows: one proves it matters, one proves it is still happening","kind":"content","session":1,"hash":"a89bfe23","md":"#### [day3#two-windows] Two windows: one proves it matters, one proves it is still happening\n\n*Multi-window alerts*\n\n```\n# file: Lab 3.1\ndef fires(g, long, short, rate):\n    lw = U.burn_rate(g.bad, g.graded, 0.95, long)\n    sw = U.burn_rate(g.bad, g.graded, 0.95, short)\n    return (lw > rate) & (sw > rate)\n```\n\nWithout the short window, the alert keeps firing for hours after the fix; without the long one, a single bad five minutes pages someone.","notes":"Windows are counted in five-minute slots: one hour is 12 slots. Ask: what happens to a regression that affects ten minutes in every hour? The workbook discusses this weakness of short windows.","minutes":null,"lo":["LO4"]},{"id":"when-it-fires","n":8,"title":"The averaged alert never fires; the Arabic one fires in 35 minutes","kind":"content","session":1,"hash":"a83fd25a","md":"#### [day3#when-it-fires] The averaged alert never fires; the Arabic one fires in 35 minutes\n\n*Lab 3.1 · the replay*\n\n| Tier | All traffic | Arabic slice |\n| --- | --- | --- |\n| fast page: 1 h and 5 min at 14.4× | never | never |\n| slow page: 6 h and 30 min at 6× | never | after 255 min |\n| quality: 1 h and 5 min at 6× | never | after 35 min |\n\nAfter the update Arabic burns at about 8×, English at about 0.6×, all traffic at about 5×.","notes":"The third tier is the course's proposal for quality objectives: step changes after releases need a short long-window. It costs more pages on noisy days; the stretch counts them over the month.","minutes":null,"lo":["LO1","LO4"]},{"id":"locate-regression","n":9,"title":"Put the change log next to the slice: slot 131 against a deploy at 130","kind":"content","session":1,"hash":"d5be7a45","md":"#### [day3#locate-regression] Put the change log next to the slice: slot 131 against a deploy at 130\n\n*Locating it*\n\n- slot 40: help index refresh (English)\n- slot 130: model update: athar-v2.4\n- slot 210: gateway configuration\n\n- Arabic 30-minute error rate above 10% from slot 131, for the rest of the day\n- The English slice did not move: the change is language-specific\n- A step change right after a release points at the release","notes":"Correlation is enough to decide a rollback, not to explain it. The explanation comes in Lab 3.4: Eastern Arabic digits and a dropped normalisation step.","minutes":null,"lo":["LO4"]},{"id":"alert-as-code","n":10,"title":"The alert is code in the repository, reviewed like code","kind":"content","session":1,"hash":"99ea57b6","md":"#### [day3#alert-as-code] The alert is code in the repository, reviewed like code\n\n*The rule*\n\n```\n# file: Prometheus rule (Lab 3.1)\n- alert: AtharArabicQualityBurn\n  expr: (athar:quality_bad:ratio_rate1h{lang=\"ar\"} > (6 * 0.05))\n    and (athar:quality_bad:ratio_rate5m{lang=\"ar\"} > (6 * 0.05))\n  labels:\n    severity: page\n```","notes":"The recording rules athar:quality_bad:\\* are assumed to exist; Prometheus with Grafana is one example of the metrics slot. One rule per language, generated from the objectives file so they never drift apart.","minutes":null,"lo":["LO4"]},{"id":"check-averaged","n":11,"title":"Why did the alert stay silent?","kind":"quiz","session":1,"hash":"c0a368f9","md":"#### [day3#check-averaged] Why did the alert stay silent?\n\n*Checkpoint*\n\n**Question:** After v2.4, 38% of Arabic answers fail and English is unchanged. Arabic is 60% of traffic. The 6× quality alert on all traffic never fires. Why?\n\n- A. Too few answers are graded to see it\n- B. The English slice keeps the combined burn rate near 5×, below the threshold\n- C. The five-minute window is too short\n- D. The 95% objective is too strict","notes":"Answer: B.","minutes":null,"lo":["LO4"]},{"id":"lab-3-1","n":12,"title":"A burn-rate alert on quality","kind":"lab","session":1,"hash":"aa1fc1f7","md":"#### [day3#lab-3-1] A burn-rate alert on quality\n\nLab 3.1 · 25 min\n\nBuild a burn-rate alert on the sampled quality indicator and locate the regression in a replayed day, first on all traffic and then by language.\n\n[D3_1_quality_burn_rate.ipynb](https://sdaiaacademy.github.io/ae-403/labs/D3_1_quality_burn_rate.ipynb)\n\n- [ ] Quality burn rate per five minutes (5 min)\n- [ ] Two windows and two burn rates (7 min)\n- [ ] Replay the day: when does it fire? (5 min)\n- [ ] Slice by language and locate the regression (8 min)\n- [ ] ✱ Stretch: Write the alert as a Prometheus rule and count its pages over the month","notes":"Watch for: windows given in minutes instead of slots; a burn rate computed on requests instead of graded answers. The stretch writes the rule and counts how often it would have paged in the month.","minutes":null,"lo":[]},{"id":"s2","n":13,"title":"Running an incident","kind":"section","session":2,"hash":"dcbd1b3d","md":"#### [day3#s2] Running an incident\n\n*Session 2*\n\n- Run an incident in three roles with a decision log\n- Mitigate before diagnosing\n- Decide on breach notification from the facts","notes":"","minutes":null,"lo":["LO4"]},{"id":"three-roles","n":14,"title":"Three roles keep deciding, doing and recording apart","kind":"content","session":2,"hash":"612e2fff","md":"#### [day3#three-roles] Three roles keep deciding, doing and recording apart\n\n*Incident roles*\n\n- **Incident lead.** Decides and sets priorities. Talks to the service owner. Does not type commands.\n- **Operator.** Runs the mitigation and reports what the system shows.\n- **Scribe.** Keeps the decision log: minute, role, decision, reason.","notes":"The SRE workbook's incident response chapter separates command, operations and communications roles. Three is enough for a team of Athar's size; the separation matters more than the titles.\n\nSources: Google SRE workbook, Incident Response.","minutes":null,"lo":["LO4"]},{"id":"mitigate-first","n":15,"title":"Mitigate first; diagnose on a copy","kind":"content","session":2,"hash":"6346dd80","md":"#### [day3#mitigate-first] Mitigate first; diagnose on a copy\n\n*The first rule*\n\n- **5 min** to mitigate when the lead rolls back first: 32 exposed answers\n- **35 min** when the team diagnoses first: 56 exposed answers\n\nLab 3.2's simulator. A rollback is reversible; the minutes customers spend receiving wrong answers are not.","notes":"The exposed answers are answers carrying another customer's parcel record. The 35 minutes before the page count in both plans: alerting speed is part of the incident.","minutes":null,"lo":["LO4"]},{"id":"decision-log","n":16,"title":"Every decision gets a minute, an owner and a reason","kind":"content","session":2,"hash":"6ad31ee5","md":"#### [day3#decision-log] Every decision gets a minute, an owner and a reason\n\n*The decision log*\n\n| T+ | Role | Decision | Reason |\n| --- | --- | --- | --- |\n| 1 | lead | declare | quality alert; release 35 minutes earlier |\n| 5 | lead | roll back v2.4 | complaints confirm impact; only recent change; reversible |\n| 10 | lead | page the DPO | a customer saw another customer's address |\n| 40 | lead | notify SDAIA | names and addresses exposed: harm likely |","notes":"From the lab's reference plan. The log is the material of Lab 3.4's review; a log without reasons cannot be reviewed fairly, because nobody can see what was known at the time.","minutes":null,"lo":["LO4"]},{"id":"breach-procedure","n":17,"title":"Personal data in answers is a breach: follow the procedure","kind":"content","session":2,"hash":"e128721c","md":"#### [day3#breach-procedure] Personal data in answers is a breach: follow the procedure\n\n*Responsible use*\n\n1. **Contain** stop the exposure: the rollback\n2. **Assess** data, people, likely harm, with the DPO\n3. **Notify** SDAIA within 72 hours of awareness, if harm is expected\n4. **Document** the notice, the actions, the lessons","notes":"SDAIA's procedural guide for handling personal data breach incidents: notify SDAIA within 72 hours of becoming aware when the incident is expected to harm the data or the data subjects, through the national platform; contain; notify data subjects without undue delay when it harms them; keep the documents. National Cybersecurity Authority reporting rules may apply as well. Ithar Al-Hammadi decides with the lead, not after the incident.\n\nSources: SDAIA, Procedural Guide for Handling Personal Data Breach Incidents; Personal Data Protection Law.","minutes":null,"lo":["LO4"]},{"id":"awareness-clock","n":18,"title":"The 72 hours start at awareness, not at the root cause","kind":"content","session":2,"hash":"3da5fcca","md":"#### [day3#awareness-clock] The 72 hours start at awareness, not at the root cause\n\n*What goes wrong*\n\n- Awareness came at T+9, when a customer reported another person's address\n- Waiting for the root cause before assessing spends the clock on the wrong question\n- Preserve the evidence before the rollback overwrites the logs you will need","notes":"The breach guide lists what the notice contains: a description, the categories and numbers of people, the risks and remedies, whether data subjects are told, and contacts. The assessment at T+20 gathers exactly these.","minutes":null,"lo":["LO4"]},{"id":"check-first-action","n":19,"title":"Order the first actions","kind":"quiz","session":2,"hash":"5a1328f9","md":"#### [day3#check-first-action] Order the first actions\n\n*Checkpoint*\n\n**Question:** The Arabic quality alert pages you; v2.4 went out 35 minutes ago. Put the first four actions in order.\n\n*Put these in the right order*\n\n- Start root-cause analysis\n- Roll back to v2.3\n- Declare the incident and assign the roles\n- Page the data protection officer once personal data is reported","notes":"This is the supervised check's third item type: order first actions in an incident, AI-off. Discuss any group that put root cause second: what did each minute cost?","minutes":null,"lo":["LO4"]},{"id":"lab-3-2","n":20,"title":"Game day: a model-update regression","kind":"lab","session":2,"hash":"01876c67","md":"#### [day3#lab-3-2] Game day: a model-update regression\n\nLab 3.2 · 25 min\n\nRun a game day on a model-update regression as incident lead, operator and scribe, without AI assistance, keeping a decision log and deciding on breach notification.\n\n[D3_2_game_day.ipynb](https://sdaiaacademy.github.io/ae-403/labs/D3_2_game_day.ipynb)\n\n- [ ] Read the roles and the first page (3 min)\n- [ ] Detect and declare: first decisions (6 min)\n- [ ] Mitigate: choose and apply the action (7 min)\n- [ ] Personal data in answers: the breach decision (5 min)\n- [ ] Close and hand over the log (4 min)\n- [ ] ✱ Stretch: Rerun the drill with a different first action and compare time to mitigate","notes":"AI-off: no assistant in the room. Groups of three; rotate roles in the stretch. Watch for: a plan with no reason column; notifying SDAIA without an assessment; customers told before the DPO is involved. Debrief with two groups' logs side by side.","minutes":null,"lo":[]},{"id":"s3","n":21,"title":"Canary and rollback","kind":"section","session":3,"hash":"192510b5","md":"#### [day3#s3] Canary and rollback\n\n*Session 3*\n\n- Design canary steps with analysis at each step\n- Size the minimum sample for a quality gate\n- Roll back automatically on latency or quality","notes":"","minutes":null,"lo":["LO1","LO4"]},{"id":"canary-recap","n":22,"title":"A canary is a release that can stop itself","kind":"content","session":3,"hash":"00027f6f","md":"#### [day3#canary-recap] A canary is a release that can stop itself\n\n*Recap from AE-305*\n\n**5%** 10 min → **25%** 20 min → **50%** 20 min → **100%** promote\n\nAnalysis at every step; a failed step rolls back without a human. Progressive delivery tools such as Argo Rollouts or Flagger run the steps; your gate decides them.","notes":"AE-305 Day 2 built a canary on replayed traffic. Here the question is the standard: what must a gate check, on how many samples, before a model reaches everyone? The supplied labs/release/analysis-template.yaml shows the same gate in Argo Rollouts form.","minutes":null,"lo":["LO1","LO4"]},{"id":"old-gate","n":23,"title":"Ten minutes at 5% promoted the int4 model on 27 Arabic answers","kind":"content","session":3,"hash":"4da1efc5","md":"#### [day3#old-gate] Ten minutes at 5% promoted the int4 model on 27 Arabic answers\n\n*Lab 3.3 · the old pipeline*\n\n- **Latency.** Canary p95 1,174 ms against stable 1,455 ms: the 4-bit model is faster.\n- **Quality.** 26 of 27 graded Arabic answers passed. Its true Arabic rate is 90.5%, against 97% for stable.","notes":"The true rates are the simulator's settings; the participants see only the samples. With 27 samples a 90% model passes the gate by luck about a quarter of the time; on this run it did.","minutes":null,"lo":["LO1","LO4"]},{"id":"minimum-sample","n":24,"title":"No quality verdict below 200 graded answers per language","kind":"content","session":3,"hash":"336d5d06","md":"#### [day3#minimum-sample] No quality verdict below 200 graded answers per language\n\n*The minimum sample*\n\n- Latency is judged at every step: it has thousands of samples\n- Quality is judged on the cumulative canary samples, once each language has 200\n- Before that the step continues, and the release cannot reach 100%\n- Canary answers are graded at 30%, stable ones at 5%, to reach 200 in minutes","notes":"200 is a course choice: it detects a drop of a few points from 97% with reasonable confidence. Participants must justify their own number in the capstone. The SRE workbook's canarying chapter discusses population size and the reduced overall error rate a canary sees.\n\nSources: Google SRE workbook, Canarying Releases.","minutes":null,"lo":["LO4"]},{"id":"canary-decisions","n":25,"title":"v2.6 is promoted; the int4 model rolls back at 25%","kind":"content","session":3,"hash":"f6d5d570","md":"#### [day3#canary-decisions] v2.6 is promoted; the int4 model rolls back at 25%\n\n*Lab 3.3 · the designed gate*\n\n| Candidate | 5% | 25% | 50% | Decision |\n| --- | --- | --- | --- | --- |\n| v2.6 | continue (35 ar) | pass (305 ar) | pass | promoted |\n| v2.6-int4 | continue (27 ar) | fail: ar 91.2% against 96.6% |  | rolled back |","notes":"At 25% the English sample also dipped below stable (96.0% against 99.1%, a lucky stable sample). Ask: would you investigate English too? Yes, but the Arabic gap alone is decisive.","minutes":null,"lo":["LO1","LO4"]},{"id":"gate-as-policy","n":26,"title":"The release gate is the error budget policy, automated","kind":"content","session":3,"hash":"057ac71b","md":"#### [day3#gate-as-policy] The release gate is the error budget policy, automated\n\n*The standard you set*\n\n| Rule | Value |\n| --- | --- |\n| first-token p95 | at most 1.2 × stable, every step |\n| quality per language | at least stable minus 3 points |\n| minimum sample | 200 graded answers per language, cumulative |\n| on failure | automatic rollback, alert to the release engineer |","notes":"Link back to Day 1: RR-1, the frozen model update, can go through this gate as a fix only because the gate measures Arabic quality. That is the escape the release policy needed.","minutes":null,"lo":["LO1","LO4"]},{"id":"check-canary","n":27,"title":"The canary passed; should it have?","kind":"quiz","session":3,"hash":"85b5f8e6","md":"#### [day3#check-canary] The canary passed; should it have?\n\n*Checkpoint*\n\n**Question:** A canary ran 10 minutes at 5% and passed with 25 of 26 Arabic answers correct, against 97% for stable. What do you do before promoting?\n\n- A. Promote: 96% is within the 3-point margin\n- B. Roll back: the sample is too small to trust\n- C. Continue at a larger share until each language has the minimum sample\n- D. Ask the evaluation team to approve by hand","notes":"Answer: C.","minutes":null,"lo":["LO4"]},{"id":"lab-3-3","n":28,"title":"Canary with automated rollback","kind":"lab","session":3,"hash":"a64945bf","md":"#### [day3#lab-3-3] Canary with automated rollback\n\nLab 3.3 · 25 min\n\nRelease two candidate model versions as canaries with automated rollback on a latency and quality gate: one promotes, one rolls back on Arabic quality.\n\n[D3_3_canary_rollback.ipynb](https://sdaiaacademy.github.io/ae-403/labs/D3_3_canary_rollback.ipynb)\n\n- [ ] Read the steps and the gate (3 min)\n- [ ] Write the analysis for one step (7 min)\n- [ ] Add the minimum-sample rule (6 min)\n- [ ] Run both candidates and read the decisions (9 min)\n- [ ] ✱ Stretch: Translate the gate into the supplied Argo Rollouts analysis template","notes":"Watch for: judging quality per step instead of cumulatively; letting \"continue\" reach 100%. The stretch maps the Python gate onto the Argo Rollouts template: the minimum-sample rule needs a metric the template does not have yet.","minutes":null,"lo":[]},{"id":"s4","n":29,"title":"Learning from incidents","kind":"section","session":4,"hash":"68b80d0b","md":"#### [day3#s4] Learning from incidents\n\n*Session 4*\n\n- Write a blameless timeline and contributing factors\n- Write corrective actions with an owner and a test\n- Turn an incident's failing cases into a regression test","notes":"","minutes":null,"lo":["LO4"]},{"id":"blameless","n":30,"title":"A blameless review asks what made the error easy, not who made it","kind":"content","session":4,"hash":"8a740f75","md":"#### [day3#blameless] A blameless review asks what made the error easy, not who made it\n\n*Blameless reviews*\n\n- **Not a factor.** \"The engineer did not test Arabic.\"\n- **A factor.** \"The evaluation set had no Arabic tracking questions and no Eastern Arabic digits.\"\n\nThe SRE book: a blameless postmortem focuses on the contributing causes without indicting any individual or team.","notes":"The second sentence leads to a fix any engineer benefits from; the first leads to a more careful engineer and the same gap. Lab 3.4's check flags names and phrases such as \"human error\" and \"should have\".\n\nSources: Google SRE book, Postmortem Culture.","minutes":null,"lo":["LO4"]},{"id":"contributing-factors","n":31,"title":"Five conditions made the incident possible","kind":"content","session":4,"hash":"b54dff54","md":"#### [day3#contributing-factors] Five conditions made the incident possible\n\n*Lab 3.4 · INC-0731*\n\n1. The offline evaluation set had no Arabic tracking questions\n2. The v2.4 prompt template dropped digit normalisation\n3. The tracking lookup fell back to the nearest parcel instead of refusing\n4. The release went to everyone at once, with no quality gate\n5. On-call had no written authority to roll back","notes":"Each factor in the lab carries its evidence from the record (a chat line, a fact, a timeline entry). Factor 3 is why a quality bug became a personal data breach: an unsafe default in a dependency.","minutes":null,"lo":["LO4"]},{"id":"owned-actions","n":32,"title":"An action has an owning role, a date and a check","kind":"content","session":4,"hash":"4a4b8097","md":"#### [day3#owned-actions] An action has an owning role, a date and a check\n\n*Corrective actions*\n\n| Action | Owner | Days | Done when |\n| --- | --- | --- | --- |\n| Normalise digits in the gateway | model platform | 7 | unit test with Eastern Arabic digits passes |\n| Lookup refuses inexact matches | tracking API team | 7 | unknown number returns \"not found\" |\n| Every model release through the canary gate | release engineer | 21 | pipeline refuses a release without a verdict |","notes":"Three of the five actions from the lab. \"Be more careful\" has no check, so it is not an action. Owners are roles: people change jobs, roles stay.","minutes":null,"lo":["LO4"]},{"id":"case-to-test","n":33,"title":"The incident's cases become a test that failed before the fix","kind":"content","session":4,"hash":"0e603412","md":"#### [day3#case-to-test] The incident's cases become a test that failed before the fix\n\n*From case to test*\n\n```\n# file: Lab 3.4\ndef check_case(answer, case):\n    a = U.normalise_digits(answer)\n    problems = []\n    if case[\"asked_parcel\"] not in a:\n        problems.append(\"does not name the parcel asked about\")\n    if [p for p in U.PARCEL_RE.findall(a) if p != case[\"asked_parcel\"]]:\n        problems.append(\"names another customer's parcel\")\n    return problems\n```\n\nv2.4 passes 0 of 12 cases; v2.4.1 passes 12 of 12.","notes":"Replaying recorded failures as regression cases was AE-305's Day 4 technique; here the source is the review. A test that passes on the broken version proves nothing: make it fail first.","minutes":null,"lo":["LO4"]},{"id":"review-template","n":34,"title":"Every review has the same five parts","kind":"content","session":4,"hash":"0661075c","md":"#### [day3#review-template] Every review has the same five parts\n\n*The standard you set*\n\n- **Timeline.** from the decision log, in minutes from the page\n- **Impact.** users, answers, data, budget spent\n- **Factors.** conditions, each with evidence\n\n- **Actions.** owned, dated, checked\n- **Tests.** the cases, in the release gate","notes":"The capstone's incident evidence is exactly this: a timeline, a decision log, owned corrective actions and a new regression test (LO4's evidence line in the catalog).","minutes":null,"lo":["LO4"]},{"id":"check-factor","n":35,"title":"Which line belongs in the review?","kind":"quiz","session":4,"hash":"16fb0962","md":"#### [day3#check-factor] Which line belongs in the review?\n\n*Checkpoint*\n\n**Question:** Four draft lines for INC-0731's contributing factors. Which one belongs in a blameless review?\n\n- A. The release engineer should have checked Arabic before shipping\n- B. Human error during the template change\n- C. Arabic customers received wrong answers\n- D. The release pipeline had no gate on Arabic answer quality","notes":"Answer: D.","minutes":null,"lo":["LO4"]},{"id":"lab-3-4","n":36,"title":"Blameless review and regression test","kind":"lab","session":4,"hash":"1387f48c","md":"#### [day3#lab-3-4] Blameless review and regression test\n\nLab 3.4 · 25 min\n\nWrite a blameless review of a supplied incident and turn its failing cases into a regression test that fails on the bad version and passes on the fixed one.\n\n[D3_4_blameless_review.ipynb](https://sdaiaacademy.github.io/ae-403/labs/D3_4_blameless_review.ipynb)\n\n- [ ] Read the incident record (4 min)\n- [ ] Timeline and contributing factors (7 min)\n- [ ] Owned corrective actions (5 min)\n- [ ] The regression test: fails before, passes after (9 min)\n- [ ] ✱ Stretch: Add the test to the canary gate of Lab 3.3","notes":"Watch for: factors without evidence; actions owned by names; a regression test that only checks for the asked parcel and misses the leaked one. Ask two participants to read a factor aloud and let the room test it for blame.","minutes":null,"lo":[]},{"id":"wrap-up","n":37,"title":"Three things to keep","kind":"content","session":4,"hash":"3a9d8634","md":"#### [day3#wrap-up] Three things to keep\n\n*Day 3 · wrap-up*\n\n- **Alert per slice.** Quality alerts per language, with windows short enough for step changes.\n- **Mitigate, then diagnose.** Roles, a decision log, and the breach procedure from awareness.\n- **Gates and tests.** A canary with a minimum sample; every incident leaves a test behind.","notes":"Ask: which of today's artefacts would you demand first from another team?","minutes":null,"lo":["LO4"]},{"id":"next","n":38,"title":"Day 4: integrity and readiness","kind":"content","session":4,"hash":"b0ed8936","md":"#### [day3#next] Day 4: integrity and readiness\n\n*Next*\n\n- Where model files come from, how to prove they were not changed, and how to admit only verified models\n- The last session starts the capstone: a readiness review of another team's service","notes":"Ask participants to think about which service they will review: a peer's from the cohort, or the supplied Athar release pack.","minutes":null,"lo":[]}],"activities":[{"id":"review-day2-q1","slide":"review-day2","type":"single","prompt":"The engine is down. The fallback model passes 87% of English and 73% of Arabic test questions; the cache answers 63% of Arabic help questions, all correctly. The minimum service is 85% per language. What do Arabic help questions get?","options":[{"key":"A","text":"The fallback model, like English"},{"key":"B","text":"An apology for every Arabic question"},{"key":"C","text":"The cache first, the fallback on a miss, both disclosed"},{"key":"D","text":"The full cache, including saved tracking answers"}],"correct":[2],"explanation":"Routed this way, Arabic help passed 91.1% in Lab 2.3, above the minimum; the fallback alone gave 72.6%.","misconceptions":["Applies one route to both languages although their modes perform differently","Gives up a service that the cache can partly keep","","Serves cached answers without the freshness and personal-data checks"],"lo":["LO3"]},{"id":"check-averaged-q1","slide":"check-averaged","type":"single","prompt":"After v2.4, 38% of Arabic answers fail and English is unchanged. Arabic is 60% of traffic. The 6× quality alert on all traffic never fires. Why?","options":[{"key":"A","text":"Too few answers are graded to see it"},{"key":"B","text":"The English slice keeps the combined burn rate near 5×, below the threshold"},{"key":"C","text":"The five-minute window is too short"},{"key":"D","text":"The 95% objective is too strict"}],"correct":[1],"explanation":"Averaging dilutes a one-language failure. The objective and its alert must be per language.","misconceptions":["Blames sampling, but the Arabic slice alone has enough samples to fire","","Confuses the two windows: the short window is above the threshold too","Treats the objective as the cause; any objective averaged over both languages hides the slice"],"lo":["LO4"]},{"id":"check-first-action-q1","slide":"check-first-action","type":"order","prompt":"The Arabic quality alert pages you; v2.4 went out 35 minutes ago. Put the first four actions in order.","options":[{"key":"A","text":"Declare the incident and assign the roles"},{"key":"B","text":"Roll back to v2.3"},{"key":"C","text":"Page the data protection officer once personal data is reported"},{"key":"D","text":"Start root-cause analysis"}],"correct":[0,1,2,3],"explanation":"Roles first so decisions have an owner, then the reversible mitigation, then the breach procedure, and only then the diagnosis.","misconceptions":["","","",""],"lo":["LO4"]},{"id":"check-canary-q1","slide":"check-canary","type":"single","prompt":"A canary ran 10 minutes at 5% and passed with 25 of 26 Arabic answers correct, against 97% for stable. What do you do before promoting?","options":[{"key":"A","text":"Promote: 96% is within the 3-point margin"},{"key":"B","text":"Roll back: the sample is too small to trust"},{"key":"C","text":"Continue at a larger share until each language has the minimum sample"},{"key":"D","text":"Ask the evaluation team to approve by hand"}],"correct":[2],"explanation":"26 answers cannot tell 97% from 90%. The gate holds the decision until the sample can.","misconceptions":["Treats a pass on a tiny sample as evidence of quality","Discards a candidate on no evidence of a problem","","Moves the decision to people without new evidence"],"lo":["LO4"]},{"id":"check-factor-q1","slide":"check-factor","type":"single","prompt":"Four draft lines for INC-0731's contributing factors. Which one belongs in a blameless review?","options":[{"key":"A","text":"The release engineer should have checked Arabic before shipping"},{"key":"B","text":"Human error during the template change"},{"key":"C","text":"Arabic customers received wrong answers"},{"key":"D","text":"The release pipeline had no gate on Arabic answer quality"}],"correct":[3],"explanation":"It names a condition of the system, with an obvious owner and an action that removes it.","misconceptions":["Names a person's behaviour, which invites blame and no fix","Labels the cause instead of finding the condition behind it","States an outcome, not a condition anyone can change",""],"lo":["LO4"]}],"ai":{"context":{"course":"../context/course.md","courseJs":"../context/course.js","day":"day3.md","llms":"../llms.txt"},"tasks":[],"tools":[]},"bridge":{"allowedOrigins":[]},"features":{},"strings":{}}</script>
+<script src="../_engine/academy.js"></script>
+</body>
+</html>

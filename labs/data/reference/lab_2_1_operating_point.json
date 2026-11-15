@@ -1,0 +1,6 @@
+{
+ "concurrency": 16,
+ "goodput": 2.13,
+ "ttft_p95_ms": 211.0,
+ "peak_goodput": 2.16
+}

@@ -1,0 +1,4 @@
+{
+ "probe": "synthetic traffic: a tiny English prompt that measures the probe, not users",
+ "499": "the user left before the answer; no answer was owed (counted separately as an abandonment signal)"
+}

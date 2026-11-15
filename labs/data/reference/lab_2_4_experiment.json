@@ -1,0 +1,10 @@
+{
+ "hypothesis": "With retrieval down or the model provider timing out, Athar still answers tracking questions within 5 s and answers or plainly declines every help question",
+ "minimum_service": {
+  "tracking_answered": 0.95,
+  "p95_latency_ms": 5000,
+  "silent_failures": 0
+ },
+ "blast_radius": "the simulated service only; in production, one replica's share of traffic behind a flag",
+ "abort_if": "tracking answered below 90% for one minute, or any personal data in a degraded answer"
+}

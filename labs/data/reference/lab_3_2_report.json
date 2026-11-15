@@ -1,0 +1,14 @@
+{
+ "time_to_declare": 1,
+ "time_to_mitigate": 5,
+ "wrong_arabic_answers": 1520,
+ "answers_with_other_customers_data": 32,
+ "dpo_paged_at": 10,
+ "breach_assessed_at": 20,
+ "evidence_preserved_at": 11,
+ "sdaia_notified_at": 40,
+ "customers_notified_at": 45,
+ "roles_assigned_at": 2,
+ "log_entries": 10,
+ "entries_without_reason": 0
+}

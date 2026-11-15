@@ -1,0 +1,28 @@
+# Athar's model admission rule written as a Kyverno policy (read-only reference for Lab 4.3).
+# The release gate verifies the signature, the bill of materials and the licence, then writes
+# its verdict into the inference pod's annotations; the cluster refuses any pod without them.
+# The labs run the gate itself in Python.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: athar-model-admission
+spec:
+  background: false
+  rules:
+    - name: require-admitted-model
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - athar
+      validate:
+        failureAction: Enforce
+        message: "Model artefacts must pass the release gate: verified signature, bill of materials and an allowed licence."
+        pattern:
+          metadata:
+            annotations:
+              models.rasael.example/signature: "verified"
+              models.rasael.example/bom: "?*"
+              models.rasael.example/licence: "Apache-2.0 | MIT"

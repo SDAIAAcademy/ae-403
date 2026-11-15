@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-ax="page" data-track="ai-engineering">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reliability Engineering for AI Services · SDAIA Academy</title>
+<meta name="generator" content="SDAIA Academy engine 1.0.0">
+<meta name="description" content="Set, measure and defend the reliability standards of an AI service: objectives, capacity, degraded modes, incidents, safe releases and verified models">
+<link rel="icon" href="_engine/icon.svg">
+<link rel="alternate" type="text/markdown" href="index.md">
+<link rel="describedby" href="llms.txt">
+<link rel="stylesheet" href="_engine/academy.css">
+</head>
+<body>
+<header>
+<div class="wrap">
+<div class="top"><div class="logo" id="logo"></div><nav><a href="slides/day1.html">Slides</a><a href="practice.html">Practice</a><a href="index.md" type="text/markdown">Markdown</a></nav></div>
+<div class="kicker">AI Engineering Track · SDAIA Academy · AE-403</div>
+<h1>Reliability Engineering for AI Services<span class="sub ar" lang="ar" dir="rtl">هندسة الاعتمادية لخدمات الذكاء الاصطناعي</span></h1>
+<p>Set, measure and defend the reliability standards of an AI service: objectives, capacity, degraded modes, incidents, safe releases and verified models</p>
+<div class="meta"><span class="track">AI Engineering Track</span><span>4 teaching days + capstone day</span><span>26 hours</span><span>Level 400</span><span>AI Engineering · Expert badge</span></div>
+</div>
+</header>
+<main class="wrap">
+<h2>About the course</h2>
+<p>Participants set and defend reliability standards for AI services that other teams build. For a fictional postal and parcels operator running a bilingual tracking assistant on a self-hosted open-weight model with retrieval, they write service level objectives for availability, latency and answer quality, set admission limits with headroom from measured goodput, design and chaos-test degradation paths, lead incident drills and blameless reviews, release through canaries with automated rollback, and admit models only after verifying signatures and bills of materials.</p>
+<p><b>Who it is for:</b> Specialists. Engineers who have completed the level 300 core or can show equivalent work: a production AI system they built, operated and can defend.</p>
+<p><b>Format:</b> Intensive: 4 teaching days of four sessions and a capstone day, with guided pre-work and a tracked follow-up task</p>
+<h2>The case study</h2>
+<div class="note info"><b>Rasael Post and Parcels.</b> Rasael Post and Parcels is a fictional national postal and parcels operator whose bilingual assistant, Athar, answers tracking, redelivery and help questions on a self-hosted open-weight model with retrieval over 3,000 Arabic and English help articles. Participants set its objectives, decide its admission limit, design and chaos-test its degraded modes, run an incident drill on a silent quality regression, release through a canary, and admit models only after verifying signatures and bills of materials; all telemetry, traffic, answers, incidents and model artefacts are synthetic and generated with a fixed seed.</div>
+<h2>The course</h2>
+<div class="day">
+<div class="day-head c-teal"><div><div class="t">Day 1 · 4 sessions · 4 labs</div><h3>Objectives that match what users need</h3></div><a class="btn" href="slides/day1.html">Open the slides</a></div>
+<div class="scroll"><table>
+<tr><th>Session</th><th>Topic</th><th>Lab</th></tr>
+<tr><td>1</td><td><b>AI services fail differently</b><br>An AI service can be up, fast on a probe and still wrong, slow or silent for its users<ul><li>Name four ways an AI service fails while an uptime check stays green</li><li>Read per-minute telemetry by language and by mode</li><li>Separate what users felt from what the probe measured</li></ul></td><td><a href="labs/D1_1_uptime_blind_spots.ipynb">Lab 1.1 · What the uptime check missed</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D1_1_uptime_blind_spots.ipynb">Open in Colab</a></td></tr>
+<tr><td>2</td><td><b>Indicators for latency and quality</b><br>Indicators as good events over valid events: first-token time, per-token time, availability and a sampled quality grade<ul><li>Define an indicator as good events over valid events</li><li>Exclude probes and client cancellations with a written reason</li><li>Estimate a sampled quality rate with its interval, by language</li></ul></td><td><a href="labs/D1_2_indicators.ipynb">Lab 1.2 · Four indicators from one day</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D1_2_indicators.ipynb">Open in Colab</a></td></tr>
+<tr><td>3</td><td><b>Objectives and error budgets</b><br>Objectives tied to what users need, the budget they leave, and a release policy that spends it<ul><li>Set an objective from a user task, not from last month</li><li>Compute budget burn over a month and per week</li><li>Write a release policy that decides from the remaining budget</li></ul></td><td><a href="labs/D1_3_error_budgets.ipynb">Lab 1.3 · Objectives, budget and release policy</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D1_3_error_budgets.ipynb">Open in Colab</a></td></tr>
+<tr><td>4</td><td><b>Objectives for multi-step tasks</b><br>A booking flow succeeds per task, not per call: completion, cost per completed task and escalation<ul><li>Explain why per-call success hides failed tasks</li><li>Define completion, cost and escalation indicators for a flow</li><li>Set objectives a flow can be held to</li></ul></td><td><a href="labs/D1_4_task_objectives.ipynb">Lab 1.4 · Indicators for the redelivery flow</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D1_4_task_objectives.ipynb">Open in Colab</a></td></tr>
+</table></div>
+</div>
+<div class="day">
+<div class="day-head c-cyan"><div><div class="t">Day 2 · 4 sessions · 4 labs</div><h3>Capacity and failure</h3></div><a class="btn" href="slides/day2.html">Open the slides</a></div>
+<div class="scroll"><table>
+<tr><th>Session</th><th>Topic</th><th>Lab</th></tr>
+<tr><td>1</td><td><b>Capacity with headroom</b><br>Goodput falls past a concurrency the engine can sustain; the operating point leaves headroom for the busiest hour<ul><li>Read tail latency and goodput from a concurrency sweep</li><li>Choose an operating point and justify it against the objectives</li><li>Size replicas for the busiest hour with a stated margin</li></ul></td><td><a href="labs/D2_1_goodput_operating_point.ipynb">Lab 2.1 · Goodput curve and operating point</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D2_1_goodput_operating_point.ipynb">Open in Colab</a></td></tr>
+<tr><td>2</td><td><b>Admission control and shedding</b><br>Admit what the engine can serve, queue little, shed the least important traffic first<ul><li>Set a concurrency cap from the operating point</li><li>Rank traffic into priority classes with a reason</li><li>Show by replay that priority traffic keeps its objective</li></ul></td><td><a href="labs/D2_2_admission_shedding.ipynb">Lab 2.2 · A cap and priority shedding</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D2_2_admission_shedding.ipynb">Open in Colab</a></td></tr>
+<tr><td>3</td><td><b>Degraded modes</b><br>A smaller fallback model and a cached-answer mode keep a minimum service; each one is measured and disclosed<ul><li>Design degraded modes with entry and exit conditions</li><li>Measure answer quality in each mode by language</li><li>Keep personal answers out of any cache and tell users plainly</li></ul></td><td><a href="labs/D2_3_degraded_modes.ipynb">Lab 2.3 · Fallback model and cached answers</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D2_3_degraded_modes.ipynb">Open in Colab</a></td></tr>
+<tr><td>4</td><td><b>Chaos experiments</b><br>A hypothesis, a blast radius and an abort condition; failures that retries make worse<ul><li>Write a chaos experiment as a falsifiable hypothesis</li><li>Inject dependency failures and measure the minimum service</li><li>Stop a retry storm with a retry budget and backoff</li></ul></td><td><a href="labs/D2_4_chaos.ipynb">Lab 2.4 · Outage, timeout and retry storm</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D2_4_chaos.ipynb">Open in Colab</a></td></tr>
+</table></div>
+</div>
+<div class="day">
+<div class="day-head c-coral"><div><div class="t">Day 3 · 4 sessions · 4 labs</div><h3>Incidents and safe releases</h3></div><a class="btn" href="slides/day3.html">Open the slides</a></div>
+<div class="scroll"><table>
+<tr><th>Session</th><th>Topic</th><th>Lab</th></tr>
+<tr><td>1</td><td><b>Finding silent regressions</b><br>A quality budget burns silently; multi-window burn-rate alerts, sliced by language, find it in minutes<ul><li>Compute burn rate on a quality indicator</li><li>Build a multi-window, multi-burn-rate alert</li><li>Locate a regression in time and in a slice</li></ul></td><td><a href="labs/D3_1_quality_burn_rate.ipynb">Lab 3.1 · A burn-rate alert on quality</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D3_1_quality_burn_rate.ipynb">Open in Colab</a></td></tr>
+<tr><td>2</td><td><b>Running an incident</b><br>Roles, a decision log, mitigation before diagnosis, and personal data handled through the breach procedure<ul><li>Run an incident in three roles with a decision log</li><li>Mitigate before diagnosing</li><li>Decide on breach notification from the facts</li></ul></td><td><a href="labs/D3_2_game_day.ipynb">Lab 3.2 · Game day: a model-update regression</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D3_2_game_day.ipynb">Open in Colab</a></td></tr>
+<tr><td>3</td><td><b>Canary and rollback</b><br>A canary with enough samples and a per-language quality gate rolls back without a human<ul><li>Design canary steps with analysis at each step</li><li>Size the minimum sample for a quality gate</li><li>Roll back automatically on latency or quality</li></ul></td><td><a href="labs/D3_3_canary_rollback.ipynb">Lab 3.3 · Canary with automated rollback</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D3_3_canary_rollback.ipynb">Open in Colab</a></td></tr>
+<tr><td>4</td><td><b>Learning from incidents</b><br>Blameless reviews find contributing factors, own the actions and turn the cases into tests<ul><li>Write a blameless timeline and contributing factors</li><li>Write corrective actions with an owner and a test</li><li>Turn an incident's failing cases into a regression test</li></ul></td><td><a href="labs/D3_4_blameless_review.ipynb">Lab 3.4 · Blameless review and regression test</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D3_4_blameless_review.ipynb">Open in Colab</a></td></tr>
+</table></div>
+</div>
+<div class="day">
+<div class="day-head c-purple"><div><div class="t">Day 4 · 4 sessions · 4 labs</div><h3>Integrity and readiness</h3></div><a class="btn" href="slides/day4.html">Open the slides</a></div>
+<div class="scroll"><table>
+<tr><th>Session</th><th>Topic</th><th>Lab</th></tr>
+<tr><td>1</td><td><b>The model supply chain</b><br>A model is files from somewhere; provenance and a hash for every file say which ones<ul><li>Trace a model artefact to its source and revision</li><li>Hash every file and compare with the publisher's list</li><li>Name where tampering hides in a model folder</li></ul></td><td><a href="labs/D4_1_provenance.ipynb">Lab 4.1 · Provenance and the tampered file</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D4_1_provenance.ipynb">Open in Colab</a></td></tr>
+<tr><td>2</td><td><b>Signing and verification</b><br>A signed manifest of hashes binds every file to a signer; verification fails on any change<ul><li>Sign a model folder as a manifest of hashed files</li><li>Verify the signature at admission</li><li>Explain what a signature proves and what it does not</li></ul></td><td><a href="labs/D4_2_signing.ipynb">Lab 4.2 · Sign and verify a model folder</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D4_2_signing.ipynb">Open in Colab</a></td></tr>
+<tr><td>3</td><td><b>Bills of materials and admission</b><br>A machine learning bill of materials and an admission policy reject unsigned or unlicensed models<ul><li>Write a CycloneDX ML-BOM for a model</li><li>Write an admission policy with logged reasons</li><li>Run the gate on valid, tampered and unlicensed artefacts</li></ul></td><td><a href="labs/D4_3_bom_admission.ipynb">Lab 4.3 · Bill of materials and admission gate</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D4_3_bom_admission.ipynb">Open in Colab</a></td></tr>
+<tr><td>4</td><td><b>Production readiness reviews</b><br>A readiness review ranks findings by risk and sets launch conditions the owner can meet<ul><li>Apply a readiness checklist to another team's evidence</li><li>Rank findings by likelihood and impact</li><li>Set a launch decision with dated conditions</li></ul></td><td><a href="labs/D4_4_readiness_review.ipynb">Lab 4.4 · Readiness review of Taqdir</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-403/blob/main/labs/D4_4_readiness_review.ipynb">Open in Colab</a></td></tr>
+</table></div>
+</div>
+<div class="day">
+<div class="day-head c-amber"><div><div class="t">Capstone</div><h3>Readiness review defences</h3></div><a class="btn" href="slides/capstone.html">Open the slides</a></div>
+<div class="scroll"><table><tr><td>A production readiness review defended before a panel, with a live fault to diagnose</td></tr></table></div>
+</div>
+<h2>Capstone</h2>
+<div class="two">
+<div><p>A production readiness review of a peer's or a supplied AI service, covering objectives, capacity, degradation, incidents and release integrity with measured evidence in a public repository, defended before a panel of experienced engineers. The follow-up task applies one reliability standard to a service in the participant's own team or an open-source deployment</p><p><b>What you submit:</b> A public GitHub repository link: the readiness review (objectives, capacity, degradation, incident drill, release integrity) with its measured evidence, logs and commit history</p><p><b>Format:</b> 10 min talk and demo · 5 min Q&amp;A</p></div>
+<div><h3>Rubric</h3><div class="bar c-teal"><span>Objectives and alerts<i style="--w:80%"></i></span><b>20%</b></div><div class="bar c-cyan"><span>Capacity and degradation<i style="--w:100%"></i></span><b>25%</b></div><div class="bar c-coral"><span>Incident drill and review<i style="--w:80%"></i></span><b>20%</b></div><div class="bar c-purple"><span>Release integrity<i style="--w:60%"></i></span><b>15%</b></div><div class="bar c-amber"><span>Readiness decision<i style="--w:80%"></i></span><b>20%</b></div></div>
+</div>
+<h2>Outcomes</h2>
+<p>By the end of the course, participants can:</p>
+<div class="day"><div class="scroll"><table>
+<tr><th></th><th>Outcomes</th><th>Level</th><th>Evidence</th></tr>
+<tr><td><b>LO1</b></td><td>Design service level objectives for availability, latency and answer quality, with error budgets and a release policy, given a month of synthetic telemetry and a sampled online quality signal</td><td>Performance</td><td>an objectives document defended against a reviewer's challenges</td></tr>
+<tr><td><b>LO2</b></td><td>Decide an admission limit and shedding priorities that keep headroom for the busiest hour, given the self-hosted model, a recorded traffic trace and the service objectives</td><td>Performance</td><td>a justified operating point and margin, and an overload replay in which priority traffic still meets its objective</td></tr>
+<tr><td><b>LO3</b></td><td>Design degradation for overload and dependency failure using load shedding, a smaller fallback model and a cached-answer mode, given overload, retrieval outage and provider timeout scenarios</td><td>Performance</td><td>chaos test results showing each path keeps the minimum service, with quality measured in each mode</td></tr>
+<tr><td><b>LO4</b></td><td>Lead an incident drill from detection to recovery and write a blameless review, given a silent quality regression after a model update</td><td>Performance</td><td>a timeline, a decision log, owned corrective actions and a new regression test</td></tr>
+<tr><td><b>LO5</b></td><td>Build a release gate that verifies model signatures, a bill of materials and licences before deployment, given signed, tampered and unlicensed model artefacts</td><td>Performance</td><td>a pipeline run that admits the valid artefact and rejects the others, with logs</td></tr>
+<tr><td><b>LO6</b></td><td>Review another team's AI service for production readiness and set launch conditions, given a peer's service, its telemetry and a readiness checklist</td><td>Performance</td><td>ranked findings and a launch decision defended before a panel</td></tr>
+</table></div></div>
+<h2>Tools</h2>
+<div class="grid">
+<div class="card c-teal"><h3>Inference engine</h3><p>vLLM · SGLang · llama.cpp server</p></div>
+<div class="card c-cyan"><h3>Load generation</h3><p>inference-perf · k6 · Locust</p></div>
+<div class="card c-coral"><h3>Metrics, traces and alerting</h3><p>Prometheus with Grafana · an OpenTelemetry collector</p></div>
+<div class="card c-purple"><h3>Fault injection</h3><p>Chaos Mesh · Toxiproxy</p></div>
+<div class="card c-green"><h3>Progressive delivery</h3><p>Argo Rollouts · Flagger</p></div>
+<div class="card c-teal"><h3>Signing, bills of materials and admission</h3><p>OpenSSF Model Signing · CycloneDX ML-BOM · Kyverno</p></div>
+<div class="card c-cyan"><h3>Single-node cluster</h3><p>kind · k3s</p></div>
+</div>
+<h2>Before you start</h2>
+<h3>Prerequisites</h3>
+<ul><li>AE-305 Operating Machine Learning and Language Model Systems</li><li>AE-307 Container Orchestration and Cloud Infrastructure for AI Workloads</li><li>Has written alerting rules on service metrics</li><li>Runs containers on a single-node cluster</li><li>Has released a service through a canary or blue-green rollout</li><li>Reads a goodput-versus-concurrency curve (the measurement method is taught in AE-401)</li><li>Setup: a laptop CPU with uv, or Google Colab. Nothing downloads a model; the self-hosted engine is a calibrated simulator and the answers are recorded. Run 00_setup_check before Day 1; see labs/README.md.</li></ul>
+<div class="note tip">The labs are notebooks. Open each one in Google Colab from the table above, or clone the repository and run them locally.</div>
+<h2>Sources</h2>
+<h3>Objectives, alerts and incidents</h3>
+<ul><li><a href="https://sre.google/workbook/implementing-slos/">Google SRE Workbook: Implementing SLOs</a></li><li><a href="https://sre.google/workbook/error-budget-policy/">Google SRE Workbook: Example Error Budget Policy</a></li><li><a href="https://sre.google/workbook/alerting-on-slos/">Google SRE Workbook: Alerting on SLOs</a></li><li><a href="https://sre.google/workbook/incident-response/">Google SRE Workbook: Incident Response</a></li><li><a href="https://sre.google/sre-book/postmortem-culture/">Google SRE Book: Postmortem Culture: Learning from Failure</a></li><li><a href="https://sre.google/sre-book/evolving-sre-engagement-model/">Google SRE Book: The Evolving SRE Engagement Model (production readiness reviews)</a></li><li><a href="https://github.com/open-telemetry/semantic-conventions-genai">OpenTelemetry semantic conventions for generative AI: metrics</a></li></ul>
+<h3>Capacity, overload and degradation</h3>
+<ul><li><a href="https://sre.google/sre-book/handling-overload/">Google SRE Book: Handling Overload</a></li><li><a href="https://sre.google/sre-book/addressing-cascading-failures/">Google SRE Book: Addressing Cascading Failures</a></li><li><a href="https://docs.vllm.ai/en/latest/design/metrics.html">vLLM documentation: Metrics</a></li><li><a href="https://github.com/kubernetes-sigs/inference-perf">inference-perf: a benchmarking tool for generative AI inference (Kubernetes SIGs)</a></li><li><a href="https://github.com/Shopify/toxiproxy">Toxiproxy</a></li><li><a href="https://chaos-mesh.org/docs/">Chaos Mesh documentation</a></li></ul>
+<h3>Releases and model integrity</h3>
+<ul><li><a href="https://sre.google/workbook/canarying-releases/">Google SRE Workbook: Canarying Releases</a></li><li><a href="https://argo-rollouts.readthedocs.io/en/stable/features/analysis/">Argo Rollouts: Analysis and Progressive Delivery</a></li><li><a href="https://docs.flagger.app/">Flagger documentation</a></li><li><a href="https://github.com/sigstore/model-transparency">OpenSSF Model Signing (sigstore/model-transparency)</a></li><li><a href="https://cyclonedx.org/capabilities/mlbom/">CycloneDX: Machine Learning Bill of Materials (ML-BOM)</a></li><li><a href="https://cyclonedx.org/specification/overview/">CycloneDX specification overview</a></li><li><a href="https://kyverno.io/docs/policy-types/cluster-policy/validate/">Kyverno: validate rules</a></li></ul>
+<h3>National references</h3>
+<ul><li><a href="https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf">Personal Data Protection Law (SDAIA)</a></li><li><a href="https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataBreachIncidents.pdf">Personal Data Breach Incidents procedural guide (SDAIA)</a></li><li><a href="https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf">NDMO Data Classification Policy</a></li><li><a href="https://nca.gov.sa/en/regulatory-documents/controls-list/ccc/">National Cybersecurity Authority: Cloud Cybersecurity Controls (CCC)</a></li><li><a href="https://sdaia.gov.sa/en/MediaCenter/KnowledgeCenter/ResearchLibrary/ExecutiveSummaryEn.pdf">National AI Risk Management Framework: executive summary (SDAIA)</a></li></ul>
+<h2>Files and links</h2>
+<div class="files">
+<a href="practice.html"><b>practice.html</b><span>Practice questions with feedback</span></a>
+<a href="index.md"><b>index.md</b><span>This page as Markdown, for an AI assistant</span></a>
+<a href="llms.txt"><b>llms.txt</b><span>The course for AI assistants (llms.txt)</span></a>
+<a href="https://github.com/SDAIAAcademy/ae-403"><b>SDAIAAcademy/ae-403</b><span>The course repository</span></a>
+</div>
+</main>
+<footer><div class="wrap">SDAIA Academy · AI Engineering Track · Reliability Engineering for AI Services<br><span class="muted">Course version 2027.1.0 · engine 1.0.0 · built 2026-11-15 · commit d44e8c9</span></div></footer>
+<script type="application/json" id="academy-data">{"v":1,"engine":"1.0.0","build":{"at":"2026-11-15T15:04:19Z","version":"2027.1.0","commit":"d44e8c9"},"course":{"id":"ae-403","code":"AE-403","title":"Reliability Engineering for AI Services","track":"ai-engineering","lang":"en","dir":"ltr","url":"https://sdaiaacademy.github.io/ae-403/","repo":"SDAIAAcademy/ae-403","home":"index.html"},"ai":{"context":{"course":"context/course.md","courseJs":"context/course.js","day":null,"llms":"llms.txt"},"tasks":[],"tools":[]},"features":{},"strings":{}}</script>
+<script src="_engine/academy.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+ "__frame__": true,
+ "columns": [
+  "scenario",
+  "lang",
+  "pass_rate",
+  "answered",
+  "disclosed"
+ ],
+ "rows": [
+  [
+   "engine down",
+   "ar",
+   0.911,
+   1.0,
+   1.0
+  ],
+  [
+   "engine down",
+   "en",
+   0.871,
+   1.0,
+   1.0
+  ],
+  [
+   "healthy",
+   "ar",
+   0.895,
+   1.0,
+   1.0
+  ],
+  [
+   "healthy",
+   "en",
+   0.983,
+   1.0,
+   1.0
+  ],
+  [
+   "retrieval down",
+   "ar",
+   0.702,
+   0.702,
+   1.0
+  ],
+  [
+   "retrieval down",
+   "en",
+   0.638,
+   0.638,
+   1.0
+  ]
+ ]
+}

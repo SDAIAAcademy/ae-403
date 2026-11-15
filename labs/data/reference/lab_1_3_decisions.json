@@ -1,0 +1,41 @@
+{
+ "__frame__": true,
+ "columns": [
+  "id",
+  "change",
+  "decision",
+  "reason"
+ ],
+ "rows": [
+  [
+   "RR-1",
+   "New model version v2.5 for all languages",
+   "freeze",
+   "quality_ar has 19% of its budget left: only fixes until it recovers"
+  ],
+  [
+   "RR-2",
+   "Shorter English system prompt",
+   "go",
+   "lowest remaining budget is quality_en at 57%"
+  ],
+  [
+   "RR-3",
+   "Raise the engine's batch size",
+   "go",
+   "lowest remaining budget is ttft at 54%"
+  ],
+  [
+   "RR-4",
+   "Gateway security patch",
+   "go",
+   "security fixes are exempt from the freeze"
+  ],
+  [
+   "RR-5",
+   "Refresh the Arabic help index",
+   "freeze",
+   "quality_ar has 19% of its budget left: only fixes until it recovers"
+  ]
+ ]
+}

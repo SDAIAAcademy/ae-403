@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-ax="deck" data-track="ai-engineering">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capstone · Readiness review defences · Reliability Engineering for AI Services</title>
+<meta name="generator" content="SDAIA Academy engine 1.0.0">
+<link rel="icon" href="../_engine/icon.svg">
+<link rel="alternate" type="text/markdown" href="capstone.md">
+<link rel="describedby" href="../llms.txt">
+<link rel="stylesheet" href="../_engine/academy.css">
+</head>
+<body>
+<div class="deck" data-course="Reliability Engineering for AI Services" data-track="ai-engineering" data-day="Capstone">
+<section class="slide title" id="title" data-auto="title" data-label="Welcome" data-n="1">
+  <div class="kicker">SDAIA Academy · Reliability Engineering for AI Services</div>
+  <h1>Readiness review defences</h1>
+  <p class="lead mt">Capstone: A production readiness review defended before a panel, with a live fault to diagnose</p>
+  <div class="meta"><span class="track">AI Engineering Track</span><span>4 teaching days + capstone day</span><span>10 min talk and demo · 5 min Q&amp;A</span><span>AE-403</span></div>
+  <aside class="notes">Today is theirs: keep your own talking to the opening and the closing. Confirm the running order, the panel and the demo setup (screen sharing, the simulator open in a notebook, a recorded backup) first. The supervised exit check runs before the defences, with AI off.</aside>
+</section>
+
+<section class="slide" id="agenda" data-label="Agenda" data-n="2">
+  <div class="kicker">Capstone</div>
+  <h2>How the day runs</h2>
+  <div class="agenda">
+    <div class="item now"><div><b>Exit check and final prep</b><small>the supervised check without AI, the rubric, a last rehearsal</small></div></div>
+    <div class="item"><div><b>Defences</b><small>ten minutes of review, five of questions with a live fault</small></div></div>
+    <div class="item"><div><b>Review and closing</b><small>peer feedback, the trainer's review, the follow-up task</small></div></div>
+  </div>
+  <aside class="notes"><p>The exit check mirrors the entry check: an error budget burn, an admission limit from a goodput curve, and the first actions of an incident in order. It is 20% of the grade and runs with AI off; collect the papers before the first defence.</p></aside>
+</section>
+
+<section class="slide" id="deliverable" data-label="What you hand in" data-n="3">
+  <div class="kicker">The capstone</div>
+  <h2>A readiness review of a real or supplied service, with measured evidence</h2>
+  <div class="cols cols-2">
+    <ul class="bullets small">
+      <li>A public GitHub repository: the review, the code and notebooks behind every number, the logs</li>
+      <li>Load-test, chaos and pipeline logs, the drill's decision log, and a commit history that shows the work</li>
+      <li>Findings ranked by risk, a launch decision, and dated conditions that each name their proof</li>
+      <li>Synthetic data only: no personal data, no keys, no private model weights</li>
+    </ul>
+    <div class="card c-teal flat"><h4>Brief and template</h4><p class="small mb0"><code>labs/capstone/README.md</code> and <code>TEMPLATE_README.md</code>. The supplied service is Athar v2.7 (<code>athar_v27_pack.json</code>), running on the course's simulator.</p></div>
+  </div>
+  <aside class="notes"><p>AI assistants were allowed while preparing; the defence is live, so every participant must be able to explain every number in their repository. A peer's service is welcome when its owner agreed the scope on Day 4. Check before the first defence that each repository is public and opens.</p></aside>
+</section>
+
+<section class="slide" id="rubric" data-label="The rubric" data-n="4">
+  <div class="kicker">How reviews are scored</div>
+  <h2>The rubric</h2>
+  <div class="bars">
+    <div class="row"><span>Objectives and alerts</span><div class="bar c-teal" style="--w:80%"></div><span class="val">20%</span></div>
+    <div class="row"><span>Capacity and degradation</span><div class="bar c-cyan" style="--w:100%"></div><span class="val">25%</span></div>
+    <div class="row"><span>Incident drill and review</span><div class="bar c-coral" style="--w:80%"></div><span class="val">20%</span></div>
+    <div class="row"><span>Release integrity</span><div class="bar c-purple" style="--w:60%"></div><span class="val">15%</span></div>
+    <div class="row"><span>Readiness decision</span><div class="bar c-amber" style="--w:80%"></div><span class="val">20%</span></div>
+  </div>
+  <div class="callout tip mt"><b>Every claim carries a number and the log it came from.</b> "Met" is the team's word; a review shows the measurement.</div>
+  <aside class="notes"><p>Full marks, one example each. Objectives: per-language quality with its sample size and interval, and a burn-rate alert replayed on data. Capacity: a goodput curve, the busiest hour and the margin. Degradation: chaos results per mode with quality measured in Arabic and English. Drill: a decision log with times. Integrity: a gate that rejects a tampered and an unlicensed artefact, with logs. Decision: ranked findings and dated conditions with proofs.</p><p>The grade: rubric 60%, panel defence 20%, supervised check 20%. Passing needs 70% overall and at least 60% on both the rubric and the supervised check.</p></aside>
+</section>
+
+<section class="slide" id="format" data-label="Format" data-n="5">
+  <div class="kicker">Format</div>
+  <h2>Ten minutes of review, then five of questions with a live fault</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>1 · The service</h4><p class="small mb0">What it does, for whom, its objectives. Two minutes.</p></div>
+    <div class="card c-cyan"><h4>2 · The evidence</h4><p class="small mb0">Capacity, degradation, the drill, the release gate: measured. Five minutes.</p></div>
+    <div class="card c-coral"><h4>3 · The decision</h4><p class="small mb0">The top three findings, the decision, the conditions. Three minutes.</p></div>
+  </div>
+  <div class="callout note mt"><b>Peer feedback.</b> After each defence, everyone writes one strength, one question and one suggestion.</div>
+  <aside class="notes"><p>Ten and five minutes is the course's choice for an Expert-level defence with a live diagnosis; the catalog entry does not fix it. Keep the timer visible and stop the talk at ten: a review that cannot be told in ten minutes has not been ranked.</p></aside>
+</section>
+
+<section class="slide" id="live-fault" data-label="The live fault" data-n="6">
+  <div class="kicker">In the questions</div>
+  <h2>The panel injects a fault; you diagnose it aloud</h2>
+  <div class="flow">
+    <div class="step c-navy"><b>1 · Inject</b>the assessor starts one fault, unannounced</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>2 · Detect</b>which indicator moved, and which alert fires</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>3 · Mitigate</b>the first action, and why before the root cause</div>
+    <div class="arrow">→</div>
+    <div class="step c-purple"><b>4 · Explain</b>what your review predicted, and what it missed</div>
+  </div>
+  <div class="callout tip small mt"><b>The reasoning is scored, not the speed.</b> Say what you look at first and why; a wrong first guess that you correct from the data is a good answer.</div>
+  <aside class="notes"><p>This is the authenticity check of the catalog entry. On the supplied service, inject one of the simulator's faults in a notebook the participant can see: <code>s = relia.Service(); s.faults.add("retrieval_outage")</code>, or <code>"retrieval_slow"</code>, or <code>"provider_timeout"</code>; or replay overload with retries through <code>relia.retry_storm</code>. On a peer's service, use Toxiproxy for latency or a cut connection, agreed with the owner beforehand. Choose the fault the participant's own review rated lowest: it tests whether the ranking was right.</p></aside>
+</section>
+
+<section class="slide" id="week-recap" data-label="The week" data-n="7">
+  <div class="kicker">What the panel will look for</div>
+  <h2>The week in four questions</h2>
+  <div class="cols cols-4 gap-s">
+    <div class="card c-teal"><h4>What does good mean?</h4><p class="small mb0">Indicators per language, budgets that change releases.</p></div>
+    <div class="card c-cyan"><h4>What survives the busiest hour?</h4><p class="small mb0">An operating point with margin, shedding by priority, honest degraded modes.</p></div>
+    <div class="card c-coral"><h4>Who acts when it breaks?</h4><p class="small mb0">Roles, a decision log, a canary that rolls back, a review without blame.</p></div>
+    <div class="card c-purple"><h4>What are we running?</h4><p class="small mb0">Hashes, signatures, a bill of materials, a ranked launch decision.</p></div>
+  </div>
+  <aside class="notes"><p>One question per day. Each participant should be able to point to where their repository answers each one.</p></aside>
+</section>
+
+<section class="slide order" id="running-order" data-label="Running order" data-n="8">
+  <div class="kicker">Running order</div>
+  <h2>Who defends when</h2>
+  <table class="t small">
+    <tr><th>#</th><th>Presenter</th><th>Service reviewed</th></tr>
+    <tr><td>1</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>2</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>3</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>4</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>5</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>6</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>7</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+    <tr><td>8</td><td><input placeholder="name"></td><td><input placeholder="Service"></td></tr>
+  </table>
+  <aside class="notes">Type the names in at the start; the fields can be edited live and are not saved, so keep the list in your notes too. Do not schedule two reviews of the same peer service back to back.</aside>
+</section>
+
+<section class="slide dark" id="final-prep" data-label="Before the first defence" data-n="9">
+  <div class="kicker">Before the first defence</div>
+  <h1>Final prep · 20 minutes</h1>
+  <div class="timer" data-minutes="20"></div>
+  <p class="lead">Rehearse once, record a backup, open your service or the simulator on this screen.</p>
+  <aside class="notes">Press T to start the timer. Breaks are not slides: press B when the room needs one.</aside>
+</section>
+
+<section class="slide dark presenting" id="now-presenting" data-label="Now presenting" data-n="10">
+  <div class="kicker center">Now defending</div>
+  <div class="center"><input placeholder="Presenter · service"></div>
+  <aside class="notes">Type the presenter's name and press T to start the timer. Reuse this slide for every presenter; the panel agrees the fault before the questions start.</aside>
+</section>
+
+<section class="slide" id="review" data-label="Trainer review" data-n="11">
+  <div class="kicker">Trainer review</div>
+  <h2>What the reviews showed</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Strongest patterns</h4><p class="small mb0">What several reviews got right.</p></div>
+    <div class="card c-coral"><h4>Common gaps</h4><p class="small mb0">What most reviews would fix next.</p></div>
+    <div class="card c-purple"><h4>One surprise</h4><p class="small mb0">Something the live faults showed.</p></div>
+  </div>
+  <aside class="notes">Fill these in from your scoring notes during the last break. Name projects for strengths; keep gaps anonymous.</aside>
+</section>
+
+<section class="slide" id="what-next" data-label="After the course" data-n="12">
+  <div class="kicker">After the course</div>
+  <h2>Keep going</h2>
+  <ul class="bullets">
+    <li><b>The follow-up task:</b> within 30 days, apply one standard from the course to a service in your team or an open-source deployment, and send the evidence</li>
+    <li><b>Your review stays yours:</b> keep it reproducible and act on the first condition you named today</li>
+    <li><b>The AE Expert badge:</b> this course is one of the AE-400 courses that help prepare for it</li>
+  </ul>
+  <aside class="notes"><p>The follow-up task is tracked: agree the date and where the evidence is sent before people leave. One standard is enough: an objective with its alert, an admission limit, a degraded mode, a release gate or model admission.</p></aside>
+</section>
+
+<section class="slide dark" id="thanks" data-label="Thank you" data-n="13">
+  <div class="kicker">SDAIA Academy</div>
+  <h1>Thank you</h1>
+  <p class="lead">Reliability Engineering for AI Services</p>
+  <aside class="notes">Thank the panel by name. Remind everyone that the repositories must stay public until grading is complete.</aside>
+</section>
+</div>
+<script type="application/json" id="academy-data">{"v":1,"engine":"1.0.0","build":{"at":"2026-11-15T15:04:19Z","version":"2027.1.0","commit":"d44e8c9"},"course":{"id":"ae-403","code":"AE-403","title":"Reliability Engineering for AI Services","track":"ai-engineering","lang":"en","dir":"ltr","url":"https://sdaiaacademy.github.io/ae-403/","repo":"SDAIAAcademy/ae-403","home":"../index.html"},"deck":{"id":"capstone","kind":"capstone","day":5,"label":"Capstone","title":"Readiness review defences","prev":"day4.html","next":null,"md":"capstone.md","alt":{}},"sessions":[],"slides":[{"id":"title","n":1,"title":"Readiness review defences","kind":"title","session":0,"hash":"cc1999f8","md":"#### [capstone#title] Readiness review defences\n\n*SDAIA Academy · Reliability Engineering for AI Services*\n\nCapstone: A production readiness review defended before a panel, with a live fault to diagnose\n\nAI Engineering Track · 4 teaching days + capstone day · 10 min talk and demo · 5 min Q&A · AE-403","notes":"Today is theirs: keep your own talking to the opening and the closing. Confirm the running order, the panel and the demo setup (screen sharing, the simulator open in a notebook, a recorded backup) first. The supervised exit check runs before the defences, with AI off.","minutes":null,"lo":[]},{"id":"agenda","n":2,"title":"How the day runs","kind":"content","session":0,"hash":"b0bb58e1","md":"#### [capstone#agenda] How the day runs\n\n*Capstone*\n\n- **Exit check and final prep**: the supervised check without AI, the rubric, a last rehearsal\n- **Defences**: ten minutes of review, five of questions with a live fault\n- **Review and closing**: peer feedback, the trainer's review, the follow-up task","notes":"The exit check mirrors the entry check: an error budget burn, an admission limit from a goodput curve, and the first actions of an incident in order. It is 20% of the grade and runs with AI off; collect the papers before the first defence.","minutes":null,"lo":[]},{"id":"deliverable","n":3,"title":"A readiness review of a real or supplied service, with measured evidence","kind":"content","session":0,"hash":"5fb8bc0d","md":"#### [capstone#deliverable] A readiness review of a real or supplied service, with measured evidence\n\n*The capstone*\n\n- A public GitHub repository: the review, the code and notebooks behind every number, the logs\n- Load-test, chaos and pipeline logs, the drill's decision log, and a commit history that shows the work\n- Findings ranked by risk, a launch decision, and dated conditions that each name their proof\n- Synthetic data only: no personal data, no keys, no private model weights\n\n- **Brief and template.** `labs/capstone/README.md` and `TEMPLATE_README.md`. The supplied service is Athar v2.7 (`athar_v27_pack.json`), running on the course's simulator.","notes":"AI assistants were allowed while preparing; the defence is live, so every participant must be able to explain every number in their repository. A peer's service is welcome when its owner agreed the scope on Day 4. Check before the first defence that each repository is public and opens.","minutes":null,"lo":[]},{"id":"rubric","n":4,"title":"The rubric","kind":"content","session":0,"hash":"b6944c5f","md":"#### [capstone#rubric] The rubric\n\n*How reviews are scored*\n\n| Item | Value |\n| --- | --- |\n| Objectives and alerts | 20% |\n| Capacity and degradation | 25% |\n| Incident drill and review | 20% |\n| Release integrity | 15% |\n| Readiness decision | 20% |\n\n> **Every claim carries a number and the log it came from.** \"Met\" is the team's word; a review shows the measurement.","notes":"Full marks, one example each. Objectives: per-language quality with its sample size and interval, and a burn-rate alert replayed on data. Capacity: a goodput curve, the busiest hour and the margin. Degradation: chaos results per mode with quality measured in Arabic and English. Drill: a decision log with times. Integrity: a gate that rejects a tampered and an unlicensed artefact, with logs. Decision: ranked findings and dated conditions with proofs.\n\nThe grade: rubric 60%, panel defence 20%, supervised check 20%. Passing needs 70% overall and at least 60% on both the rubric and the supervised check.","minutes":null,"lo":[]},{"id":"format","n":5,"title":"Ten minutes of review, then five of questions with a live fault","kind":"content","session":0,"hash":"61f1b3f6","md":"#### [capstone#format] Ten minutes of review, then five of questions with a live fault\n\n*Format*\n\n- **1 · The service.** What it does, for whom, its objectives. Two minutes.\n- **2 · The evidence.** Capacity, degradation, the drill, the release gate: measured. Five minutes.\n- **3 · The decision.** The top three findings, the decision, the conditions. Three minutes.\n\n> **Peer feedback.** After each defence, everyone writes one strength, one question and one suggestion.","notes":"Ten and five minutes is the course's choice for an Expert-level defence with a live diagnosis; the catalog entry does not fix it. Keep the timer visible and stop the talk at ten: a review that cannot be told in ten minutes has not been ranked.","minutes":null,"lo":[]},{"id":"live-fault","n":6,"title":"The panel injects a fault; you diagnose it aloud","kind":"content","session":0,"hash":"86d1d72d","md":"#### [capstone#live-fault] The panel injects a fault; you diagnose it aloud\n\n*In the questions*\n\n1. **1 · Inject** the assessor starts one fault, unannounced\n2. **2 · Detect** which indicator moved, and which alert fires\n3. **3 · Mitigate** the first action, and why before the root cause\n4. **4 · Explain** what your review predicted, and what it missed\n\n> **The reasoning is scored, not the speed.** Say what you look at first and why; a wrong first guess that you correct from the data is a good answer.","notes":"This is the authenticity check of the catalog entry. On the supplied service, inject one of the simulator's faults in a notebook the participant can see: `s = relia.Service(); s.faults.add(\"retrieval_outage\")`, or `\"retrieval_slow\"`, or `\"provider_timeout\"`; or replay overload with retries through `relia.retry_storm`. On a peer's service, use Toxiproxy for latency or a cut connection, agreed with the owner beforehand. Choose the fault the participant's own review rated lowest: it tests whether the ranking was right.","minutes":null,"lo":[]},{"id":"week-recap","n":7,"title":"The week in four questions","kind":"content","session":0,"hash":"e279c2fe","md":"#### [capstone#week-recap] The week in four questions\n\n*What the panel will look for*\n\n- **What does good mean?** Indicators per language, budgets that change releases.\n- **What survives the busiest hour?** An operating point with margin, shedding by priority, honest degraded modes.\n- **Who acts when it breaks?** Roles, a decision log, a canary that rolls back, a review without blame.\n- **What are we running?** Hashes, signatures, a bill of materials, a ranked launch decision.","notes":"One question per day. Each participant should be able to point to where their repository answers each one.","minutes":null,"lo":[]},{"id":"running-order","n":8,"title":"Who defends when","kind":"order","session":0,"hash":"f10004d6","md":"#### [capstone#running-order] Who defends when\n\n*Running order*\n\n| # | Presenter | Service reviewed |\n| --- | --- | --- |\n| 1 |  |  |\n| 2 |  |  |\n| 3 |  |  |\n| 4 |  |  |\n| 5 |  |  |\n| 6 |  |  |\n| 7 |  |  |\n| 8 |  |  |","notes":"Type the names in at the start; the fields can be edited live and are not saved, so keep the list in your notes too. Do not schedule two reviews of the same peer service back to back.","minutes":null,"lo":[]},{"id":"final-prep","n":9,"title":"Final prep · 20 minutes","kind":"content","session":0,"hash":"749b2f3d","md":"#### [capstone#final-prep] Final prep · 20 minutes\n\n*Before the first defence*\n\nRehearse once, record a backup, open your service or the simulator on this screen.","notes":"Press T to start the timer. Breaks are not slides: press B when the room needs one.","minutes":null,"lo":[]},{"id":"now-presenting","n":10,"title":"Now presenting","kind":"presenting","session":0,"hash":"6a22234f","md":"#### [capstone#now-presenting] Now presenting\n\n*Now defending*","notes":"Type the presenter's name and press T to start the timer. Reuse this slide for every presenter; the panel agrees the fault before the questions start.","minutes":null,"lo":[]},{"id":"review","n":11,"title":"What the reviews showed","kind":"content","session":0,"hash":"6ee2de31","md":"#### [capstone#review] What the reviews showed\n\n*Trainer review*\n\n- **Strongest patterns.** What several reviews got right.\n- **Common gaps.** What most reviews would fix next.\n- **One surprise.** Something the live faults showed.","notes":"Fill these in from your scoring notes during the last break. Name projects for strengths; keep gaps anonymous.","minutes":null,"lo":[]},{"id":"what-next","n":12,"title":"Keep going","kind":"content","session":0,"hash":"f32620f2","md":"#### [capstone#what-next] Keep going\n\n*After the course*\n\n- **The follow-up task:** within 30 days, apply one standard from the course to a service in your team or an open-source deployment, and send the evidence\n- **Your review stays yours:** keep it reproducible and act on the first condition you named today\n- **The AE Expert badge:** this course is one of the AE-400 courses that help prepare for it","notes":"The follow-up task is tracked: agree the date and where the evidence is sent before people leave. One standard is enough: an objective with its alert, an admission limit, a degraded mode, a release gate or model admission.","minutes":null,"lo":[]},{"id":"thanks","n":13,"title":"Thank you","kind":"content","session":0,"hash":"e9bab210","md":"#### [capstone#thanks] Thank you\n\n*SDAIA Academy*\n\nReliability Engineering for AI Services","notes":"Thank the panel by name. Remind everyone that the repositories must stay public until grading is complete.","minutes":null,"lo":[]}],"activities":[],"ai":{"context":{"course":"../context/course.md","courseJs":"../context/course.js","day":"capstone.md","llms":"../llms.txt"},"tasks":[],"tools":[]},"bridge":{"allowedOrigins":[]},"features":{},"strings":{}}</script>
+<script src="../_engine/academy.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+ "__frame__": true,
+ "columns": [
+  "policy",
+  "peak_offered_rps",
+  "recovered_at_s",
+  "failed_requests"
+ ],
+ "rows": [
+  [
+   "immediate retries",
+   24.0,
+   null,
+   4638
+  ],
+  [
+   "backoff only",
+   33.99,
+   153.0,
+   3801
+  ],
+  [
+   "10% retry budget",
+   6.6,
+   90.0,
+   197
+  ],
+  [
+   "budget and backoff",
+   6.6,
+   90.0,
+   197
+  ]
+ ]
+}

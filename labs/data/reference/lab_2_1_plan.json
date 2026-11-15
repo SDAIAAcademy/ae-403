@@ -1,0 +1,8 @@
+{
+ "busiest_day": 27,
+ "busiest_hour": 20,
+ "busiest_rps": 7.64,
+ "typical_daily_peak_rps": 4.975,
+ "replicas": 5,
+ "margin": 0.394
+}

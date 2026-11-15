@@ -1,0 +1,6 @@
+{
+ "model_type": "athar-small",
+ "hidden_size": 512,
+ "num_layers": 8,
+ "vocab_size": 32000
+}

@@ -1,0 +1,21 @@
+[project]
+name = "ae-403-labs"
+version = "2027.1.0"
+description = "Lab notebooks for the SDAIA Academy course AE-403 Reliability Engineering for AI Services"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "numpy>=2.2",
+    "pandas>=2.2",
+    "matplotlib>=3.9",
+    "pyyaml>=6.0",
+    "cryptography>=44",
+    "pyopenssl>=25",
+    "model-signing>=1.1.1",
+    "cyclonedx-python-lib[json-validation]>=11.0",
+    "jupyterlab>=4.4",
+    "nbclient>=0.10",
+    "ipykernel>=6.29",
+]
+
+[tool.uv]
+package = false

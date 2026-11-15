@@ -1,0 +1,1602 @@
+{
+  "format": "classpulse-bank",
+  "version": 1,
+  "course": {
+    "name": "Reliability Engineering for AI Services",
+    "los": [
+      {
+        "code": "LO1",
+        "description": "Design service level objectives for availability, latency and answer quality, with error budgets and a release policy, given a month of synthetic telemetry and a sampled online quality signal"
+      },
+      {
+        "code": "LO2",
+        "description": "Decide an admission limit and shedding priorities that keep headroom for the busiest hour, given the self-hosted model, a recorded traffic trace and the service objectives"
+      },
+      {
+        "code": "LO3",
+        "description": "Design degradation for overload and dependency failure using load shedding, a smaller fallback model and a cached-answer mode, given overload, retrieval outage and provider timeout scenarios"
+      },
+      {
+        "code": "LO4",
+        "description": "Lead an incident drill from detection to recovery and write a blameless review, given a silent quality regression after a model update"
+      },
+      {
+        "code": "LO5",
+        "description": "Build a release gate that verifies model signatures, a bill of materials and licences before deployment, given signed, tampered and unlicensed model artefacts"
+      },
+      {
+        "code": "LO6",
+        "description": "Review another team's AI service for production readiness and set launch conditions, given a peer's service, its telemetry and a readiness checklist"
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "check-probe-q1",
+      "type": "single",
+      "prompt": "Athar's uptime check sends one short English prompt a minute. Which of these incidents does it detect?",
+      "options": [
+        "Arabic answers wrong after an index refresh",
+        "First token over four seconds at the evening peak",
+        "The engine pods restart and refuse every request",
+        "Answers cut short at the output limit"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "The probe sees only what makes its own request fail. A total outage does; the other three return 200 to a tiny English prompt.",
+      "misconceptions": [
+        "Assumes the probe is graded: it checks that an answer came back, not that it is right",
+        "Assumes the probe waits like users: a tiny prompt needs almost no prefill and skips most of the queue",
+        "",
+        "Treats a 200 as a full answer: a cut answer still returns success to a four-token probe"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 11
+    },
+    {
+      "id": "check-cancel-q1",
+      "type": "single",
+      "prompt": "A customer closes the chat after two seconds, before Athar's first token. The gateway logs a 499. How should the availability indicator count it?",
+      "options": [
+        "As a bad event",
+        "As a good event",
+        "As half a bad event",
+        "Excluded from valid events, and counted in its own abandonment signal"
+      ],
+      "key": {
+        "indices": [
+          3
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "No answer was owed once the user left, so it is not an availability failure; but many early cancels can mean slow first tokens, so watch them separately.",
+      "misconceptions": [
+        "Treats every non-200 as the service's failure, which blames Athar for users who left",
+        "Confuses a user's choice with success: no answer was delivered",
+        "Moves the problem rather than deciding it: the indicator still needs a rule",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 20
+    },
+    {
+      "id": "check-budget-q1",
+      "type": "single",
+      "prompt": "Over 30 days Athar served 2,000,000 valid requests and 6,000 failed. The availability objective is 99.5%. What share of the error budget remains?",
+      "options": [
+        "99.7%",
+        "0.3%",
+        "40%",
+        "167%"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "The budget is 0.5% of 2,000,000, or 10,000 requests. 6,000 failed, so 60% is burned and 40% remains.",
+      "misconceptions": [
+        "Reports the success rate (99.7%) as if it were the budget left, without comparing failures with the 0.5% allowed",
+        "Reads the 0.3% failure rate as the budget left",
+        "",
+        "Divides the wrong way round: 0.5% over 0.3%"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 29
+    },
+    {
+      "id": "check-flow-q1",
+      "type": "single",
+      "prompt": "Ruwaida asks for one headline indicator for the redelivery booking flow on her monthly review. Which do you propose?",
+      "options": [
+        "Share of successful model and tool calls",
+        "Share of sessions that booked a slot, per language",
+        "Share of sessions not escalated to a person",
+        "Median session duration"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "The customer's task is the booking. Completion per language measures it directly; cost and escalation sit beside it as context.",
+      "misconceptions": [
+        "Measures the parts, not the task: calls succeed while bookings fail",
+        "",
+        "Optimises the wrong direction: some parcels must be escalated",
+        "Measures speed, not success: a fast abandoned session still failed"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 37
+    },
+    {
+      "id": "review-day1-q1",
+      "type": "single",
+      "prompt": "Over 30 days Athar's sampled quality was 97.8% in English and 95.9% in Arabic, 96.7% together. The objective is 95%. What do you report?",
+      "options": [
+        "96.7%, within objective",
+        "Each language against its own objective, with its remaining budget",
+        "97.8%, the higher of the two",
+        "Nothing until every answer is graded"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "The objective is per language: Arabic has 19% of its budget left while English has 57%, and only the slices show it.",
+      "misconceptions": [
+        "Averages the slices, which lets English hide how close Arabic is to its objective",
+        "",
+        "Reports the best slice as if it were the service",
+        "Drops the measurement because it is sampled, when the interval makes a sample usable"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 3
+    },
+    {
+      "id": "check-curve-q1",
+      "type": "single",
+      "prompt": "A sweep gives goodput 3.1, 3.4, 3.5, 1.2 requests a second at 8, 12, 16 and 20 in flight. First-token p95 at 12 is 600 ms, at 16 it is 1,400 ms; the threshold is 1,500 ms. Where do you set the operating point?",
+      "options": [
+        "16 in flight",
+        "12 in flight",
+        "8 in flight",
+        "20 in flight"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO2"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "12 keeps 97% of the peak goodput with the p95 well under the threshold; 16 sits within 100 ms of it.",
+      "misconceptions": [
+        "Chooses the peak, leaving no headroom below the threshold",
+        "",
+        "Gives away capacity the curve shows is safe",
+        "Reads throughput past the knee as capacity"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 11
+    },
+    {
+      "id": "check-shed-q1",
+      "type": "single",
+      "prompt": "During the sale-day surge Athar's replicas are at their cap. Which traffic should the gateway shed first?",
+      "options": [
+        "The most recent arrivals, whatever their class",
+        "Tracking requests, because they are the most numerous",
+        "Staff summaries of complaint threads",
+        "Arabic requests, because their prompts are longer"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO2"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "Summaries are batch work that can wait for the surge to pass, and their long prompts free the most capacity.",
+      "misconceptions": [
+        "Ranks by arrival order, which sheds whoever is unlucky rather than whoever can wait",
+        "Protects the cheapest requests rather than the most urgent ones",
+        "",
+        "Sheds by language, which fails one language's users unnoticed"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 19
+    },
+    {
+      "id": "check-mode-q1",
+      "type": "single",
+      "prompt": "Shuaib reports that the fallback model passes 84% of the test set, against a minimum service of 85%, \"close enough to ship\". English passes 92%, Arabic 79%. What do you decide?",
+      "options": [
+        "Ship it: 84% is within a point",
+        "Remove the fallback mode entirely",
+        "Lower the minimum service to 80%",
+        "Use it for English; route Arabic to the cache first and measure again"
+      ],
+      "key": {
+        "indices": [
+          3
+        ]
+      },
+      "lo": [
+        "LO3"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "The minimum service is per language. The fallback meets it for English only, so Arabic needs another rung, measured before it is trusted.",
+      "misconceptions": [
+        "Accepts an average that a 60% Arabic user base cannot rely on",
+        "Throws away a mode that works for English instead of routing",
+        "Changes the bar to fit the model instead of the users",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 27
+    },
+    {
+      "id": "check-storm-q1",
+      "type": "single",
+      "prompt": "A 30-second provider fault ended ten minutes ago. Athar still fails most requests, and the engine shows three times the normal request rate. What is the most likely cause?",
+      "options": [
+        "Client retries keep the load past the knee, so goodput stays near zero",
+        "A new provider fault started",
+        "Half of the replicas were lost during the fault",
+        "A traffic surge from a marketing campaign"
+      ],
+      "key": {
+        "indices": [
+          0
+        ]
+      },
+      "lo": [
+        "LO3"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "Three times the normal rate right after a fault is the signature of retries. Shed load and enforce a retry budget; the service then recovers.",
+      "misconceptions": [
+        "",
+        "Assumes a second fault without evidence; the load points to retries",
+        "Confuses a capacity loss with a load increase",
+        "Blames users' real demand for load the fault created"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 35
+    },
+    {
+      "id": "review-day2-q1",
+      "type": "single",
+      "prompt": "The engine is down. The fallback model passes 87% of English and 73% of Arabic test questions; the cache answers 63% of Arabic help questions, all correctly. The minimum service is 85% per language. What do Arabic help questions get?",
+      "options": [
+        "The fallback model, like English",
+        "An apology for every Arabic question",
+        "The cache first, the fallback on a miss, both disclosed",
+        "The full cache, including saved tracking answers"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO3"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "Routed this way, Arabic help passed 91.1% in Lab 2.3, above the minimum; the fallback alone gave 72.6%.",
+      "misconceptions": [
+        "Applies one route to both languages although their modes perform differently",
+        "Gives up a service that the cache can partly keep",
+        "",
+        "Serves cached answers without the freshness and personal-data checks"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 3
+    },
+    {
+      "id": "check-averaged-q1",
+      "type": "single",
+      "prompt": "After v2.4, 38% of Arabic answers fail and English is unchanged. Arabic is 60% of traffic. The 6× quality alert on all traffic never fires. Why?",
+      "options": [
+        "Too few answers are graded to see it",
+        "The English slice keeps the combined burn rate near 5×, below the threshold",
+        "The five-minute window is too short",
+        "The 95% objective is too strict"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "Averaging dilutes a one-language failure. The objective and its alert must be per language.",
+      "misconceptions": [
+        "Blames sampling, but the Arabic slice alone has enough samples to fire",
+        "",
+        "Confuses the two windows: the short window is above the threshold too",
+        "Treats the objective as the cause; any objective averaged over both languages hides the slice"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 11
+    },
+    {
+      "id": "check-first-action-q1",
+      "type": "ordering",
+      "prompt": "The Arabic quality alert pages you; v2.4 went out 35 minutes ago. Put the first four actions in order.",
+      "options": [
+        "Declare the incident and assign the roles",
+        "Roll back to v2.3",
+        "Page the data protection officer once personal data is reported",
+        "Start root-cause analysis"
+      ],
+      "key": {},
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "Roles first so decisions have an owner, then the reversible mitigation, then the breach procedure, and only then the diagnosis.",
+      "misconceptions": [],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 19
+    },
+    {
+      "id": "check-canary-q1",
+      "type": "single",
+      "prompt": "A canary ran 10 minutes at 5% and passed with 25 of 26 Arabic answers correct, against 97% for stable. What do you do before promoting?",
+      "options": [
+        "Promote: 96% is within the 3-point margin",
+        "Roll back: the sample is too small to trust",
+        "Continue at a larger share until each language has the minimum sample",
+        "Ask the evaluation team to approve by hand"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "26 answers cannot tell 97% from 90%. The gate holds the decision until the sample can.",
+      "misconceptions": [
+        "Treats a pass on a tiny sample as evidence of quality",
+        "Discards a candidate on no evidence of a problem",
+        "",
+        "Moves the decision to people without new evidence"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 27
+    },
+    {
+      "id": "check-factor-q1",
+      "type": "single",
+      "prompt": "Four draft lines for INC-0731's contributing factors. Which one belongs in a blameless review?",
+      "options": [
+        "The release engineer should have checked Arabic before shipping",
+        "Human error during the template change",
+        "Arabic customers received wrong answers",
+        "The release pipeline had no gate on Arabic answer quality"
+      ],
+      "key": {
+        "indices": [
+          3
+        ]
+      },
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "It names a condition of the system, with an obvious owner and an action that removes it.",
+      "misconceptions": [
+        "Names a person's behaviour, which invites blame and no fix",
+        "Labels the cause instead of finding the condition behind it",
+        "States an outcome, not a condition anyone can change",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 35
+    },
+    {
+      "id": "review-day3-q1",
+      "type": "single",
+      "prompt": "INC-0731's review lists five contributing factors. Which corrective action would have stopped v2.4 before it reached all Arabic users?",
+      "options": [
+        "Remind release engineers to test Arabic carefully",
+        "Shorten the alert's long window to 30 minutes",
+        "Fix the digit normalisation in the prompt template",
+        "Route every model release through a canary with a per-language quality gate"
+      ],
+      "key": {
+        "indices": [
+          3
+        ]
+      },
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "The gate stops any Arabic quality regression, this one and the next, before it reaches everyone; the other actions are needed too, but none of them blocks the release.",
+      "misconceptions": [
+        "Asks people to try harder, with no check that it happened",
+        "Speeds up the response but lets the regression ship",
+        "Fixes this bug but not the next one the gate would catch",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 3
+    },
+    {
+      "id": "check-hash-q1",
+      "type": "single",
+      "prompt": "Every file of a downloaded model matches the hash list published on the same mirror. What can you conclude?",
+      "options": [
+        "The files are the publisher's originals",
+        "The files match that list, and nothing more until the list is verified",
+        "The model may be used commercially",
+        "The model will answer as well as the original"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO5"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "A matching hash is only as trustworthy as the list; a list from the mirror can be changed with the files.",
+      "misconceptions": [
+        "Trusts a list that came through the same channel as the files",
+        "",
+        "Confuses integrity with permission to use",
+        "Confuses integrity with quality"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 10
+    },
+    {
+      "id": "check-signature-q1",
+      "type": "single",
+      "prompt": "A model folder and its signature bundle both came from a partner's file share, along with the public key to check them. The signature verifies. What has been shown?",
+      "options": [
+        "The partner released these exact files",
+        "The model contains no planted behaviour",
+        "Only that the files match whoever holds that key, which could be anyone with access to the share",
+        "Rasael may deploy it in production"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO5"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "The key travelled with the files; anyone who could replace the files could replace the key. Get the partner's key through a separate, trusted channel.",
+      "misconceptions": [
+        "Assumes the key is genuine although it arrived with the files",
+        "Confuses integrity with safety",
+        "",
+        "Confuses integrity with licence"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 18
+    },
+    {
+      "id": "check-admission-q1",
+      "type": "single",
+      "prompt": "Four candidate models for the fallback mode. Rasael's allow list is Apache-2.0 and MIT. Which one passes all four rules?",
+      "options": [
+        "Apache-2.0, signature mismatch on one shard",
+        "Research-only licence, signature verified",
+        "MIT, signature verified, safetensors files, BOM hashes match",
+        "Apache-2.0, signature verified, weights in a pickled .bin file"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO5"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "Only C passes every rule: verified integrity, matching bill of materials, an allowed licence and no executable format.",
+      "misconceptions": [
+        "Accepts a signature that does not verify because the licence is fine",
+        "Treats a valid signature as permission to use",
+        "",
+        "Ignores that pickled weights can run code when loaded"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 26
+    },
+    {
+      "id": "check-launch-q1",
+      "type": "single",
+      "prompt": "A service has every item met except two partial ones: its canary gates on latency only, and its fallback was never tested under a provider failure. Both have likelihood 4 and impact 4, so each scores a risk of 8. What do you decide under Rasael's rule?",
+      "options": [
+        "Do not launch until both are fixed",
+        "Launch with two dated conditions, each with the evidence that proves it",
+        "Launch without conditions",
+        "Ask the team to rerun their own checklist"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO6"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "No missing item has impact 5, so nothing blocks; each gap becomes a condition with a date and a proof.",
+      "misconceptions": [
+        "Blocks on partial items that the rule turns into conditions, not blockers",
+        "",
+        "Ignores real gaps because most items are met",
+        "Moves the decision elsewhere without adding evidence"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "slide": 35
+    },
+    {
+      "id": "q-slo-budget-burn",
+      "type": "numeric",
+      "prompt": "Athar's availability objective is 99.5% of valid requests over 30 days. The month will see about 2,000,000 valid requests. After 10 days, 6,000 requests have failed. What percentage of the month's error budget has been spent?",
+      "options": [],
+      "key": {
+        "value": 60,
+        "tolerance": 1
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 90,
+      "displayMode": "full",
+      "explanation": "The budget is 0.5% of 2,000,000 = 10,000 failed requests; 6,000 of 10,000 is 60%.",
+      "misconceptions": [],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "unit": "%"
+    },
+    {
+      "id": "q-slo-fast-burn",
+      "type": "single",
+      "prompt": "A page fires when the one-hour burn rate of a 30-day objective reaches 14.4. If the burn holds for exactly that hour, how much of the 30-day error budget is gone?",
+      "options": [
+        "About 2%: 14.4 hours of budget-rate spending out of 720 hours",
+        "14.4%, the burn rate read as a percentage",
+        "0.1%, the gap between 99.9% and 100%",
+        "Half the budget, since a page means the objective is at risk"
+      ],
+      "key": {
+        "indices": [
+          0
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "A burn rate of 1 spends the budget evenly over 720 hours; 14.4 for one hour spends 14.4/720, which is 2%.",
+      "misconceptions": [
+        "",
+        "Reads the burn rate as a share of the budget",
+        "Confuses the objective's error rate with the budget spent",
+        "Equates a page with a fixed, large loss"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-slo-per-language",
+      "type": "single",
+      "prompt": "Over a week Athar's graded answers pass 97% overall: 98.4% in English on 1,700 samples and 89% in Arabic on 300 samples. The objective is 95% of graded answers correct. What should the quality objective look like?",
+      "options": [
+        "One overall objective: 97% already meets 95%, so the service is healthy",
+        "No quality objective, since grading is only a sample",
+        "One objective per language, each with its sample size and interval, so Arabic's 89% is visible and spends its own budget",
+        "An Arabic objective of 89%, set to what the service does today"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "An overall rate lets the larger English traffic hide a failing Arabic service; per-language objectives with sample sizes show it.",
+      "misconceptions": [
+        "Trusts an average that the larger group dominates",
+        "Thinks a sampled signal cannot carry an objective",
+        "",
+        "Sets the objective from current performance instead of what users need"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-slo-task",
+      "type": "single",
+      "prompt": "Rebooking a delivery takes Athar five model or tool calls in a row; each succeeds 99% of the time, independently. About how often does the whole rebooking task succeed?",
+      "options": [
+        "About 99%: the weakest call sets the rate",
+        "About 95%: 0.99 to the power of 5",
+        "About 99.9%: retries inside the task raise it",
+        "It cannot be estimated without the calls' latencies"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Independent steps multiply: 0.99^5 is about 0.951, so an objective per call overstates what users get per task.",
+      "misconceptions": [
+        "Thinks a chain is as good as its weakest link",
+        "",
+        "Assumes retries that the scenario does not have",
+        "Confuses success with latency"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-slo-probe",
+      "type": "tf",
+      "prompt": "An uptime probe that receives HTTP 200 from Athar every minute shows that users are getting correct answers.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "A probe sees that the endpoint answers, not what it answers: empty or wrong answers also return 200.",
+      "misconceptions": [
+        "Equates a reachable endpoint with a working assistant",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-cap-replicas",
+      "type": "numeric",
+      "prompt": "Each Athar replica serves 2.1 requests per second of goodput at its operating point. The busiest hour of the year averages 7.6 requests per second, and the team keeps 25% headroom above it. How many replicas are needed?",
+      "options": [],
+      "key": {
+        "value": 5,
+        "tolerance": 0
+      },
+      "lo": [
+        "LO2"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 90,
+      "displayMode": "full",
+      "explanation": "7.6 × 1.25 = 9.5 requests per second; 9.5 / 2.1 = 4.5, so 5 replicas.",
+      "misconceptions": [],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000,
+      "unit": "replicas"
+    },
+    {
+      "id": "q-cap-goodput",
+      "type": "single",
+      "prompt": "A load test shows throughput still rising up to 24 concurrent requests per replica, but beyond 16 the share of requests meeting the time-to-first-token objective falls quickly. Where should the admission limit be?",
+      "options": [
+        "At 24, where throughput peaks",
+        "At 16 or just below, where goodput (requests that meet the objective) is highest",
+        "At 1, so that every request gets the fastest answer",
+        "No limit: autoscaling will add replicas"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO2"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Requests that miss the objective are not service; the limit sits where goodput peaks, not raw throughput.",
+      "misconceptions": [
+        "Counts answered requests whether or not they meet the objective",
+        "",
+        "Ignores cost: the objective, not the fastest answer, is the target",
+        "Assumes scaling is instant and unlimited during a burst"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-cap-shed",
+      "type": "single",
+      "prompt": "Athar is overloaded at 140% of its admission limit. Traffic is P1 parcel tracking for customers, P2 redelivery chat, and P3 bulk summaries of help articles for staff. What does the gateway do?",
+      "options": [
+        "Queue everything in arrival order until the burst passes",
+        "Reject a random 30% of all requests",
+        "Shed P3 first, cap and give P2 a short queue deadline, and keep P1 within its objective",
+        "Shed P1 first, since tracking questions can be retried"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO2",
+        "LO3"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Shedding by priority keeps the most important traffic within its objective while the overload lasts.",
+      "misconceptions": [
+        "Thinks queues absorb any overload; they turn it into latency for everyone",
+        "Treats all traffic as equal",
+        "",
+        "Lets retries justify shedding the most valuable traffic"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-cap-order",
+      "type": "ordering",
+      "prompt": "Put the steps for setting an admission limit in order.",
+      "options": [
+        "Measure goodput against concurrency on the model you will serve",
+        "Choose the operating point where the objective is still met",
+        "Compare capacity at that point with the busiest hour plus headroom",
+        "Replay a recorded overload and check priority traffic still meets its objective"
+      ],
+      "key": {},
+      "lo": [
+        "LO2"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "The limit comes from measurement, is sized against the busiest hour, and is proven by a replay.",
+      "misconceptions": [],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-deg-outage",
+      "type": "single",
+      "prompt": "Retrieval over the help articles is down. Which degraded mode should Athar use for help questions?",
+      "options": [
+        "Serve vetted cached answers to known questions, disclose the reduced service, and send the rest to a template that points to the help centre",
+        "Let the model answer from memory without retrieval, so users notice nothing",
+        "Return an error for every question until retrieval is back",
+        "Retry retrieval on every request until it answers"
+      ],
+      "key": {
+        "indices": [
+          0
+        ]
+      },
+      "lo": [
+        "LO3"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "A degraded mode keeps a minimum, honest service; answering without sources invents policy and retries add load.",
+      "misconceptions": [
+        "",
+        "Thinks fluent answers without sources are a safe fallback",
+        "Gives up a minimum service the case can still provide",
+        "Retries against a dependency that is down, adding load"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-deg-cache-pd",
+      "type": "single",
+      "prompt": "Of 137 cached answers, 9 are tracking answers that contain a customer's name and address, and 7 quote a delivery fee that changed last month. What happens to the cache before it serves as a fallback?",
+      "options": [
+        "Keep all 137: they were correct when written",
+        "Remove only the 7 stale answers; personal data is fine in a server-side cache",
+        "Remove only the 9 with personal data; prices change rarely",
+        "Remove both: answers with personal data must not be served to others, and stale answers are wrong"
+      ],
+      "key": {
+        "indices": [
+          3
+        ]
+      },
+      "lo": [
+        "LO3"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "A cache served to anyone must hold no personal data and no stale facts.",
+      "misconceptions": [
+        "Treats a once-correct answer as permanently correct",
+        "Ignores that a cached answer is shown to other users",
+        "Ignores that a stale price is a wrong answer",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-deg-retry",
+      "type": "single",
+      "prompt": "A provider timeout lasts 60 seconds. Clients retry every failure immediately, up to three times. After the provider recovers, the service stays overloaded. What fixes this?",
+      "options": [
+        "More retries, so that more requests eventually succeed",
+        "A retry budget (about 10% of requests) with exponential backoff and jitter",
+        "A longer client timeout",
+        "Restarting the service after each fault"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO3"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Immediate retries multiply load past capacity, so goodput collapses; a budget and backoff bound the extra load.",
+      "misconceptions": [
+        "Thinks retries are free",
+        "",
+        "Delays the failure without reducing load",
+        "Treats a load problem as a process problem"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-deg-quality",
+      "type": "tf",
+      "prompt": "A chaos test of the smaller fallback model passes if Athar keeps returning HTTP 200 throughout the fault.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO3"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 30,
+      "displayMode": "full",
+      "explanation": "The fallback in the case kept answering, but its Arabic quality fell to about 73%; each mode needs its quality measured per language.",
+      "misconceptions": [
+        "Equates availability with a minimum service",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-inc-order",
+      "type": "ordering",
+      "prompt": "A quality alert pages 35 minutes after a model update: Arabic tracking answers have been wrong since the update. Put the first actions in order.",
+      "options": [
+        "Declare the incident and name an incident lead",
+        "Mitigate: roll back to the previous model",
+        "Tell the stakeholders what is known and when the next update is due",
+        "Find the root cause from the logs, once users are protected"
+      ],
+      "key": {},
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Roles first, then stop the harm, then communicate; diagnosis comes after users are protected.",
+      "misconceptions": [],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-inc-rollback",
+      "type": "single",
+      "prompt": "Twenty minutes into the incident the team suspects the new model mis-reads Arabic-Indic digits in parcel numbers, but is not sure. Users are still getting wrong answers. What does the incident lead decide?",
+      "options": [
+        "Keep the new model until the root cause is proven, to avoid a needless rollback",
+        "Roll back now and record the decision and its time in the log; prove the cause afterwards",
+        "Patch the prompt template in production to normalise digits",
+        "Ask each engineer to test Arabic queries by hand"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Mitigation does not wait for certainty: a rollback is cheap and reversible, and the log records why.",
+      "misconceptions": [
+        "Puts the diagnosis before the users' harm",
+        "",
+        "Makes an untested change during the incident",
+        "Relies on people to catch what a gate should"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-inc-action",
+      "type": "single",
+      "prompt": "The blameless review of INC-0731 lists corrective actions. Which one prevents a repeat?",
+      "options": [
+        "Remind release engineers to test Arabic carefully",
+        "Note that the engineer on call missed the regression",
+        "Shorten the alert's long window",
+        "Add the failing Arabic digit cases as a regression test, and route model releases through a canary with a per-language quality gate"
+      ],
+      "key": {
+        "indices": [
+          3
+        ]
+      },
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "A test and a gate catch the failure every time; reminders and blame do not change the system.",
+      "misconceptions": [
+        "Relies on people remembering",
+        "Turns a review into blame",
+        "Changes detection speed but not prevention",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-inc-breach",
+      "type": "single",
+      "prompt": "During the incident, 40 answers showed parcels' recipient names and addresses to the wrong customers. Under SDAIA's personal data breach guide, what is the notification clock?",
+      "options": [
+        "Notify within 72 hours of becoming aware of the breach, when it may harm the people concerned",
+        "Notify only after the root cause is known",
+        "No notification: the exposure was caused by a model error, not an attack",
+        "Notify within 30 days, in the monthly report"
+      ],
+      "key": {
+        "indices": [
+          0
+        ]
+      },
+      "lo": [
+        "LO4"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "The clock starts at awareness, not at the root cause, and a model error that exposes personal data is a breach.",
+      "misconceptions": [
+        "",
+        "Waits for diagnosis before notifying",
+        "Thinks only attacks are breaches",
+        "Confuses breach notification with routine reporting"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-inc-canary",
+      "type": "single",
+      "prompt": "A canary of a quantised model passed its quality gate on 27 Arabic samples, then failed in production. What should the gate have required?",
+      "options": [
+        "A higher pass threshold on the same 27 samples",
+        "A longer canary at the same traffic share, with no other change",
+        "A minimum sample per language before deciding, and a comparison against the stable version",
+        "No gate: canaries only measure latency"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO4",
+        "LO1"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "27 samples give an interval too wide to decide; a minimum sample per language makes the gate's decision trustworthy.",
+      "misconceptions": [
+        "Tightens a threshold that the sample cannot support",
+        "Waits without checking whether enough samples arrive",
+        "",
+        "Thinks quality cannot be gated"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-int-key",
+      "type": "single",
+      "prompt": "A partner's model folder arrives with a signature bundle and the public key to check it, all in the same file share. The signature verifies. What has been shown?",
+      "options": [
+        "That the partner released these exact files",
+        "That the files match whatever key was in the share, which anyone with access to the share could have replaced",
+        "That the model is safe to load",
+        "That Rasael may deploy it"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO5"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Verification is only as trusted as the key; a key that travels with the model can be swapped with it.",
+      "misconceptions": [
+        "Trusts a key from the same channel as the files",
+        "",
+        "Confuses integrity with safety",
+        "Confuses integrity with permission"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-int-licence",
+      "type": "single",
+      "prompt": "A small model's signature verifies with Rasael's release key and its bill of materials matches every file. Its licence allows research use only. What does the admission gate decide?",
+      "options": [
+        "Admit: integrity is proven",
+        "Admit with a warning in the log",
+        "Ask the publisher to re-sign it",
+        "Reject: the licence is not on the allow list"
+      ],
+      "key": {
+        "indices": [
+          3
+        ]
+      },
+      "lo": [
+        "LO5"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Integrity is not permission: every rule must pass, including the licence.",
+      "misconceptions": [
+        "Treats a valid signature as the only rule",
+        "Turns a failed rule into a warning",
+        "Thinks signing changes the licence",
+        ""
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-int-mirror",
+      "type": "single",
+      "prompt": "One weight shard of a model downloaded from a mirror has a different SHA-256 from the publisher's list. What does that prove?",
+      "options": [
+        "The bytes of that shard are not the ones the publisher released",
+        "Someone tampered with it on purpose",
+        "The mirror is malicious",
+        "The model will behave differently"
+      ],
+      "key": {
+        "indices": [
+          0
+        ]
+      },
+      "lo": [
+        "LO5"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "A hash difference proves the bytes differ, not who changed them, why, or what the change does.",
+      "misconceptions": [
+        "",
+        "Infers intent from a hash",
+        "Infers the source of the change",
+        "Infers behaviour from bytes"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-int-pickle",
+      "type": "single",
+      "prompt": "Why does the admission gate refuse a model shipped as a pickled .bin file, even with a valid signature?",
+      "options": [
+        "Pickle files are larger than safetensors",
+        "Loading a pickle can run code, so a signed file can still carry code that runs at load",
+        "Signatures cannot cover binary files",
+        "The engine cannot read .bin files"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO5"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Signing proves who released the bytes, not that loading them is safe; formats that run code at load are refused.",
+      "misconceptions": [
+        "Thinks the rule is about size",
+        "",
+        "Thinks signatures only cover text",
+        "Thinks the rule is about compatibility"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-int-bom",
+      "type": "multi",
+      "prompt": "Which of these does a CycloneDX machine learning bill of materials record for a model? Choose all that apply.",
+      "options": [
+        "The hash of each file",
+        "The licence",
+        "The publisher and version",
+        "Whether the model's answers are correct"
+      ],
+      "key": {
+        "indices": [
+          0,
+          1,
+          2
+        ]
+      },
+      "lo": [
+        "LO5"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "A bill of materials records what a release contains and where it came from, not how well it performs.",
+      "misconceptions": [
+        "",
+        "",
+        "",
+        "Confuses an inventory with an evaluation"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-prr-claim",
+      "type": "single",
+      "prompt": "Taqdir's team marks its latency objective as met: 95% of requests under 2 seconds to first token. Rasael's standard is 1.5 seconds. How does the review score it?",
+      "options": [
+        "Met: the team's evidence shows its objective is met",
+        "Missing: there is no 1.5-second measurement",
+        "Partial: an objective exists and is measured, but it is weaker than the standard",
+        "Not scored: the standard is the platform team's concern"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO6"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "A reviewer checks the claim against the standard; meeting a weaker objective is partial.",
+      "misconceptions": [
+        "Accepts the team's word for the score",
+        "Ignores the measured evidence that exists",
+        "",
+        "Leaves the standard out of the review"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-prr-risk",
+      "type": "numeric",
+      "prompt": "A finding has likelihood 4, impact 4 and is partial (gap 0.5). What is its risk, as likelihood × impact × gap?",
+      "options": [],
+      "key": {
+        "value": 8,
+        "tolerance": 0
+      },
+      "lo": [
+        "LO6"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 45,
+      "displayMode": "full",
+      "explanation": "4 × 4 × 0.5 = 8, which makes it a dated condition under Rasael's rule.",
+      "misconceptions": [],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-prr-decision",
+      "type": "single",
+      "prompt": "Every checklist item for a service is met except one: its fallback model is unsigned (missing, impact 5). What is the decision under Rasael's rule?",
+      "options": [
+        "Launch: twelve of thirteen items are met",
+        "Launch with a condition to sign the model within 30 days",
+        "Do not launch until the model is signed and admitted; then relaunch review",
+        "Ask the team to rerun its own checklist"
+      ],
+      "key": {
+        "indices": [
+          2
+        ]
+      },
+      "lo": [
+        "LO6"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "Any missing item with impact 5 blocks the launch until fixed; a count of met items does not outweigh it.",
+      "misconceptions": [
+        "Counts items instead of weighing risk",
+        "Turns a blocking item into a condition",
+        "",
+        "Lets the team grade itself"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    },
+    {
+      "id": "q-prr-condition",
+      "type": "single",
+      "prompt": "What makes a launch condition usable?",
+      "options": [
+        "It is written in the team's own words",
+        "It names an owner, a date, and the evidence that proves it is met",
+        "It lists every finding, whatever its risk",
+        "It is approved by the panel"
+      ],
+      "key": {
+        "indices": [
+          1
+        ]
+      },
+      "lo": [
+        "LO6"
+      ],
+      "weight": 1,
+      "scored": true,
+      "timer": 60,
+      "displayMode": "full",
+      "explanation": "A condition without an owner, a date and a proof cannot be checked or closed.",
+      "misconceptions": [
+        "Thinks ownership of wording is ownership of the work",
+        "",
+        "Confuses a condition list with the findings list",
+        "Thinks approval replaces evidence"
+      ],
+      "liveContext": false,
+      "basis": "best",
+      "confidence": true,
+      "createdAt": 1794755059000,
+      "updatedAt": 1794755059000
+    }
+  ]
+}

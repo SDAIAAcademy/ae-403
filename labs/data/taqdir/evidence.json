@@ -1,0 +1,55 @@
+{
+ "alerts.burn_rate": {
+  "note": "burn-rate alert on availability; quality has a static threshold on the daily average",
+  "status": "partial"
+ },
+ "capacity.admission": {
+  "note": "concurrency cap of 12 per replica, two priority classes",
+  "status": "met"
+ },
+ "capacity.busiest_hour": {
+  "note": "load test at the average hour (2.1 requests a second); the busiest hour was 6.4",
+  "status": "missing"
+ },
+ "degradation.disclosure": {
+  "note": "reduced-mode banner in Arabic and English",
+  "status": "met"
+ },
+ "degradation.fallback_tested": {
+  "note": "fallback model configured; never exercised with a provider failure",
+  "status": "partial"
+ },
+ "incidents.breach_procedure": {
+  "note": "linked; data protection officer named",
+  "status": "met"
+ },
+ "incidents.runbook": {
+  "note": "runbook lists commands, no roles, no decision log",
+  "status": "missing"
+ },
+ "integrity.bom": {
+  "note": "CycloneDX ML-BOM with the licence of each component",
+  "status": "met"
+ },
+ "integrity.signature": {
+  "note": "weights pulled from a third-party mirror; no signature",
+  "status": "missing"
+ },
+ "objectives.latency": {
+  "note": "99.5% availability and 95% under 2 s to first token, 30 days",
+  "status": "met"
+ },
+ "objectives.quality_by_language": {
+  "note": "quality objective of 92%, measured on English samples only",
+  "status": "partial"
+ },
+ "release.canary_gate": {
+  "note": "canary at 10% for 30 minutes, latency gate only",
+  "status": "partial"
+ },
+ "release.rollback_tested": {
+  "note": "rollback drill 12 days before the review",
+  "status": "met"
+ },
+ "service": "Taqdir, the delivery-estimate assistant of the cross-border parcels team"
+}

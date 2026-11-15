@@ -1,0 +1,6 @@
+id,change,touches,kind
+RR-1,New model version v2.5 for all languages,quality_ar quality_en ttft,feature
+RR-2,Shorter English system prompt,quality_en,feature
+RR-3,Raise the engine's batch size,ttft availability,feature
+RR-4,Gateway security patch,availability,security
+RR-5,Refresh the Arabic help index,quality_ar,feature

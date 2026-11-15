@@ -1,158 +1,392 @@
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Today: where model files come from, how to prove they were not changed, how to admit only what you can verify and may use, and finally how to review another team's service. The last session starts the capstone.</p></aside>
 </section>
 
 <section class="slide" id="agenda" data-auto="agenda"></section>
 
-<!-- Session 1 -->
-
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea" data-lo="LO5">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="review-day3" data-lo="LO4">
+  <div class="kicker">Review of Day 3</div>
+  <h2>Which action closes INC-0412's biggest gap?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4">
+    <p class="lead">INC-0412's review lists five contributing factors. Which corrective action would have stopped v2.4 before it reached all Arabic users?</p>
+    <div class="opts">
+      <div class="opt" data-why="Asks people to try harder, with no check that it happened">Remind release engineers to test Arabic carefully</div>
+      <div class="opt" data-why="Speeds up the response but lets the regression ship">Shorten the alert's long window to 30 minutes</div>
+      <div class="opt" data-why="Fixes this bug but not the next one the gate would catch">Fix the digit normalisation in the prompt template</div>
+      <div class="opt" data-ok>Route every model release through a canary with a per-language quality gate</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The gate stops any Arabic quality regression, this one and the next, before it reaches everyone; the other actions are needed too, but none of them blocks the release.</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Answer: D. Every action in the lab's list is worth doing; the question asks which one blocks the release.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps" data-lo="LO5">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
+<!-- ======================= SESSION 1 ======================= -->
+<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
+
+<section class="slide" id="model-is-files" data-lo="LO5">
+  <div class="kicker">The model supply chain</div>
+  <h2>A model is a folder of files from somewhere</h2>
   <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+    <div class="step c-navy"><b>Publisher</b>trains and releases</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>Hub or mirror</b>stores and serves copies</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>Your registry</b>what the pipeline pulls</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>Engine</b>loads it for users</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <p class="small mt">Each hop is a place where a file can be swapped: weights, tokenizer, configuration, even the licence.</p>
+  <aside class="notes"><p>Ask the room where their last model came from and whether anyone checked the bytes. Usually the answer is "from the hub, by name". A name is not an identity.</p></aside>
+</section>
+
+<section class="slide" id="what-can-change" data-lo="LO5">
+  <div class="kicker">Where tampering hides</div>
+  <h2>Every file in the folder changes behaviour, not only the weights</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-coral"><h4>Weights</h4><p class="small mb0">A changed shard plants a behaviour that only some inputs trigger.</p></div>
+    <div class="card c-amber"><h4>Tokenizer and config</h4><p class="small mb0">A changed vocabulary or setting silently changes every answer.</p></div>
+    <div class="card c-purple"><h4>Loadable code</h4><p class="small mb0">Pickled formats can run code when loaded; safetensors stores tensors only.</p></div>
+  </div>
+  <aside class="notes"><p>The stretch of Lab 4.1 asks which extensions an admission policy should refuse; Lab 4.3's gate refuses .bin, .pt, .pkl and .pickle.</p></aside>
+</section>
+
+<section class="slide" id="provenance-record" data-lo="LO5">
+  <div class="kicker">Lab 4.1 · provenance</div>
+  <h2>Three candidate fallback models, three provenance records</h2>
+  <table class="t small">
+    <tr><th>Artefact</th><th>Publisher</th><th>Obtained from</th><th>Licence</th></tr>
+    <tr><td><code>athar-small-v1</code></td><td>Rasael ML platform team</td><td>the publisher</td><td>Apache-2.0</td></tr>
+    <tr><td><code>athar-small-v1-mirror</code></td><td>Rasael ML platform team</td><td>a third-party mirror</td><td>Apache-2.0</td></tr>
+    <tr><td><code>athar-tiny-q4</code></td><td>an external research group</td><td>the publisher</td><td>research use only</td></tr>
+  </table>
+  <aside class="notes"><p>Each record also lists the publisher's SHA-256 for every file. The weight files are random bytes for the course, not a model: the integrity questions do not depend on what the bytes mean.</p></aside>
+</section>
+
+<section class="slide" id="hash-finding" data-lo="LO5">
+  <div class="kicker">Lab 4.1 · the finding</div>
+  <h2>One shard of the mirrored copy is not what the publisher released</h2>
+  <pre class="code s" data-file="Lab 4.1 finding"><code>artefact   athar-small-v1-mirror
+file       model-00002-of-00002.safetensors
+expected   be1f25b1cc7b4c31...
+found      eff1f6fb22ae544a...
+decision   do not admit; obtain from the publisher and verify its signature</code></pre>
+  <p class="small mt">64 bytes of 24,576 differ. A hash proves the bytes differ, not who changed them or why.</p>
+  <aside class="notes"><p>The mirror's record lists the publisher's hashes, correctly: only hashing the received file shows the change. Ask: what if the mirror had changed the list too? That question is the next session.</p></aside>
+</section>
+
+<section class="slide" id="hash-list-limit" data-lo="LO5">
+  <div class="kicker">What goes wrong</div>
+  <h2>A hash list from the same place as the files proves nothing</h2>
+  <ul class="bullets">
+    <li>Whoever can change a shard on a mirror can change the list beside it</li>
+    <li>The list must be signed by the publisher, and the key must reach you another way</li>
+    <li>Then a change to any file, or to the list, fails verification</li>
+  </ul>
+  <aside class="notes"><p>This is the bridge to Session 2: a signed manifest of file hashes is exactly what OpenSSF Model Signing produces.</p></aside>
+</section>
+
+<section class="slide" id="check-hash" data-lo="LO5">
+  <div class="kicker">Checkpoint</div>
+  <h2>The hashes match; is the model safe to admit?</h2>
+  <div class="quiz" data-type="single" data-lo="LO5">
+    <p class="lead">Every file of a downloaded model matches the hash list published on the same mirror. What can you conclude?</p>
+    <div class="opts">
+      <div class="opt" data-why="Trusts a list that came through the same channel as the files">The files are the publisher's originals</div>
+      <div class="opt" data-ok>The files match that list, and nothing more until the list is verified</div>
+      <div class="opt" data-why="Confuses integrity with permission to use">The model may be used commercially</div>
+      <div class="opt" data-why="Confuses integrity with quality">The model will answer as well as the original</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> A matching hash is only as trustworthy as the list; a list from the mirror can be changed with the files.</div>
+  </div>
+  <aside class="notes"><p>Answer: B.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-1" data-auto="lab" data-lab="4.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: hashing only the weights; comparing against the received list instead of the publisher's. The finding's wording matters: factual, no accusation.</p></aside>
 </section>
 
-<!-- Session 2 -->
-
+<!-- ======================= SESSION 2 ======================= -->
 <section class="slide section" id="s2" data-auto="section" data-session="2"></section>
 
-<section class="slide" id="s2-idea" data-lo="LO5">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="signed-manifest" data-lo="LO5">
+  <div class="kicker">Model signing</div>
+  <h2>Sign a manifest of every file's hash, not one archive</h2>
+  <div class="flow">
+    <div class="step c-navy"><b>Hash</b>every file in the folder</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>Statement</b>an in-toto list of files and digests</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>Sign</b>in a DSSE envelope</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>Bundle</b>a Sigstore bundle beside the model</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>This is the format of OpenSSF Model Signing (the model_signing package, from the sigstore/model-transparency project): the signed statement lists each file with its digest under the predicate type https://model_signing/signature/v1.0. Large models hash in parallel, and verification names the file that changed.</p><p>Sources: sigstore/model-transparency README.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps" data-lo="LO5">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="key-or-keyless" data-lo="LO5">
+  <div class="kicker">Two ways to sign</div>
+  <h2>Sign with a key you guard, or keylessly with an identity</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>A key</h4><p class="small mb0">An elliptic-curve key pair. Verification needs the public key from a trusted channel. The lab uses this: no account, no network.</p></div>
+    <div class="card c-purple"><h4>Keyless (Sigstore)</h4><p class="small mb0">A short-lived certificate for a sign-in identity, recorded in a public transparency log. Verification names the identity and its provider.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>The model_signing tool also supports certificates and hardware keys through PKCS #11. For a government service, where the key lives (a hardware module, the cloud provider's key service) is a control the NCA Cloud Cybersecurity Controls care about: name it in the review.</p></aside>
+</section>
+
+<section class="slide" id="sign-code" data-lo="LO5">
+  <div class="kicker">Lab 4.2</div>
+  <h2>Three lines sign; three lines verify</h2>
+  <pre class="code s" data-file="Lab 4.2"><code>model_signing.signing.Config().use_elliptic_key_signer(
+    private_key="key.priv").sign(model, "model.sig")
+
+model_signing.verifying.Config().use_elliptic_key_verifier(
+    public_key="key.pub").verify(model, "model.sig")   # raises on failure</code></pre>
+  <aside class="notes"><p>The package used in the course's runs was model-signing 1.1.1 from PyPI; on Windows it also needed pyOpenSSL installed, which the lab environment includes. The same is available as a command: model_signing sign key and model_signing verify key.</p></aside>
+</section>
+
+<section class="slide" id="verify-results" data-lo="LO5">
+  <div class="kicker">Lab 4.2 · results</div>
+  <h2>Change one character, or use another key, and verification fails</h2>
+  <table class="t small">
+    <tr><th>Check</th><th>Result</th></tr>
+    <tr><td>signed folder, signer's public key</td><td>verified</td></tr>
+    <tr class="hl"><td><code>tokenizer.json</code> with one number changed</td><td>signature mismatch: hash mismatch for tokenizer.json</td></tr>
+    <tr class="hl"><td>original folder, a different public key</td><td>key mismatch</td></tr>
+  </table>
+  <aside class="notes"><p>The error names the file: that is the value of a per-file manifest. Restore the file and it verifies again.</p></aside>
+</section>
+
+<section class="slide" id="what-signature-proves" data-lo="LO5">
+  <div class="kicker">Limits</div>
+  <h2>A signature proves who signed which bytes, nothing more</h2>
+  <div class="cols cols-2">
+    <ul class="bullets small">
+      <li><b>Proves:</b> every file is what the key holder signed</li>
+      <li><b>Does not prove:</b> that the model is good, safe or free of planted behaviour</li>
+      <li><b>Does not prove:</b> that you may use it: licences are a separate rule</li>
+    </ul>
+    <div class="card c-coral flat"><h4>Where the key comes from</h4><p class="small mb0">The pipeline holds the trusted public key. A key shipped beside the model can be replaced with the model.</p></div>
+  </div>
+  <aside class="notes"><p>Ask: which of Day 3's problems would a signature have caught? None: v2.4 was signed and broken. Integrity and quality are different gates.</p></aside>
+</section>
+
+<section class="slide" id="check-signature" data-lo="LO5">
+  <div class="kicker">Checkpoint</div>
+  <h2>The signature verifies</h2>
+  <div class="quiz" data-type="single" data-lo="LO5">
+    <p class="lead">A model folder and its signature bundle both came from a partner's file share, along with the public key to check them. The signature verifies. What has been shown?</p>
+    <div class="opts">
+      <div class="opt" data-why="Assumes the key is genuine although it arrived with the files">The partner released these exact files</div>
+      <div class="opt" data-why="Confuses integrity with safety">The model contains no planted behaviour</div>
+      <div class="opt" data-ok>Only that the files match whoever holds that key, which could be anyone with access to the share</div>
+      <div class="opt" data-why="Confuses integrity with licence">Rasael may deploy it in production</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The key travelled with the files; anyone who could replace the files could replace the key. Get the partner's key through a separate, trusted channel.</div>
+  </div>
+  <aside class="notes"><p>Answer: C.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-2" data-auto="lab" data-lab="4.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: a private key written into the repository (the lab checks that git ignores artifacts/); verifying with the public key that came with the files. Participants who skip the key step get the supplied signature and release key, so the verification steps still run.</p></aside>
 </section>
 
-<!-- Session 3 -->
-
+<!-- ======================= SESSION 3 ======================= -->
 <section class="slide section" id="s3" data-auto="section" data-session="3"></section>
 
-<section class="slide" id="s3-idea" data-lo="LO5">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide" id="ml-bom" data-lo="LO5">
+  <div class="kicker">Bills of materials</div>
+  <h2>A machine learning bill of materials says what the release contains</h2>
+  <pre class="code s" data-file="athar-small-v1.cdx.json (Lab 4.3)"><code>"components": [{
+  "type": "machine-learning-model", "name": "athar-small-v1",
+  "publisher": "Rasael ML platform team",
+  "licenses": [{"license": {"id": "Apache-2.0"}}],
+  "modelCard": {"modelParameters": {"task": "text-generation"}},
+  "components": [{"type": "file", "name": "model-00001-of-00002.safetensors",
+                  "hashes": [{"alg": "SHA-256", "content": "750bb039..."}]}]
+}]</code></pre>
+  <aside class="notes"><p>CycloneDX supports machine learning models as a component type with a model card. The lab's BOM validates against the CycloneDX 1.7 schema with cyclonedx-python-lib; the current specification release is 1.7.2.</p><p>Sources: CycloneDX ML-BOM capability page; CycloneDX specification releases.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps" data-lo="LO5">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="admission-rules" data-lo="LO5">
+  <div class="kicker">The admission gate</div>
+  <h2>Four rules, all of which must pass, each logged with its reason</h2>
+  <ol class="bullets">
+    <li>The signature verifies with the release key the pipeline holds</li>
+    <li>The bill of materials validates, and its hashes equal the signed digests</li>
+    <li>The licence is on the allow list (Apache-2.0, MIT)</li>
+    <li>No file format that runs code when loaded</li>
+  </ol>
+  <aside class="notes"><p>The allow list is a decision for Rasael's legal and data governance owners, not for the engineer; the gate enforces what they decided. Ask the room what their allow list would contain.</p></aside>
+</section>
+
+<section class="slide" id="gate-run" data-lo="LO5">
+  <div class="kicker">Lab 4.3 · the pipeline run</div>
+  <h2>The gate admits one artefact and rejects two, for different reasons</h2>
+  <table class="t small">
+    <tr><th>Artefact</th><th>Signature</th><th>BOM</th><th>Licence</th><th>Decision</th></tr>
+    <tr class="hl"><td>athar-small-v1</td><td>verified</td><td>matches</td><td>Apache-2.0</td><td>admit</td></tr>
+    <tr><td>athar-small-v1-mirror</td><td>mismatch</td><td>shard 2 differs</td><td>Apache-2.0</td><td>reject</td></tr>
+    <tr><td>athar-tiny-q4</td><td>verified</td><td>matches</td><td>research only</td><td>reject</td></tr>
+  </table>
+  <aside class="notes"><p>The log, one JSON line per artefact, is the evidence LO5 asks for. The research model is intact and signed: integrity is not permission.</p></aside>
+</section>
+
+<section class="slide" id="cluster-admission" data-lo="LO5">
+  <div class="kicker">In the cluster</div>
+  <h2>The cluster refuses any pod the gate did not admit</h2>
+  <pre class="code s" data-file="release/kyverno-model-admission.yaml"><code>validate:
+  failureAction: Enforce
+  pattern:
+    metadata:
+      annotations:
+        models.rasael.example/signature: "verified"
+        models.rasael.example/licence: "Apache-2.0 | MIT"</code></pre>
+  <aside class="notes"><p>Kyverno is one example of an admission controller; current Kyverno documents failureAction per validate rule (the older spec.validationFailureAction is deprecated). The cluster trusts the gate's annotations: who may write them is itself a control to review.</p><p>Sources: Kyverno documentation, Validate Rules.</p></aside>
+</section>
+
+<section class="slide" id="classification-note" data-lo="LO5">
+  <div class="kicker">Data governance</div>
+  <h2>The model's records are classified data too</h2>
+  <ul class="bullets">
+    <li>Admission logs and BOMs name suppliers, versions and keys: classify them before sharing</li>
+    <li>Telemetry with answers can hold personal data: it inherits the answers' classification</li>
+    <li>Where the release key and the model store live is a cloud control to review</li>
+  </ul>
+  <aside class="notes"><p>The NDMO Data Classification Policy defines four levels (Top Secret, Secret, Restricted, Public) by the impact of disclosure; the NCA Cloud Cybersecurity Controls apply to services hosted in the cloud. Name the classification of each artefact in the capstone review; do not quote clause numbers from memory.</p><p>Sources: NDMO Data Classification Policy; NCA Cloud Cybersecurity Controls.</p></aside>
+</section>
+
+<section class="slide" id="check-admission" data-lo="LO5">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which artefact does the gate admit?</h2>
+  <div class="quiz" data-type="single" data-lo="LO5">
+    <p class="lead">Four candidate models for the fallback mode. Rasael's allow list is Apache-2.0 and MIT. Which one passes all four rules?</p>
+    <div class="opts">
+      <div class="opt" data-why="Accepts a signature that does not verify because the licence is fine">Apache-2.0, signature mismatch on one shard</div>
+      <div class="opt" data-why="Treats a valid signature as permission to use">Research-only licence, signature verified</div>
+      <div class="opt" data-ok>MIT, signature verified, safetensors files, BOM hashes match</div>
+      <div class="opt" data-why="Ignores that pickled weights can run code when loaded">Apache-2.0, signature verified, weights in a pickled .bin file</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Only C passes every rule: verified integrity, matching bill of materials, an allowed licence and no executable format.</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>Answer: C.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-3" data-auto="lab" data-lab="4.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: a licence check against the BOM the gate itself wrote from the provenance (fine here, but in production the BOM comes from the publisher and is signed too); rules that stop at the first failure and log nothing about the others.</p></aside>
 </section>
 
-<!-- Session 4 -->
-
+<!-- ======================= SESSION 4 ======================= -->
 <section class="slide section" id="s4" data-auto="section" data-session="4"></section>
 
-<section class="slide" id="s4-idea" data-lo="LO6">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="readiness-review" data-lo="LO6">
+  <div class="kicker">Readiness reviews</div>
+  <h2>A readiness review decides whether another team's service may launch</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-teal"><h4>Evidence</h4><p class="small mb0">Measured results, not claims: curves, logs, replays, drills.</p></div>
+    <div class="card c-cyan"><h4>Ranking</h4><p class="small mb0">Findings ordered by risk to users and to the organisation.</p></div>
+    <div class="card c-coral"><h4>Decision</h4><p class="small mb0">Launch, launch with dated conditions, or not yet, and what would change it.</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>The SRE book describes production readiness reviews as the way an SRE team takes on a service: a structured review of its reliability before support is accepted. SDAIA's National AI Risk Management Framework offers a method to identify, assess, treat and monitor AI risks; a readiness review is where those meet a launch date.</p><p>Sources: Google SRE book, The Evolving SRE Engagement Model; SDAIA, National AI Risk Management Framework (executive summary).</p></aside>
 </section>
 
-<section class="slide" id="s4-steps" data-lo="LO6">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="checklist-areas" data-lo="LO6">
+  <div class="kicker">The checklist</div>
+  <h2>Thirteen items in six areas: this week, as questions</h2>
+  <table class="t small">
+    <tr><th>Area</th><th>The question</th></tr>
+    <tr><td>Objectives</td><td>Per language, with burn-rate alerts?</td></tr>
+    <tr><td>Capacity</td><td>Load-tested to the busiest hour, with admission limits?</td></tr>
+    <tr><td>Degradation</td><td>Modes tested under faults, and disclosed?</td></tr>
+    <tr><td>Incidents</td><td>Roles, a decision log, the breach procedure?</td></tr>
+    <tr><td>Release</td><td>A canary with a quality gate; a tested rollback?</td></tr>
+    <tr><td>Integrity</td><td>A verified signature and a bill of materials?</td></tr>
+  </table>
+  <aside class="notes"><p>Each area maps to a day of the course: the checklist is the course turned around and pointed at another team.</p></aside>
+</section>
+
+<section class="slide" id="read-the-claim" data-lo="LO6">
+  <div class="kicker">Lab 4.4 · Taqdir</div>
+  <h2>Read every claim: "met" is the team's word, not the review's</h2>
+  <div class="chat">
+    <div class="msg ai"><span class="who">Taqdir team</span>Objectives for availability and first-token time: <b>met</b>. 95% under 2 s to first token.</div>
+    <div class="msg user"><span class="who">Reviewer</span>Rasael's standard is 1.5 s. Partial.</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>Taqdir is the cross-border team's delivery-estimate assistant. One of thirteen claims fails on reading the note; the lab asks participants to find it before showing them.</p></aside>
+</section>
+
+<section class="slide" id="ranked-findings" data-lo="LO6">
+  <div class="kicker">Lab 4.4 · ranked</div>
+  <h2>Risk = likelihood × impact × gap; the top three decide the review</h2>
+  <table class="t small">
+    <tr><th>Finding</th><th>Status</th><th class="num">Risk</th></tr>
+    <tr><td>Load test only at the average hour (2.1 a second; the busiest was 6.4)</td><td>missing</td><td class="num">16</td></tr>
+    <tr class="hl"><td>Weights from a third-party mirror, unsigned</td><td>missing</td><td class="num">15</td></tr>
+    <tr><td>Quality objective on English samples only</td><td>partial</td><td class="num">10</td></tr>
+    <tr><td>Runbook without roles or a decision log</td><td>missing</td><td class="num">9</td></tr>
+    <tr><td>Quality alert on a daily average</td><td>partial</td><td class="num">8</td></tr>
+  </table>
+  <aside class="notes"><p>The gap is 1 for missing and 0.5 for partial; likelihood and impact come from Rasael's checklist. The ranking is a starting point for judgement, not a replacement for it: participants may argue an order, with reasons.</p></aside>
+</section>
+
+<section class="slide" id="launch-decision" data-lo="LO6">
+  <div class="kicker">The decision</div>
+  <h2>Not yet: an unsigned model blocks the launch</h2>
+  <div class="cols cols-2">
+    <div class="card c-coral"><h4>Blocking</h4><p class="small mb0">Missing with impact 5: the model signature. Nobody can show the weights are the publisher's, and Lab 4.1 found a tampered mirror.</p></div>
+    <div class="card c-teal"><h4>Conditions</h4><p class="small mb0">Busiest-hour load test and per-language quality within 14 days; runbook and quality alerts within 30, each with its proof.</p></div>
+  </div>
+  <aside class="notes"><p>Rasael's rule in the lab: a missing item with impact 5 blocks; other findings with risk 8 or more become dated conditions with a named proof. The relaunch review happens when the blocking item is met. Present it to Ruwaida as a path to launch, not a refusal.</p></aside>
+</section>
+
+<section class="slide" id="capstone-kickoff" data-lo="LO6">
+  <div class="kicker">The capstone</div>
+  <h2>Your capstone is this review, on a real or supplied service, with measured evidence</h2>
+  <ul class="bullets">
+    <li>A peer's service, or the supplied Athar v2.7 release pack (<code>labs/capstone/</code>)</li>
+    <li>Objectives, capacity, degradation, an incident drill, release integrity, a decision</li>
+    <li>A public GitHub repository; a 10-minute defence with 5 minutes of panel questions</li>
+    <li>During the questions, the panel injects a fault and you diagnose it live</li>
+  </ul>
+  <aside class="notes"><p>AI-full in the capstone: assistants are allowed for the work, which is then defended live. Ask each participant to name their service and the first three checklist items they will test before leaving.</p></aside>
+</section>
+
+<section class="slide" id="check-launch" data-lo="LO6">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which launch decision?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6">
+    <p class="lead">A service has every item met except two partial ones: its canary gates on latency only, and its fallback was never tested under a provider failure. Both have impact 4. What do you decide?</p>
+    <div class="opts">
+      <div class="opt" data-why="Blocks on partial items that the rule turns into conditions, not blockers">Do not launch until both are fixed</div>
+      <div class="opt" data-ok>Launch with two dated conditions, each with the evidence that proves it</div>
+      <div class="opt" data-why="Ignores real gaps because most items are met">Launch without conditions</div>
+      <div class="opt" data-why="Moves the decision elsewhere without adding evidence">Ask the team to rerun their own checklist</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> No missing item has impact 5, so nothing blocks; each gap becomes a condition with a date and a proof.</div>
+  </div>
+  <aside class="notes"><p>Answer: B.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-4" data-auto="lab" data-lab="4.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>Watch for: accepting the team's statuses unread (the O1 claim); a decision with conditions that have no proof. The stretch starts the capstone: collect each participant's service choice before the end of the day.</p></aside>
 </section>
 
-<section class="slide" id="wrap-up">
+<section class="slide" id="wrap-up" data-lo="LO5 LO6">
   <div class="kicker">Day 4 · wrap-up</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Hash what you received</h4><p class="small mb0">Against a list you can trust.</p></div>
+    <div class="card c-cyan"><h4>Verify before admission</h4><p class="small mb0">Signature, bill of materials, licence, format: all logged.</p></div>
+    <div class="card c-coral"><h4>Review by risk</h4><p class="small mb0">Evidence over claims; a decision with dated, provable conditions.</p></div>
   </div>
+  <aside class="notes"><p>Close the teaching days: the four days are the readiness checklist. Tomorrow is the panel.</p></aside>
 </section>
 
-<section class="slide dark" id="next" data-label="Next">
+<section class="slide dark" id="next">
   <div class="kicker">Next</div>
-  <h2>Capstone: Capstone project presentations</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+  <h2>Capstone day: the readiness review before the panel</h2>
+  <ul class="bullets">
+    <li>Bring your repository, its logs and a running service (or the simulator) for the live fault</li>
+    <li>The supervised exit check, without AI, runs before the defences</li>
+  </ul>
+  <aside class="notes"><p>Remind participants that the follow-up task, one standard applied to their own team's service, is tracked within 30 days.</p></aside>
 </section>

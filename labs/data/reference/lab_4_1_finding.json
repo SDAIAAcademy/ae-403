@@ -1,0 +1,8 @@
+{
+ "artefact": "athar-small-v1-mirror",
+ "file": "model-00002-of-00002.safetensors",
+ "expected": "be1f25b1cc7b4c31",
+ "found": "eff1f6fb22ae544a",
+ "meaning": "the bytes of this shard are not the ones the publisher released; the copy came from a third-party mirror",
+ "decision": "do not admit; obtain the artefact from the publisher and verify its signature (Lab 4.2)"
+}

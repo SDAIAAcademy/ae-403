@@ -1,0 +1,80 @@
+[
+ {
+  "artefact": "athar-small-v1",
+  "decision": "admit",
+  "rules": [
+   {
+    "rule": "signature",
+    "ok": true,
+    "reason": "verified with the release key"
+   },
+   {
+    "rule": "bill of materials",
+    "ok": true,
+    "reason": "valid, hashes match the signed digests"
+   },
+   {
+    "rule": "licence",
+    "ok": true,
+    "reason": "Apache-2.0 is on the allow list"
+   },
+   {
+    "rule": "file types",
+    "ok": true,
+    "reason": "no executable formats"
+   }
+  ]
+ },
+ {
+  "artefact": "athar-small-v1-mirror",
+  "decision": "reject",
+  "rules": [
+   {
+    "rule": "signature",
+    "ok": false,
+    "reason": "Signature mismatch"
+   },
+   {
+    "rule": "bill of materials",
+    "ok": false,
+    "reason": "hashes differ from the signed digests: model-00002-of-00002.safetensors"
+   },
+   {
+    "rule": "licence",
+    "ok": true,
+    "reason": "Apache-2.0 is on the allow list"
+   },
+   {
+    "rule": "file types",
+    "ok": true,
+    "reason": "no executable formats"
+   }
+  ]
+ },
+ {
+  "artefact": "athar-tiny-q4",
+  "decision": "reject",
+  "rules": [
+   {
+    "rule": "signature",
+    "ok": true,
+    "reason": "verified with the release key"
+   },
+   {
+    "rule": "bill of materials",
+    "ok": true,
+    "reason": "valid, hashes match the signed digests"
+   },
+   {
+    "rule": "licence",
+    "ok": false,
+    "reason": "LicenseRef-Research-Only is not on the allow list"
+   },
+   {
+    "rule": "file types",
+    "ok": true,
+    "reason": "no executable formats"
+   }
+  ]
+ }
+]

@@ -1,0 +1,39 @@
+{
+ "decision": "do not launch",
+ "blocking": [
+  "S1"
+ ],
+ "conditions": [
+  {
+   "id": "C1",
+   "condition": "Load test up to the busiest hour with headroom",
+   "within_days": 14,
+   "proof": "a goodput curve to the busiest hour and the replica plan"
+  },
+  {
+   "id": "S1",
+   "condition": "Model signature verified at admission",
+   "within_days": 0,
+   "proof": "an admission log showing a verified signature and an allowed licence"
+  },
+  {
+   "id": "O2",
+   "condition": "An answer-quality objective sliced by language",
+   "within_days": 14,
+   "proof": "the objective per language with its samples and interval"
+  },
+  {
+   "id": "I1",
+   "condition": "Runbook with incident roles and a decision log",
+   "within_days": 30,
+   "proof": "a runbook with roles and the log of one game day"
+  },
+  {
+   "id": "O3",
+   "condition": "Burn-rate alerts on each objective",
+   "within_days": 30,
+   "proof": "the objective per language with its samples and interval"
+  }
+ ],
+ "relaunch": "relaunch review once every blocking item is met; the other conditions run on their dates"
+}

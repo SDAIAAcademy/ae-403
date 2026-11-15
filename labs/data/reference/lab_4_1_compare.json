@@ -1,0 +1,35 @@
+{
+ "__frame__": true,
+ "columns": [
+  "artefact",
+  "obtained_from",
+  "changed",
+  "unlisted",
+  "missing"
+ ],
+ "rows": [
+  [
+   "athar-small-v1",
+   "the publisher",
+   [],
+   [],
+   []
+  ],
+  [
+   "athar-small-v1-mirror",
+   "a third-party mirror",
+   [
+    "model-00002-of-00002.safetensors"
+   ],
+   [],
+   []
+  ],
+  [
+   "athar-tiny-q4",
+   "the publisher",
+   [],
+   [],
+   []
+  ]
+ ]
+}

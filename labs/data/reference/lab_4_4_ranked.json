@@ -1,0 +1,86 @@
+{
+ "__frame__": true,
+ "columns": [
+  "id",
+  "area",
+  "item",
+  "status",
+  "impact",
+  "risk",
+  "note"
+ ],
+ "rows": [
+  [
+   "C1",
+   "capacity",
+   "Load test up to the busiest hour with headroom",
+   "missing",
+   4,
+   16.0,
+   "load test at the average hour (2.1 requests a second); the busiest hour was 6.4"
+  ],
+  [
+   "S1",
+   "integrity",
+   "Model signature verified at admission",
+   "missing",
+   5,
+   15.0,
+   "weights pulled from a third-party mirror; no signature"
+  ],
+  [
+   "O2",
+   "objectives",
+   "An answer-quality objective sliced by language",
+   "partial",
+   5,
+   10.0,
+   "quality objective of 92%, measured on English samples only"
+  ],
+  [
+   "I1",
+   "incidents",
+   "Runbook with incident roles and a decision log",
+   "missing",
+   3,
+   9.0,
+   "runbook lists commands, no roles, no decision log"
+  ],
+  [
+   "O3",
+   "objectives",
+   "Burn-rate alerts on each objective",
+   "partial",
+   4,
+   8.0,
+   "burn-rate alert on availability; quality has a static threshold on the daily average"
+  ],
+  [
+   "O1",
+   "objectives",
+   "Objectives for availability and first-token time",
+   "partial",
+   4,
+   6.0,
+   "99.5% availability and 95% under 2 s to first token, 30 days (Rasael's standard is 1.5 s: partial)"
+  ],
+  [
+   "D1",
+   "degradation",
+   "Fallback mode tested under a provider failure",
+   "partial",
+   4,
+   6.0,
+   "fallback model configured; never exercised with a provider failure"
+  ],
+  [
+   "R1",
+   "release",
+   "Canary with an automated quality and latency gate",
+   "partial",
+   4,
+   6.0,
+   "canary at 10% for 30 minutes, latency gate only"
+  ]
+ ]
+}

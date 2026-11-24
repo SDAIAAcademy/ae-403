@@ -3,7 +3,7 @@
   "engine": "1",
   "id": "ae-403",
   "code": "AE-403",
-  "version": "2027.1.0",
+  "version": "2027.2.0",
   "lang": "en",
   "title": {
     "en": "Reliability Engineering for AI Services",
@@ -243,7 +243,7 @@
                 "minutes": 8
               }
             ],
-            "stretch": "Find the step where most abandoned sessions stop"
+            "stretch": "Find the step where most abandoned sessions stop, then compute the flow's completion and time as a chain of steps and name the step to improve"
           }
         }
       ],

@@ -342,6 +342,48 @@ quality_en:   good = passed; valid = graded English answers (random 6%)</code></
   <aside class="notes"><p>The flow: identify the parcel, check eligibility, offer slots, confirm. A request-level dashboard is green on every one of these calls. The user's task is the booking.</p></aside>
 </section>
 
+<section class="slide" id="chain-of-steps" data-lo="LO1">
+  <div class="kicker">A chain of steps</div>
+  <h2>Athar's address change runs five steps, each needing the one before</h2>
+  <table class="t small">
+    <tr><th>Step</th><th>Success</th><th>Mean time</th></tr>
+    <tr><td>verify_caller</td><td>99.6%</td><td>0.8 s</td></tr>
+    <tr><td>find_parcel</td><td>99.8%</td><td>0.4 s</td></tr>
+    <tr><td>check_address</td><td>96.0%</td><td>1.2 s</td></tr>
+    <tr><td>reroute</td><td>99.2%</td><td>2.9 s</td></tr>
+    <tr><td>confirm_change</td><td>99.5%</td><td>0.6 s</td></tr>
+  </table>
+  <p class="small mt">Objectives for the flow: 95% of changes completed; the whole flow within 8 s for 95% of them.</p>
+  <aside class="notes"><p>A second Athar flow, changing the delivery address of a parcel in transit, not the redelivery flow of the lab. Each step uses the result of the one before, so a failure anywhere ends the task. Before the next slide, ask the room: does the flow meet its two objectives? Most will say yes, because every step is at 96% or better.</p></aside>
+</section>
+
+<section class="slide" id="chain-arithmetic" data-lo="LO1">
+  <div class="kicker">Joint reliability</div>
+  <h2>Success multiplies and time adds: the flow misses both objectives</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="stat center"><div class="big">94.2%</div><div class="lbl">completed: the product of the five, below the weakest step</div></div>
+    <div class="stat center"><div class="big">5.9 s</div><div class="lbl">mean time: the sum of the step means</div></div>
+    <div class="stat center"><div class="big">8.8 s</div><div class="lbl">p95 of the whole flow, measured end to end</div></div>
+  </div>
+  <p class="small mt">0.996 × 0.998 × 0.960 × 0.992 × 0.995 = 0.942. Adding the five step p95s gives 10.9 s: percentiles do not add.</p>
+  <aside class="notes"><p>Means add exactly for steps in a row; percentiles do not, because the slow tail of one step rarely meets the slow tail of the next. Take the flow's p95 from end-to-end traces, never from the sum of the steps' p95s, which overstates it.</p><p>The product assumes independent failures. When the measured completion is below the product, failures are correlated or a step is missing from the picture; when above, a retry is hiding failures. All figures come from <code>labs/_tools/chain_reliability.py</code> (a simulation of 200,000 flows with a fixed seed).</p></aside>
+</section>
+
+<section class="slide" id="chain-which-step" data-lo="LO1">
+  <div class="kicker">Which step to improve</div>
+  <h2>Improve the step that moves the objective you miss</h2>
+  <table class="t small">
+    <tr><th>Change</th><th>Completed</th><th>p95, whole flow</th></tr>
+    <tr><td>Today</td><td>94.2%</td><td>8.8 s</td></tr>
+    <tr class="hl"><td>check_address from 96% to 99%</td><td>97.1%</td><td>8.8 s</td></tr>
+    <tr><td>check_address retried once</td><td>98.0%</td><td>8.9 s</td></tr>
+    <tr><td>find_parcel from 99.8% to 100%</td><td>94.4%</td><td>8.8 s</td></tr>
+    <tr class="hl"><td>reroute from 2.9 s to 1.5 s mean</td><td>94.2%</td><td>6.4 s</td></tr>
+  </table>
+  <p class="small mt">Two objectives missed, two different steps: check_address for completion, reroute for time.</p>
+  <aside class="notes"><p>The least reliable step moves completion most: raising a step to perfect multiplies the flow by 1 over its rate, so the lowest rate gives the largest gain. Polishing a step that is already at 99.8% buys 0.2 points. The slowest step moves time and does nothing for completion.</p><p>A retry buys success cheaply only when the failures are transient (a timeout); an address the service rejects fails again. It also lengthens the tail a little. Ask: which would you fund first, and what evidence would you want about check_address's failures before choosing the retry?</p></aside>
+</section>
+
 <section class="slide" id="task-indicators" data-lo="LO1">
   <div class="kicker">Indicators for a flow</div>
   <h2>Three indicators describe a flow: completion, cost and escalation</h2>
@@ -371,10 +413,9 @@ quality_en:   good = passed; valid = graded English answers (random 6%)</code></
   <h2>Escalation is the right answer for some parcels; the hand-over is the objective</h2>
   <ul class="bullets">
     <li>A parcel held by customs cannot be rebooked online: escalating it is correct</li>
-    <li>Pushing escalation to zero makes the assistant book what it should not</li>
     <li>Measure the hand-over: every escalated session reaches a person, in its language</li>
   </ul>
-  <aside class="notes"><p>Ask the room for their own flow's equivalent: a refund above a limit, a medical question, a legal one. The objective is on the quality of the hand-over, not the count.</p></aside>
+  <aside class="notes"><p>Pushing escalation to zero makes the assistant book what it should not. The objective is on the quality of the hand-over, not the count.</p></aside>
 </section>
 
 <section class="slide" id="flow-objectives" data-lo="LO1">

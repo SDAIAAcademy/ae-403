@@ -134,6 +134,57 @@ U.ok(len(flow_obj) == 3 and all(o["reason"] for o in flow_obj), "three objective
 # ✱ **Stretch** · Find the step where most abandoned sessions stop.
 
 # %% [markdown]
+# ## ✱ Stretch · The flow as a chain of steps
+#
+# The four steps run in a row, and each needs the one before. For each step, its pass rate is
+# the sessions that left it and went on (or completed, for the last step) over the sessions that
+# reached it. Escalations and abandonments end a session at the step where they happen.
+#
+# ✏️ **Exercise** · Return each step's pass rate, their product, and the gain in completion
+# (in percentage points) if that step lost no session at all. Then the flow's time: with the
+# mean seconds per call below, the time of a completed session that needs one call per step is
+# the sum of the step times. Name the step whose fix gains the most completion.
+#
+# Do not multiply the per-call success of section 2: a failed call is retried, so it says
+# little about whether the session goes on. Before you name the step, remember that an
+# escalation at `check_eligibility` is often the right answer, not a loss to remove.
+
+# %%
+SECONDS_PER_CALL = {"identify_parcel": 1.1, "check_eligibility": 0.9, "offer_slots": 1.6, "confirm_booking": 0.7}
+STEPS = ["identify_parcel", "check_eligibility", "offer_slots", "confirm_booking"]
+
+
+def chain(sessions: list[dict]) -> dict:
+    # BEGIN SOLUTION
+    reached = {st: 0 for st in STEPS}
+    for s in sessions:
+        for st in dict.fromkeys(c["step"] for c in s["calls"]):
+            reached[st] += 1
+    done = sum(s["outcome"] == "completed" for s in sessions)
+    passed = {st: (reached[STEPS[i + 1]] if i + 1 < len(STEPS) else done) for i, st in enumerate(STEPS)}
+    rate = {st: passed[st] / reached[st] for st in STEPS}
+    product = 1.0
+    for st in STEPS:
+        product *= rate[st]
+    gain = {st: round(100 * (product / rate[st] - product), 1) for st in STEPS}
+    return {"pass_rate": {st: round(rate[st], 4) for st in STEPS},
+            "product": round(product, 4),
+            "gain_if_perfect_points": gain,
+            "best_step": max(gain, key=gain.get),
+            "seconds_one_call_per_step": round(sum(SECONDS_PER_CALL.values()), 1)}
+    # END SOLUTION
+
+# %%
+try:
+    ch = chain(sessions)
+except NotImplementedError:
+    ch = U.reference("lab_1_4_chain")
+U.keep("lab_1_4_chain", ch)
+print(ch)
+U.ok(abs(ch["product"] - succ["per_task"]) < 0.001, "the product of the step pass rates is the task completion")
+U.ok(ch["product"] < min(ch["pass_rate"].values()), "the flow completes less often than its weakest step passes")
+
+# %% [markdown]
 # ## Check yourself
 #
 # 1. Why can per-call success be 98.9% while one booking in five fails?

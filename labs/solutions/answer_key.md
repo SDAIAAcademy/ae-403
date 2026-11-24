@@ -11,7 +11,7 @@ Answers written by participants differ in wording; the numbers and decisions sho
 | 1.1 What the uptime check missed | Five incidents in the week; the uptime probe saw one of them and missed four (empty answers, wrong answers, slow first tokens and an Arabic-only failure all returned HTTP 200). |
 | 1.2 Four indicators from one day | Availability counted honestly (good over valid events, with exclusions stated) is 98.95%; the naive count is lower (96.58%) because it counts invalid requests, and adding the probe barely changes it (99.06%). Latency is time to first token and time per output token at the 95th percentile; quality is the graded pass rate per language with its sample size. |
 | 1.3 Objectives, budget and release policy | The Arabic quality budget is the most spent (about 81% burned, 19% left). Of the release requests, RR-1 (new model for all languages) and RR-5 are frozen; RR-4, a security patch, is exempt; the others go. |
-| 1.4 Indicators for the redelivery flow | Per call 98.9% success, per task 79.5%: an objective per call overstates what users get. The task objective and its cost per completed task go into the objectives document. |
+| 1.4 Indicators for the redelivery flow | Per call 98.9% success, per task 79.5%: an objective per call overstates what users get. The task objective and its cost per completed task go into the objectives document. Stretch: the step pass rates are 100%, 92.25%, 89.11% and 96.65%, and their product is the completion, 79.45%; `offer_slots` gains most if fixed (9.7 points), ahead of `check_eligibility` (6.7 points, mostly correct escalations); one call per step takes 4.3 s. |
 
 ## Day 2 · Capacity and failure
 

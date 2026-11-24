@@ -6,7 +6,7 @@
     "code": "AE-403",
     "title": "Reliability Engineering for AI Services",
     "lang": "en",
-    "version": "2027.1.0"
+    "version": "2027.2.0"
   },
   "questions": [
     {
@@ -676,6 +676,36 @@
       "pool": "practice",
       "weight": 1,
       "timer": 60
+    },
+    {
+      "id": "q-slo-chain-step",
+      "type": "single",
+      "prompt": "Athar's pickup-request flow runs four steps in a row, each needing the one before: check_area passes 99.5% (0.5 s on average), price_quote 99.0% (1.8 s), book_courier 97.5% (1.0 s) and send_receipt 99.7% (0.4 s). The flow's objective is 97% of requests completed; its time objective is already met. Which single change brings the flow to its completion objective?",
+      "options": [
+        "None is needed: every step passes 97.5% or more, so the flow completes at least 97.5%",
+        "Halve the time of price_quote, about half of the flow's 3.7 s",
+        "Make send_receipt perfect, raising it from 99.7% to 100%",
+        "Raise book_courier from 97.5% to 99.5%"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Success multiplies along the chain: 0.995 × 0.990 × 0.975 × 0.997 is about 0.958, short of 97%. Raising book_courier to 99.5% gives about 0.977. A perfect send_receipt gives only 0.960, and halving price_quote saves 0.9 s but leaves completion at 95.8%.",
+      "misconceptions": [
+        "Thinks a chain is as good as its weakest step",
+        "Fixes the slowest step when the missed objective is completion",
+        "Polishes a step that is already strong, which barely moves the product",
+        ""
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 4,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 90
     },
     {
       "id": "q-slo-probe",

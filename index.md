@@ -1,7 +1,7 @@
 ---
 course: "Reliability Engineering for AI Services"
 code: "AE-403"
-version: "2027.1.0"
+version: "2027.2.0"
 language: "en"
 view: "trainee"
 source: "https://sdaiaacademy.github.io/ae-403/index.html"
@@ -217,4 +217,4 @@ A production readiness review of a peer's or a supplied AI service, covering obj
 
 SDAIA Academy · AI Engineering Track · Reliability Engineering for AI Services
 
-Course version 2027.1.0 · engine 1.0.0 · built 2026-11-15 · commit d44e8c9
+Course version 2027.2.0 · engine 1.0.0 · built 2026-11-24 · commit d0e8053

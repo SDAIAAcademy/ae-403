@@ -1,7 +1,7 @@
 ---
 course: "Reliability Engineering for AI Services"
 code: "AE-403"
-version: "2027.1.0"
+version: "2027.2.0"
 deck: "capstone"
 day: 5
 language: "en"

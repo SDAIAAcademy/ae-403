@@ -1,7 +1,7 @@
 ---
 course: "Reliability Engineering for AI Services"
 code: "AE-403"
-version: "2027.1.0"
+version: "2027.2.0"
 deck: "day1"
 day: 1
 language: "en"
@@ -370,6 +370,44 @@ Set objectives for Athar, compute the budget burned over a supplied month and wr
 
 2,000 sessions of the redelivery flow (Lab 1.4). Retried tool errors succeed; sessions fail on calls that worked.
 
+#### [day1#chain-of-steps] Athar's address change runs five steps, each needing the one before
+
+*A chain of steps*
+
+| Step | Success | Mean time |
+| --- | --- | --- |
+| verify_caller | 99.6% | 0.8 s |
+| find_parcel | 99.8% | 0.4 s |
+| check_address | 96.0% | 1.2 s |
+| reroute | 99.2% | 2.9 s |
+| confirm_change | 99.5% | 0.6 s |
+
+Objectives for the flow: 95% of changes completed; the whole flow within 8 s for 95% of them.
+
+#### [day1#chain-arithmetic] Success multiplies and time adds: the flow misses both objectives
+
+*Joint reliability*
+
+- **94.2%** completed: the product of the five, below the weakest step
+- **5.9 s** mean time: the sum of the step means
+- **8.8 s** p95 of the whole flow, measured end to end
+
+0.996 × 0.998 × 0.960 × 0.992 × 0.995 = 0.942. Adding the five step p95s gives 10.9 s: percentiles do not add.
+
+#### [day1#chain-which-step] Improve the step that moves the objective you miss
+
+*Which step to improve*
+
+| Change | Completed | p95, whole flow |
+| --- | --- | --- |
+| Today | 94.2% | 8.8 s |
+| check_address from 96% to 99% | 97.1% | 8.8 s |
+| check_address retried once | 98.0% | 8.9 s |
+| find_parcel from 99.8% to 100% | 94.4% | 8.8 s |
+| reroute from 2.9 s to 1.5 s mean | 94.2% | 6.4 s |
+
+Two objectives missed, two different steps: check_address for completion, reroute for time.
+
 #### [day1#task-indicators] Three indicators describe a flow: completion, cost and escalation
 
 *Indicators for a flow*
@@ -393,7 +431,6 @@ Set objectives for Athar, compute the budget burned over a supplied month and wr
 *Escalation*
 
 - A parcel held by customs cannot be rebooked online: escalating it is correct
-- Pushing escalation to zero makes the assistant book what it should not
 - Measure the hand-over: every escalated session reaches a person, in its language
 
 #### [day1#flow-objectives] Objectives for a flow say what is fixable and what is not
@@ -429,7 +466,7 @@ Define completion, cost and escalation indicators for the redelivery booking flo
 - [ ] Per-call success against per-task completion (7 min)
 - [ ] Cost per completed booking, with the loops (7 min)
 - [ ] Escalation rate and objectives for the flow (8 min)
-- [ ] ✱ Stretch: Find the step where most abandoned sessions stop
+- [ ] ✱ Stretch: Find the step where most abandoned sessions stop, then compute the flow's completion and time as a chain of steps and name the step to improve
 
 #### [day1#wrap-up] Three things to keep
 

@@ -2,9 +2,9 @@
   "v": 1,
   "engine": "1.0.0",
   "build": {
-    "at": "2026-11-15T15:04:19Z",
-    "version": "2027.1.0",
-    "commit": "d44e8c9"
+    "at": "2026-11-24T16:57:24Z",
+    "version": "2027.2.0",
+    "commit": "d0e8053"
   },
   "lang": "en",
   "dir": "ltr",
@@ -15,7 +15,7 @@
   "course": {
     "id": "ae-403",
     "code": "AE-403",
-    "version": "2027.1.0",
+    "version": "2027.2.0",
     "title": "Reliability Engineering for AI Services",
     "tagline": "Set, measure and defend the reliability standards of an AI service: objectives, capacity, degraded modes, incidents, safe releases and verified models",
     "description": "Participants set and defend reliability standards for AI services that other teams build. For a fictional postal and parcels operator running a bilingual tracking assistant on a self-hosted open-weight model with retrieval, they write service level objectives for availability, latency and answer quality, set admission limits with headroom from measured goodput, design and chaos-test degradation paths, lead incident drills and blameless reviews, release through canaries with automated rollback, and admit models only after verifying signatures and bills of materials.",
@@ -272,7 +272,7 @@
                   "minutes": 8
                 }
               ],
-              "stretch": "Find the step where most abandoned sessions stop"
+              "stretch": "Find the step where most abandoned sessions stop, then compute the flow's completion and time as a chain of steps and name the step to improve"
             }
           }
         ]

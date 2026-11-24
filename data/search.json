@@ -2,9 +2,9 @@
   "v": 1,
   "engine": "1.0.0",
   "build": {
-    "at": "2026-11-15T15:04:19Z",
-    "version": "2027.1.0",
-    "commit": "d44e8c9"
+    "at": "2026-11-24T16:57:24Z",
+    "version": "2027.2.0",
+    "commit": "d0e8053"
   },
   "lang": "en",
   "dir": "ltr",
@@ -299,8 +299,35 @@
     },
     {
       "deck": "day1",
-      "id": "task-indicators",
+      "id": "chain-of-steps",
       "n": 33,
+      "session": 4,
+      "title": "Athar's address change runs five steps, each needing the one before",
+      "text": "A chain of steps Athar's address change runs five steps, each needing the one before Step Success Mean time verify_caller 99.6% 0.8 s find_parcel 99.8% 0.4 s check_address 96.0% 1.2 s reroute 99.2% 2.9 s confirm_change 99.5% 0.6 s Objectives for the flow: 95% of changes completed; the whole flow within 8 s for 95% of them.",
+      "href": "../slides/day1.html#chain-of-steps"
+    },
+    {
+      "deck": "day1",
+      "id": "chain-arithmetic",
+      "n": 34,
+      "session": 4,
+      "title": "Success multiplies and time adds: the flow misses both objectives",
+      "text": "Joint reliability Success multiplies and time adds: the flow misses both objectives 94.2% completed: the product of the five, below the weakest step 5.9 s mean time: the sum of the step means 8.8 s p95 of the whole flow, measured end to end 0.996 × 0.998 × 0.960 × 0.992 × 0.995 = 0.942. Adding the five step p95s gives 10.9 s: percentiles do not add.",
+      "href": "../slides/day1.html#chain-arithmetic"
+    },
+    {
+      "deck": "day1",
+      "id": "chain-which-step",
+      "n": 35,
+      "session": 4,
+      "title": "Improve the step that moves the objective you miss",
+      "text": "Which step to improve Improve the step that moves the objective you miss Change Completed p95, whole flow Today 94.2% 8.8 s check_address from 96% to 99% 97.1% 8.8 s check_address retried once 98.0% 8.9 s find_parcel from 99.8% to 100% 94.4% 8.8 s reroute from 2.9 s to 1.5 s mean 94.2% 6.4 s Two objectives missed, two different steps: check_address for completion, reroute for time.",
+      "href": "../slides/day1.html#chain-which-step"
+    },
+    {
+      "deck": "day1",
+      "id": "task-indicators",
+      "n": 36,
       "session": 4,
       "title": "Three indicators describe a flow: completion, cost and escalation",
       "text": "Indicators for a flow Three indicators describe a flow: completion, cost and escalation Completion Sessions that reached the goal, per language. 78.2% Arabic, 81.3% English. Cost per completed task All tokens, including failed sessions, over completed ones: SAR 0.0133 a booking. Escalation Handed to a person: 8.1% Arabic, 7.2% English. A signal, not a failure.",
@@ -309,7 +336,7 @@
     {
       "deck": "day1",
       "id": "loops-cost",
-      "n": 34,
+      "n": 37,
       "session": 4,
       "title": "3% of sessions loop on slot offers and spend 10% of the tokens",
       "text": "Lab 1.4 · the loops 3% of sessions loop on slot offers and spend 10% of the tokens customer Not that slot. tool call offer_slots(parcel, after=slot_3) customer Not that one either. tool call offer_slots(parcel, after=slot_4) after 6 to 12 offers 70% of looping sessions are abandoned",
@@ -318,16 +345,16 @@
     {
       "deck": "day1",
       "id": "escalation-signal",
-      "n": 35,
+      "n": 38,
       "session": 4,
       "title": "Escalation is the right answer for some parcels; the hand-over is the objective",
-      "text": "Escalation Escalation is the right answer for some parcels; the hand-over is the objective A parcel held by customs cannot be rebooked online: escalating it is correct Pushing escalation to zero makes the assistant book what it should not Measure the hand-over: every escalated session reaches a person, in its language",
+      "text": "Escalation Escalation is the right answer for some parcels; the hand-over is the objective A parcel held by customs cannot be rebooked online: escalating it is correct Measure the hand-over: every escalated session reaches a person, in its language",
       "href": "../slides/day1.html#escalation-signal"
     },
     {
       "deck": "day1",
       "id": "flow-objectives",
-      "n": 36,
+      "n": 39,
       "session": 4,
       "title": "Objectives for a flow say what is fixable and what is not",
       "text": "Objectives for the flow Objectives for a flow say what is fixable and what is not Indicator Objective Reason Completion 85% per language, 30 days loops and timed-out confirmations are fixable; ineligible parcels are not Cost per booking SAR 0.012 or less ending the loop removes most of the excess Escalation 9% or less, all handed over the right answer for some parcels",
@@ -336,7 +363,7 @@
     {
       "deck": "day1",
       "id": "check-flow",
-      "n": 37,
+      "n": 40,
       "session": 4,
       "title": "Which indicator for the redelivery flow?",
       "text": "Checkpoint Which indicator for the redelivery flow? Ruwaida asks for one headline indicator for the redelivery booking flow on her monthly review. Which do you propose? Share of successful model and tool calls Share of sessions that booked a slot, per language Share of sessions not escalated to a person Median session duration",
@@ -345,16 +372,16 @@
     {
       "deck": "day1",
       "id": "lab-1-4",
-      "n": 38,
+      "n": 41,
       "session": 4,
       "title": "Indicators for the redelivery flow",
-      "text": "Lab 1.4 · 25 min Indicators for the redelivery flow Define completion, cost and escalation indicators for the redelivery booking flow from 2,000 recorded sessions, and show what per-call success hides. D1_4_task_objectives.ipynb Read the sessions and their steps 3 min Per-call success against per-task completion 7 min Cost per completed booking, with the loops 7 min Escalation rate and objectives for the flow 8 min ✱ Stretch: Find the step where most abandoned sessions stop",
+      "text": "Lab 1.4 · 25 min Indicators for the redelivery flow Define completion, cost and escalation indicators for the redelivery booking flow from 2,000 recorded sessions, and show what per-call success hides. D1_4_task_objectives.ipynb Read the sessions and their steps 3 min Per-call success against per-task completion 7 min Cost per completed booking, with the loops 7 min Escalation rate and objectives for the flow 8 min ✱ Stretch: Find the step where most abandoned sessions stop, then compute the flow's completion and time as a chain of steps and name the step to improve",
       "href": "../slides/day1.html#lab-1-4"
     },
     {
       "deck": "day1",
       "id": "wrap-up",
-      "n": 39,
+      "n": 42,
       "session": 4,
       "title": "Three things to keep",
       "text": "Day 1 · wrap-up Three things to keep Users, not probes Four of five incidents were invisible to the uptime check. Every number has a slice and a sample Quality per language, with its interval. Budgets decide releases Per objective, from the remaining budget, written before the incident.",
@@ -363,7 +390,7 @@
     {
       "deck": "day1",
       "id": "next",
-      "n": 40,
+      "n": 43,
       "session": 4,
       "title": "Day 2: capacity and failure",
       "text": "Next Day 2: capacity and failure Bring your objectives from Lab 1.3: Day 2 sizes the service to meet them at the busiest hour Optional reading: the SRE book chapters on handling overload and cascading failures",
